@@ -1,0 +1,28 @@
+var annotated =
+[
+    [ "AdvancedExtension", "dc/d9a/class_advanced_extension.html", "dc/d9a/class_advanced_extension" ],
+    [ "AudioExtension", "d8/d4c/class_audio_extension.html", "d8/d4c/class_audio_extension" ],
+    [ "BaseObjectExtension", "d4/dd2/class_base_object_extension.html", "d4/dd2/class_base_object_extension" ],
+    [ "CameraExtension", "d2/d81/class_camera_extension.html", "d2/d81/class_camera_extension" ],
+    [ "CommonConversionsExtension", "df/d7e/class_common_conversions_extension.html", "df/d7e/class_common_conversions_extension" ],
+    [ "CommonInstructionsExtension", "d8/d61/class_common_instructions_extension.html", "d8/d61/class_common_instructions_extension" ],
+    [ "EventsCodeGenerator", "d7/d05/class_events_code_generator.html", "d7/d05/class_events_code_generator" ],
+    [ "Exporter", "d6/d5a/class_exporter.html", "d6/d5a/class_exporter" ],
+    [ "ExternalLayoutsExtension", "d6/d4b/class_external_layouts_extension.html", "d6/d4b/class_external_layouts_extension" ],
+    [ "FileExtension", "d3/d3b/class_file_extension.html", "d3/d3b/class_file_extension" ],
+    [ "HttpServer", "dd/df3/class_http_server.html", "dd/df3/class_http_server" ],
+    [ "JoystickExtension", "d0/d19/class_joystick_extension.html", "d0/d19/class_joystick_extension" ],
+    [ "JsPlatform", "d6/d49/class_js_platform.html", "d6/d49/class_js_platform" ],
+    [ "KeyboardExtension", "d7/d08/class_keyboard_extension.html", "d7/d08/class_keyboard_extension" ],
+    [ "MathematicalToolsExtension", "d4/df8/class_mathematical_tools_extension.html", "d4/df8/class_mathematical_tools_extension" ],
+    [ "MouseExtension", "da/d7b/class_mouse_extension.html", "da/d7b/class_mouse_extension" ],
+    [ "NetworkExtension", "de/dba/class_network_extension.html", "de/dba/class_network_extension" ],
+    [ "Previewer", "d2/d7d/class_previewer.html", "d2/d7d/class_previewer" ],
+    [ "ProjectExportDialog", "d8/d9d/class_project_export_dialog.html", "d8/d9d/class_project_export_dialog" ],
+    [ "SceneExtension", "dc/dd8/class_scene_extension.html", "dc/dd8/class_scene_extension" ],
+    [ "SpriteExtension", "da/dae/class_sprite_extension.html", "da/dae/class_sprite_extension" ],
+    [ "StringInstructionsExtension", "dc/d6f/class_string_instructions_extension.html", "dc/d6f/class_string_instructions_extension" ],
+    [ "TimeExtension", "df/d97/class_time_extension.html", "df/d97/class_time_extension" ],
+    [ "VariablesExtension", "d1/d13/class_variables_extension.html", "d1/d13/class_variables_extension" ],
+    [ "WindowExtension", "d5/d92/class_window_extension.html", "d5/d92/class_window_extension" ]
+];

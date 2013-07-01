@@ -1,0 +1,39 @@
+{
+    "project": {
+        "name": "Game Develop JS Runtime API",
+        "description": "Game Develop JS Runtime: An engine for developing javascript based games using Game Develop",
+        "version": "1",
+        "url": "http://www.compilgames.net"
+    },
+    "files": {
+        "Platform documentation\\jquery.js": {
+            "name": "Platform documentation\\jquery.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {},
+    "classes": {},
+    "classitems": [
+        {
+            "file": "Platform documentation\\jquery.js",
+            "line": 55,
+            "description": "jQuery.ScrollTo - Easy element scrolling using jQuery.\nCopyright (c) 2008 Ariel Flesler - aflesler(at)gmail(dot)com\nLicensed under GPL license (http://www.opensource.org/licenses/gpl-license.php).\nDate: 2/8/2008",
+            "author": "Ariel Flesler",
+            "version": "1.3.2",
+            "class": ""
+        }
+    ],
+    "warnings": [
+        {
+            "message": "unknown tag: version",
+            "line": " Platform documentation\\jquery.js:55"
+        },
+        {
+            "message": "Missing item type\njQuery.ScrollTo - Easy element scrolling using jQuery.\nCopyright (c) 2008 Ariel Flesler - aflesler(at)gmail(dot)com\nLicensed under GPL license (http://www.opensource.org/licenses/gpl-license.php).\nDate: 2/8/2008",
+            "line": " Platform documentation\\jquery.js:55"
+        }
+    ]
+}
