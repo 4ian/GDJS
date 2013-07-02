@@ -14,6 +14,9 @@
 #endif
 #define _(s) std::string(wxGetTranslation((s)).mb_str())
 
+namespace gdjs
+{
+
 ExternalLayoutsExtension::ExternalLayoutsExtension()
 {
     SetExtensionInformation("BuiltinExternalLayouts",
@@ -39,4 +42,6 @@ ExternalLayoutsExtension::ExternalLayoutsExtension()
         .AddParameter("expression", _("Y position of the origin"), "",true).SetDefaultValue("0")
         .codeExtraInformation.SetFunctionName("ExternalLayoutsTools::CreateObjectsFromExternalLayout").SetIncludeFile("GDCpp/BuiltinExtensions/ExternalLayoutsTools.h");
     */
+}
+
 }

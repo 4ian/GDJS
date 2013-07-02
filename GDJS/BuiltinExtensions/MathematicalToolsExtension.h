@@ -7,6 +7,9 @@
 #define MATHEMATICALTOOLSEXTENSION_H
 #include "GDCore/PlatformDefinition/PlatformExtension.h"
 
+namespace gdjs
+{
+
 /**
  * \brief Built-in extension providing common functions.
  *
@@ -20,4 +23,5 @@ public :
     virtual ~MathematicalToolsExtension() {};
 };
 
+}
 #endif // MATHEMATICALTOOLSEXTENSION_H

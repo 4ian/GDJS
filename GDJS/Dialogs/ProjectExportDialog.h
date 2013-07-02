@@ -20,6 +20,9 @@
 #include "GDCore/CommonTools.h"
 namespace gd { class Project; }
 
+namespace gdjs
+{
+
 /**
  * \brief Dialogs shown to setup the export of a project.
  * \note The real work is done in Exporter.
@@ -88,4 +91,5 @@ private:
     DECLARE_EVENT_TABLE()
 };
 
+}
 #endif

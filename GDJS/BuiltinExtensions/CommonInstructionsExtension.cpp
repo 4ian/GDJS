@@ -31,6 +31,9 @@
 using namespace std;
 using namespace gd;
 
+namespace gdjs
+{
+
 CommonInstructionsExtension::CommonInstructionsExtension()
 {
     SetExtensionInformation("BuiltinCommonInstructions",
@@ -522,4 +525,6 @@ CommonInstructionsExtension::CommonInstructionsExtension()
     }
 
     StripUnimplementedInstructionsAndExpressions();
+}
+
 }

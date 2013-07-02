@@ -24,6 +24,9 @@
 #include "GDJS/EventsCodeGenerator.h"
 #include "GDJS/Dialogs/ProjectExportDialog.h"
 
+namespace gdjs
+{
+
 //Nice tool fonction
 static void InsertUnique(std::vector<std::string> & container, std::string str)
 {
@@ -442,4 +445,6 @@ std::string Exporter::GetJavaExecutablePath()
     }
 
     return "";
+}
+
 }

@@ -7,6 +7,9 @@
 #define COMMONINSTRUCTIONSEXTENSION_H
 #include "GDCore/PlatformDefinition/PlatformExtension.h"
 
+namespace gdjs
+{
+
 /**
  * \brief Built-in extension providing SpriteObject objects.
  *
@@ -20,4 +23,5 @@ class CommonInstructionsExtension : public gd::PlatformExtension
     virtual ~CommonInstructionsExtension() {};
 };
 
+}
 #endif // COMMONINSTRUCTIONSEXTENSION_H

@@ -14,6 +14,8 @@
 #endif
 #define _(s) std::string(wxGetTranslation((s)).mb_str())
 
+namespace gdjs
+{
 
 WindowExtension::WindowExtension()
 {
@@ -128,4 +130,6 @@ void WindowExtension::ExposeActionsResources(gd::Instruction & action, gd::Arbit
         worker.ExposeImage(parameter);
         action.SetParameter(1, parameter);
     }*/
+}
+
 }

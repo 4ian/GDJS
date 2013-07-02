@@ -7,6 +7,9 @@
 #define SPRITEEXTENSION_H
 #include "GDCore/PlatformDefinition/PlatformExtension.h"
 
+namespace gdjs
+{
+
 /**
  * \brief Built-in extension providing SpriteObject objects.
  *
@@ -20,4 +23,5 @@ class SpriteExtension : public gd::PlatformExtension
     virtual ~SpriteExtension() {};
 };
 
+}
 #endif // SPRITEEXTENSION_H

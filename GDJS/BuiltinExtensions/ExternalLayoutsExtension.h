@@ -7,6 +7,9 @@
 #define EXTERNALLAYOUTSEXTENSION_H
 #include "GDCore/PlatformDefinition/PlatformExtension.h"
 
+namespace gdjs
+{
+
 /**
  * \brief Built-in extension providing features related to external layouts.
  *
@@ -20,4 +23,5 @@ public :
     virtual ~ExternalLayoutsExtension() {};
 };
 
+}
 #endif // EXTERNALLAYOUTSEXTENSION_H

@@ -14,6 +14,8 @@
 #endif
 #define _(s) std::string(wxGetTranslation((s)).mb_str())
 
+namespace gdjs
+{
 
 NetworkExtension::NetworkExtension()
 {
@@ -56,4 +58,6 @@ NetworkExtension::NetworkExtension()
         .AddParameter("string", _("Save as"), "",false)
         .codeExtraInformation.SetFunctionName("DownloadFile").SetIncludeFile("GDCpp/BuiltinExtensions/NetworkTools.h");
     */
+}
+
 }

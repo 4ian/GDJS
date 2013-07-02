@@ -15,6 +15,9 @@ namespace gd { class AutomatismMetadata; }
 namespace gd { class InstructionMetadata; }
 namespace gd { class EventsCodeGenerationContext; }
 
+namespace gdjs
+{
+
 /**
  * \brief The class being responsible for generating Javascript code from events.
  *
@@ -151,4 +154,5 @@ protected:
     virtual ~EventsCodeGenerator();
 };
 
+}
 #endif // EVENTSCODEGENERATOR_H

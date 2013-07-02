@@ -7,6 +7,9 @@
 #define ADVANCEDEXTENSION_H
 #include "GDCore/PlatformDefinition/PlatformExtension.h"
 
+namespace gdjs
+{
+
 /**
  * \brief Built-in extension providing "Always" condition.
  *
@@ -20,4 +23,5 @@ class AdvancedExtension : public gd::PlatformExtension
     virtual ~AdvancedExtension() {};
 };
 
+}
 #endif // ADVANCEDEXTENSION_H

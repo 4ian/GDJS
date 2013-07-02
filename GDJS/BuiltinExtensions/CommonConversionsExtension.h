@@ -7,6 +7,9 @@
 #define COMMONCONVERSIONSEXTENSION_H
 #include "GDCore/PlatformDefinition/PlatformExtension.h"
 
+namespace gdjs
+{
+
 /**
  * \brief Built-in extension providing common functions for conversion between types.
  *
@@ -20,4 +23,5 @@ public :
     virtual ~CommonConversionsExtension() {};
 };
 
+}
 #endif // COMMONCONVERSIONSEXTENSION_H

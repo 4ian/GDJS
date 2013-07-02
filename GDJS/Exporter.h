@@ -11,6 +11,9 @@
 namespace gd { class Project; }
 namespace gd { class Layout; }
 
+namespace gdjs
+{
+
 /**
  * \brief Export a project or a layout to a playable HTML5/Javascript based game.
  */
@@ -111,4 +114,5 @@ private:
     std::string lastError; ///< The last error that occurred.
 };
 
+}
 #endif // EXPORTER_H

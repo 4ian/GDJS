@@ -7,6 +7,9 @@
 #define BASEOBJECTEXTENSION_H
 #include "GDCore/PlatformDefinition/PlatformExtension.h"
 
+namespace gdjs
+{
+
 /**
  * \brief Built-in extension providing functions for all objects
  *
@@ -20,4 +23,5 @@ public :
     virtual ~BaseObjectExtension() {};
 };
 
+}
 #endif // BASEOBJECTEXTENSION_H

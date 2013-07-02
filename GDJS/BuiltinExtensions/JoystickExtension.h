@@ -7,6 +7,8 @@
 #define JOYSTICKEXTENSION_H
 #include "GDCore/PlatformDefinition/PlatformExtension.h"
 
+namespace gdjs
+{
 /**
  * \brief Built-in extension providing functions related joysticks
  *
@@ -20,4 +22,5 @@ public :
     virtual ~JoystickExtension() {};
 };
 
+}
 #endif // JOYSTICKEXTENSION_H

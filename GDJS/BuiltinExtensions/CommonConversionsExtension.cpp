@@ -14,6 +14,8 @@
 #endif
 #define _(s) std::string(wxGetTranslation((s)).mb_str())
 
+namespace gdjs
+{
 
 CommonConversionsExtension::CommonConversionsExtension()
 {
@@ -35,4 +37,6 @@ CommonConversionsExtension::CommonConversionsExtension()
         .SetFunctionName("gdjs.toRad");
     GetAllExpressions()["ToDeg"].codeExtraInformation
         .SetFunctionName("gdjs.toDegrees");
+}
+
 }

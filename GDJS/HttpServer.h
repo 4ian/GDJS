@@ -8,6 +8,9 @@
 #include <string>
 struct mg_context;
 
+namespace gdjs
+{
+
 /**
  * \brief A very simple web server.
  *
@@ -43,4 +46,5 @@ private:
     struct mg_context * ctx;
 };
 
+}
 #endif // HTTPSERVER_H

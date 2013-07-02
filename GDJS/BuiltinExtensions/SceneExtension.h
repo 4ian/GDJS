@@ -7,6 +7,9 @@
 #define SCENEEXTENSION_H
 #include "GDCore/PlatformDefinition/PlatformExtension.h"
 
+namespace gdjs
+{
+
 /**
  * \brief Built-in extension providing common functions.
  *
@@ -20,4 +23,5 @@ class SceneExtension : public gd::PlatformExtension
     virtual ~SceneExtension() {};
 };
 
+}
 #endif // SCENEEXTENSION_H

@@ -7,6 +7,9 @@
 #define CAMERAEXTENSION_H
 #include "GDCore/PlatformDefinition/PlatformExtension.h"
 
+namespace gdjs
+{
+
 /**
  * \brief Built-in extension providing SpriteObject objects.
  *
@@ -20,4 +23,5 @@ public :
     virtual ~CameraExtension() {};
 };
 
+}
 #endif // CAMERAEXTENSION_H

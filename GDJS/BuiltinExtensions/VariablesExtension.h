@@ -7,6 +7,9 @@
 #define VARIABLESEXTENSION_H
 #include "GDCore/PlatformDefinition/PlatformExtension.h"
 
+namespace gdjs
+{
+
 /**
  * \brief Built-in extension providing actions/conditions and expressions for scene variables.
  *
@@ -20,4 +23,5 @@ class VariablesExtension : public gd::PlatformExtension
     virtual ~VariablesExtension() {};
 };
 
+}
 #endif // VARIABLESEXTENSION_H

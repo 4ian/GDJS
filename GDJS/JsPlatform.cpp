@@ -35,6 +35,9 @@
 #include "GDJS/BuiltinExtensions/AdvancedExtension.h"
 #include "GDJS/BuiltinExtensions/FileExtension.h"
 
+namespace gdjs
+{
+
 JsPlatform *JsPlatform::singleton = NULL;
 
 /**
@@ -154,4 +157,6 @@ extern "C" gd::Platform * GD_API CreateGDPlatform() {
  */
 extern "C" void GD_API DestroyGDPlatform() {
     JsPlatform::DestroySingleton();
+}
+
 }

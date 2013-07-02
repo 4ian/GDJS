@@ -7,6 +7,9 @@
 #define STRINGINSTRUCTIONSEXTENSION_H
 #include "GDCore/PlatformDefinition/PlatformExtension.h"
 
+namespace gdjs
+{
+
 /**
  * \brief Built-in extension providing common functions for strings.
  *
@@ -20,4 +23,5 @@ public :
     virtual ~StringInstructionsExtension() {};
 };
 
+}
 #endif // STRINGINSTRUCTIONSEXTENSION_H

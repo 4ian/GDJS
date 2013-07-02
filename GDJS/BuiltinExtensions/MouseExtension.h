@@ -7,6 +7,9 @@
 #define MOUSEEXTENSION_H
 #include "GDCore/PlatformDefinition/PlatformExtension.h"
 
+namespace gdjs
+{
+
 /**
  * \brief Built-in extension providing functions related the mouse
  *
@@ -20,4 +23,5 @@ public :
     virtual ~MouseExtension() {};
 };
 
+}
 #endif // MOUSEEXTENSION_H

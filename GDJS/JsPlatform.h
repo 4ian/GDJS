@@ -12,6 +12,9 @@
 #include <wx/intl.h>
 #include "HttpServer.h"
 
+namespace gdjs
+{
+
 /**
  * \brief Game Develop Javascript Platform
  *
@@ -77,5 +80,7 @@ private:
 
     static JsPlatform * singleton;
 };
+
+}
 
 #endif // JSPLATFORM_H

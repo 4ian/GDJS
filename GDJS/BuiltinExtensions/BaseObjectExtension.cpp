@@ -16,6 +16,9 @@
 #endif
 #define _(s) std::string(wxGetTranslation((s)).mb_str())
 
+namespace gdjs
+{
+
 BaseObjectExtension::BaseObjectExtension()
 {
     SetExtensionInformation("BuiltinObject",
@@ -279,4 +282,6 @@ BaseObjectExtension::BaseObjectExtension()
             .AddParameter("expression", _("Damping ( Default : 0 )"))
             .codeExtraInformation.SetFunctionName("AddForceToMoveAroundObject").SetIncludeFile("GDCpp/BuiltinExtensions/ObjectTools.h");
 */
+}
+
 }

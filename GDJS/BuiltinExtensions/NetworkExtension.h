@@ -7,6 +7,9 @@
 #define NETWORKEXTENSION_H
 #include "GDCore/PlatformDefinition/PlatformExtension.h"
 
+namespace gdjs
+{
+
 /**
  * \brief Built-in extension providing functions related to networking.
  *
@@ -20,4 +23,5 @@ public :
     virtual ~NetworkExtension() {};
 };
 
+}
 #endif // NETWORKEXTENSION_H

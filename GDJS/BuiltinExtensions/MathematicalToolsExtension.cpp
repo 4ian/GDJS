@@ -16,6 +16,9 @@
 #endif
 #define _(s) std::string(wxGetTranslation((s)).mb_str())
 
+namespace gdjs
+{
+
 MathematicalToolsExtension::MathematicalToolsExtension()
 {
     SetExtensionInformation("BuiltinMathematicalTools",
@@ -211,4 +214,6 @@ MathematicalToolsExtension::MathematicalToolsExtension()
         .codeExtraInformation.SetFunctionName("GDpriv::MathematicalTools::trunc").SetIncludeFile("GDCpp/BuiltinExtensions/MathematicalTools.h");
 
 */
+}
+
 }

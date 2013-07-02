@@ -23,6 +23,9 @@
 
 using namespace std;
 
+namespace gdjs
+{
+
 std::string EventsCodeGenerator::GenerateSceneEventsCompleteCode(gd::Project & project,
                                                                  gd::Layout & scene,
                                                                  std::vector < gd::BaseEventSPtr > & events,
@@ -576,4 +579,6 @@ EventsCodeGenerator::EventsCodeGenerator(gd::Project & project, const gd::Layout
 
 EventsCodeGenerator::~EventsCodeGenerator()
 {
+}
+
 }

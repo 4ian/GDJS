@@ -16,6 +16,9 @@
 #endif
 #define _(s) std::string(wxGetTranslation((s)).mb_str())
 
+namespace gdjs
+{
+
 SceneExtension::SceneExtension()
 {
     SetExtensionInformation("BuiltinScene",
@@ -94,5 +97,7 @@ SceneExtension::SceneExtension()
         .AddParameter("yesorno", _("Deactivate input when focus is lost"))
         .codeExtraInformation.SetFunctionName("DisableInputWhenFocusIsLost").SetIncludeFile("GDCpp/BuiltinExtensions/RuntimeSceneTools.h");
         */
+
+}
 
 }

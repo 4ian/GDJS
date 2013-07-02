@@ -14,6 +14,9 @@
 #endif
 #define _(s) std::string(wxGetTranslation((s)).mb_str())
 
+namespace gdjs
+{
+
 FileExtension::FileExtension()
 {
     SetExtensionInformation("BuiltinFile",
@@ -162,4 +165,6 @@ FileExtension::FileExtension()
         .AddParameter("string", _("Command"), "",false)
         .codeExtraInformation.SetFunctionName("ExecuteCmd").SetIncludeFile("GDCpp/BuiltinExtensions/FileTools.h");
     */
+}
+
 }

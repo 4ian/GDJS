@@ -16,6 +16,9 @@
 #endif
 #define _(s) std::string(wxGetTranslation((s)).mb_str())
 
+namespace gdjs
+{
+
 MouseExtension::MouseExtension()
 {
     SetExtensionInformation("BuiltinMouse",
@@ -93,4 +96,6 @@ MouseExtension::MouseExtension()
         .AddCodeOnlyParameter("currentScene", "")
         .codeExtraInformation.SetFunctionName("CenterCursor").SetIncludeFile("GDCpp/BuiltinExtensions/MouseTools.h");
 */
+}
+
 }

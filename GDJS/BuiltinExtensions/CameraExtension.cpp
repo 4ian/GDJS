@@ -12,6 +12,9 @@
 #endif
 #define _(s) std::string(wxGetTranslation((s)).mb_str())
 
+namespace gdjs
+{
+
 CameraExtension::CameraExtension()
 {
     SetExtensionInformation("BuiltinCamera",
@@ -159,4 +162,6 @@ CameraExtension::CameraExtension()
 
 
 */
+}
+
 }

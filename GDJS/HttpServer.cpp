@@ -8,6 +8,9 @@
 #include <string.h>
 #include "mongoose/mongoose.h"
 
+namespace gdjs
+{
+
 void HttpServer::Run(std::string indexDirectory)
 {
     //Some options ( Last option must be NULL )
@@ -28,4 +31,6 @@ void HttpServer::Stop()
 HttpServer::~HttpServer()
 {
     Stop();
+}
+
 }

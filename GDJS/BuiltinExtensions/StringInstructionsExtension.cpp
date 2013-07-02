@@ -14,6 +14,8 @@
 #endif
 #define _(s) std::string(wxGetTranslation((s)).mb_str())
 
+namespace gdjs
+{
 
 StringInstructionsExtension::StringInstructionsExtension()
 {
@@ -111,4 +113,6 @@ StringInstructionsExtension::StringInstructionsExtension()
 
 
 */
+}
+
 }

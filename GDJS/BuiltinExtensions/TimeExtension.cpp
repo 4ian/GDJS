@@ -16,6 +16,9 @@
 #endif
 #define _(s) std::string(wxGetTranslation((s)).mb_str())
 
+namespace gdjs
+{
+
 TimeExtension::TimeExtension()
 {
     SetExtensionInformation("BuiltinTime",
@@ -58,4 +61,6 @@ TimeExtension::TimeExtension()
         .SetFunctionName("gdjs.evtTools.runtimeScene.getTimeScale");
     GetAllExpressions()["Time"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.runtimeScene.getTime");
+}
+
 }

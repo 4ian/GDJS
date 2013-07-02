@@ -17,6 +17,9 @@
 #include "GDCore/PlatformDefinition/Project.h"
 #include "GDJS/Exporter.h"
 
+namespace gdjs
+{
+
 //(*IdInit(ProjectExportDialog)
 const long ProjectExportDialog::ID_STATICTEXT4 = wxNewId();
 const long ProjectExportDialog::ID_TEXTCTRL1 = wxNewId();
@@ -182,3 +185,4 @@ bool ProjectExportDialog::RequestMinify()
     return minifyCheck->GetValue();
 }
 
+}

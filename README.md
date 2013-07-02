@@ -1,5 +1,5 @@
 Game Develop Javascript Platform
-========================
+================================
 
 Game Develop Javascript Platform ( GDJS ) is a platform for developing 
 HTML5/Javascript based games with Game Develop 3 ( Free game development software 

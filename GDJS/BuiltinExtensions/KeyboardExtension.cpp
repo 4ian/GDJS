@@ -16,6 +16,9 @@
 #endif
 #define _(s) std::string(wxGetTranslation((s)).mb_str())
 
+namespace gdjs
+{
+
 KeyboardExtension::KeyboardExtension()
 {
     SetExtensionInformation("BuiltinKeyboard",
@@ -32,4 +35,6 @@ KeyboardExtension::KeyboardExtension()
         .SetFunctionName("gdjs.evtTools.input.isKeyPressed").SetIncludeFile("inputtools.h");
     GetAllConditions()["AnyKeyPressed"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.input.anyKeyPressed").SetIncludeFile("inputtools.h");
+}
+
 }

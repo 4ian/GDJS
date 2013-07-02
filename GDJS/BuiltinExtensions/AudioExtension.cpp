@@ -14,6 +14,8 @@
 #endif
 #define _(s) std::string(wxGetTranslation((s)).mb_str())
 
+namespace gdjs
+{
 
 AudioExtension::AudioExtension()
 {
@@ -344,4 +346,6 @@ void AudioExtension::ExposeActionsResources(gd::Instruction & action, gd::Arbitr
         worker.ExposeResource(parameter);
         action.SetParameter(1, parameter);
     }
+}
+
 }

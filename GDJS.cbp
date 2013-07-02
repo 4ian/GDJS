@@ -164,6 +164,38 @@
 					<Add directory="../ExtLibs/wxwidgets/lib/gcc_dll" />
 				</Linker>
 			</Target>
+			<Target title="Linux - Release - Edittime">
+				<Option output="../IDE/bin/release/JsPlatform/GDJS" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-Wall" />
+					<Add option="-fno-stack-protector" />
+					<Add option="-finput-charset=iso-8859-1" />
+					<Add option="-m32" />
+					<Add option="`wx-config --cppflags`" />
+					<Add option="`pkg-config gtk+-2.0 --cflags`" />
+					<Add option="-DGD_IDE_ONLY" />
+					<Add option='-DGD_CORE_API=&quot;&quot;' />
+					<Add option='-DGD_API=&quot;&quot;' />
+					<Add option="-DRELEASE" />
+					<Add option="-DLINUX" />
+					<Add option="-DSFML_DYNAMIC" />
+					<Add option="-DBOOST_DISABLE_ASSERTS" />
+					<Add option="-D__STDC_LIMIT_MACROS" />
+					<Add option="-D__STDC_CONSTANT_MACROS" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-lGDCore" />
+					<Add option="`wx-config --libs all`" />
+					<Add directory="../IDE/bin/release" />
+				</Linker>
+			</Target>
 		</Build>
 		<Compiler>
 			<Add directory="../GDJS" />
@@ -171,6 +203,9 @@
 			<Add directory="../ExtLibs/boost" />
 			<Add directory="../ExtLibs/SFML/include" />
 		</Compiler>
+		<Linker>
+			<Add directory="../ExtLibs/SFML/build-linux/lib" />
+		</Linker>
 		<Unit filename="GDJS/BuiltinExtensions/AdvancedExtension.cpp" />
 		<Unit filename="GDJS/BuiltinExtensions/AdvancedExtension.h" />
 		<Unit filename="GDJS/BuiltinExtensions/AudioExtension.cpp" />

@@ -18,6 +18,9 @@
 #endif
 #define _(s) std::string(wxGetTranslation((s)).mb_str())
 
+namespace gdjs
+{
+
 VariablesExtension::VariablesExtension()
 {
     SetExtensionInformation("BuiltinVariables",
@@ -344,4 +347,6 @@ VariablesExtension::VariablesExtension()
         GetAllStrExpressions()["GlobalVariableString"]
         .codeExtraInformation.SetCustomCodeGenerator(boost::shared_ptr<gd::StrExpressionMetadata::ExtraInformation::CustomCodeGenerator>(codeGenerator));
     }
+}
+
 }

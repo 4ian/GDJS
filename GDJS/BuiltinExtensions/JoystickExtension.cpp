@@ -16,6 +16,9 @@
 #endif
 #define _(s) std::string(wxGetTranslation((s)).mb_str())
 
+namespace gdjs
+{
+
 JoystickExtension::JoystickExtension()
 {
     SetExtensionInformation("BuiltinJoystick",
@@ -84,4 +87,6 @@ JoystickExtension::JoystickExtension()
         .codeExtraInformation.SetFunctionName("GetJoystickAxisValue").SetIncludeFile("GDCpp/BuiltinExtensions/JoystickTools.h");
 
     */
+}
+
 }
