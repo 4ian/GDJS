@@ -124,9 +124,16 @@ JsPlatform::JsPlatform() :
     AddExtension(boost::shared_ptr<gd::PlatformExtension>(new ExternalLayoutsExtension));
 
     //Add extensions adapted from GD C++ Platform:
-    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/TextObject.xgdwe", *this);
-    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/DraggableAutomatism.xgdwe", *this);
-    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/DestroyOutsideAutomatism.xgdwe", *this);
+    #if defined(WINDOWS)
+    std::string extension = "xgdwe";
+    #elif defined(LINUX)
+    std::string extension = "xgdle";
+    #else
+    std::string extension = "xgde";
+    #endif
+    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/TextObject."+extension, *this);
+    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/DraggableAutomatism."+extension, *this);
+    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/DestroyOutsideAutomatism."+extension, *this);
 };
 
 JsPlatform & JsPlatform::Get()
