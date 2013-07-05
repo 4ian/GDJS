@@ -9,9 +9,9 @@
  * @namespace gdjs
  * @class variablesContainer
  * @constructor
- * @param initialVariables Optional xml structure containing initial variables.
+ * @param initialVariablesData Optional object containing initial variables.
  */
-gdjs.variablesContainer = function(initialVariablesXml)
+gdjs.variablesContainer = function(initialVariablesData)
 {
     var that = {};
     var my = {};
@@ -19,15 +19,15 @@ gdjs.variablesContainer = function(initialVariablesXml)
     my.variables = new Hashtable();
     
     /**
-     * Initialize variables from a container stored in a xml structure.
+     * Initialize variables from a container data.
      * @method initFrom
-     * @param xmlStructure The XML structure to be used.
+     * @param data The object containing the variables.
      */
-    that.initFrom = function(xmlStructure) {
-        $(xmlStructure).find("Variable").each( function() {
+    that.initFrom = function(data) {
+        gdjs.iterateOver(data, "Variable", function(varData) {
 
             var variable = gdjs.variable();
-            var initialValue = $(this).attr("Value")
+            var initialValue = varData.attr.Value;
             //Try to guess the type of the value, as GD has no way ( for now ) to specify
             //the type of a variable.
             if(!isNaN(initialValue)) {  //Number
@@ -40,10 +40,10 @@ gdjs.variablesContainer = function(initialVariablesXml)
                     variable.setString(initialValue);
             }
 
-            my.variables.put($(this).attr("Name"), variable);
+            my.variables.put(varData.attr.Name, variable);
         });
     }
-    if ( initialVariablesXml != undefined ) that.initFrom(initialVariablesXml);
+    if ( initialVariablesData != undefined ) that.initFrom(initialVariablesData);
 
     /**
      * Add a new variable.

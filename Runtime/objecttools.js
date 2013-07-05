@@ -276,16 +276,16 @@ gdjs.evtTools.object.doCreateObjectOnScene = function(runtimeScene, objectName, 
 
     //Find the object to create
     var obj = null;
-    $(runtimeScene.getInitialObjectsXml()).find("Objet").each( function() {
-        if ( $(this).attr("nom") === objectName ) {
-            obj = gdjs.getObjectConstructor($(this).attr("type"))(runtimeScene, $(this));
+    gdjs.iterateOver(runtimeScene.getInitialObjectsData(), "Objet", function(objData) {
+        if ( objData.attr.nom === objectName ) {
+            obj = gdjs.getObjectConstructor(objData.attr.type)(runtimeScene, objData);
             return false;
         }
     });
     if ( obj == null ) {
-        $(runtimeScene.getGame().getInitialObjectsXml()).find("Objet").each( function() {
-            if ( $(this).attr("nom") === objectName ) {
-                obj = gdjs.getObjectConstructor($(this).attr("type"))(runtimeScene, $(this));
+        gdjs.iterateOver(runtimeScene.getGame().getInitialObjectsData(), "Objet", function(objData){
+            if ( objData.attr.nom === objectName ) {
+                obj = gdjs.getObjectConstructor(objData.attr.type)(runtimeScene, objData);
                 return false;
             }
         });

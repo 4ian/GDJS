@@ -46,6 +46,42 @@ gdjs.toDegrees = function(angleInRadians) {
 }
 
 /**
+ * Get the height of the document ( or of the viewport ) displayed in browser
+ * @method getDocHeight
+ * @static
+ */
+gdjs.getDocHeight = function() {
+    //Nice snippet from http://james.padolsey.com/javascript/get-document-height-cross-browser/
+    var D = document;
+    return Math.max(
+        D.body.scrollHeight, D.documentElement.scrollHeight,
+        D.body.offsetHeight, D.documentElement.offsetHeight,
+        D.body.clientHeight, D.documentElement.clientHeight
+    );
+}
+
+/**
+ * Iterate over a property of an object:<br>
+ * - If the property does not exist, do nothing.<br>
+ * - If it exists and is an array, call func on each member of the array.<br>
+ * - If it exists and is not array, call func directly on the property.<br>
+ * <br>
+ * Note that func must be remove elements from the array in the second case. If func
+ * return false, the iteration will stop.
+ * @method iterateOver
+ * @static
+ */
+gdjs.iterateOver = function(object, propertyName, func) {
+    if ( !object.hasOwnProperty(propertyName) ) return;
+    if ( Array.isArray(object[propertyName]) ) {
+        for(var i = 0, len = object[propertyName].length;i<len;++i) {
+            if (func(object[propertyName][i]) === false) return;
+        }
+    }
+    else func(object[propertyName]);
+}
+
+/**
  * Register the runtime objects that can be used in runtimeScene.<br>
  * Objects must be part of gdjs and have their property "thisIsARuntimeObjectConstructor"
  * defined and set to the name of the type of the object so as to be recognized.

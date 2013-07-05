@@ -10,16 +10,16 @@
  * @namespace gdjs
  * @class runtimeGame
  */
-gdjs.runtimeGame = function(xml)
+gdjs.runtimeGame = function(data)
 {
     var that = {};
     var my = {};
 
     my.variables = gdjs.variablesContainer();
-    my.xml = xml;
+    my.data = data;
     my.imageManager = gdjs.imageManager(that);
-    my.minFPS = xml ? parseInt($(xml).find("Info").find("FPSmin").attr("value")) : 15;
-    my.variables.initFrom($(xml).find("Variables"));
+    my.minFPS = data ? parseInt(data.Info.FPSmin.attr.value) : 15;
+    my.variables.initFrom(data.Variables);
 
     //Inputs :
     my.pressedKeys = new Hashtable();
@@ -42,26 +42,26 @@ gdjs.runtimeGame = function(xml)
     }
 
     /**
-     * Get the XML structure associated to the game
-     * @method getXml
-     * @return The XML structure associated to the game, which can be parsed with jQuery.
+     * Get the object containing the game data
+     * @method getGameData
+     * @return The object associated to the game, which can be parsed with jQuery.
      */
-    that.getXml = function() {
-        return my.xml;
+    that.getGameData = function() {
+        return my.data;
     }
 
     /**
-     * Get the XML structure associated to a scene.
+     * Get the data associated to a scene.
      *
-     * @method getSceneXml
+     * @method getSceneData
      * @param sceneName The name of the scene. If not defined, the first scene will be returned.
-     * @return The XML structure associated to the scene, which can be parsed with jQuery.
+     * @return The data associated to the scene.
      */
-    that.getSceneXml = function(sceneName) {
+    that.getSceneData = function(sceneName) {
         var scene = undefined;
-        $(my.xml).find("Scenes").find("Scene").each( function() {
-            if ( sceneName == undefined || $(this).attr("nom") == sceneName ) {
-                scene = $(this);
+        gdjs.iterateOver(my.data.Scenes, "Scene", function(sceneData) {
+            if ( sceneName == undefined || sceneData.attr.nom === sceneName ) {
+                scene = sceneData;
                 return false;
             }
         });
@@ -75,14 +75,14 @@ gdjs.runtimeGame = function(xml)
     /**
      * Check if a scene exists
      *
-     * @method getSceneXml
+     * @method hasScene
      * @param sceneName The name of the scene to search.
      * @return true if the scene exists. If sceneName is undefined, true if the game has a scene.
      */
     that.hasScene = function(sceneName) {
         var isTrue = false;
-        $(my.xml).find("Scenes").find("Scene").each( function() {
-            if ( sceneName == undefined || $(this).attr("nom") == sceneName ) {
+        gdjs.iterateOver(my.data.Scenes, "Scene", function(sceneData) {
+            if ( sceneName == undefined || sceneData.attr.nom == sceneName ) {
                 isTrue = true;
                 return false;
             }
@@ -92,12 +92,12 @@ gdjs.runtimeGame = function(xml)
     }
 
     /**
-     * Get the XML structure representing all the initial objects of the game.
-     * @method getInitialObjectsXml
-     * @return The XML structure associated to the initial objects, which can be parsed with jQuery.
+     * Get the data representing all the initial objects of the game.
+     * @method getInitialObjectsData
+     * @return The data associated to the initial objects.
      */
-    that.getInitialObjectsXml = function() {
-        return $(my.xml).find("Objets");
+    that.getInitialObjectsData = function() {
+        return my.data.Objets;
     }
 
     /**

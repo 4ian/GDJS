@@ -10,13 +10,13 @@
  * @class runtimeAutomatism
  * @constructor 
  */
-gdjs.runtimeAutomatism = function(runtimeScene, automatismXml)
+gdjs.runtimeAutomatism = function(runtimeScene, automatismData)
 {
     var that = {};
     var my = {};
     
-    that.name = $(automatismXml).attr("Name") || "";
-    that.type = $(automatismXml).attr("Type") || "";
+    that.name = automatismData.attr.Name || "";
+    that.type = automatismData.attr.Type || "";
     my.nameId = gdjs.runtimeObject.getNameIdentifier(that.name);
     my.activated = true;
     that.owner = null;

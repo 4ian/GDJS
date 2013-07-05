@@ -12,14 +12,14 @@
  * @class runtimeObject
  * @constructor 
  */
-gdjs.runtimeObject = function(runtimeScene, objectXml)
+gdjs.runtimeObject = function(runtimeScene, objectData)
 {
     var that = {};
     var my = {};
     
-    that.name = $(objectXml).attr("nom") || "";
+    that.name = objectData.attr.nom || "";
     my.nameId = gdjs.runtimeObject.getNameIdentifier(that.name);
-    that.type = $(objectXml).attr("type") || "";
+    that.type = objectData.attr.type || "";
     that.x = 0;
     that.y = 0;
     that.angle = 0;
@@ -30,7 +30,7 @@ gdjs.runtimeObject = function(runtimeScene, objectXml)
     that.hitBoxes.push(gdjs.polygon.createRectangle(0,0));
     that.hitBoxesDirty = true;
     that.id = runtimeScene.createNewUniqueId();
-    my.variables = gdjs.variablesContainer(objectXml ? $(objectXml).find("Variables") : undefined);
+    my.variables = gdjs.variablesContainer(objectData ? objectData.Variables : undefined);
     my.forces = [];
     my.averageForce = gdjs.force(0,0,false); //A force returned by getAverageForce method.
     my.forcesGarbage = []; //Container for unused garbage, avoiding recreating forces each tick.
@@ -38,11 +38,11 @@ gdjs.runtimeObject = function(runtimeScene, objectXml)
     my.automatismsTable = new Hashtable(); //Also contains the automatisms: Used when an automatism is accessed by its name ( see getAutomatism ).
     
     my.initAutomatisms = function() {
-        $(objectXml).find("Automatism").each(function() {
-            var aut = gdjs.getAutomatismConstructor($(this).attr("Type"))(runtimeScene, $(this));
+        gdjs.iterateOver(objectData, "Automatism", function(autoData) {
+            var aut = gdjs.getAutomatismConstructor(autoData.attr.Type)(runtimeScene, autoData);
             aut.setOwner(that);
             my.automatisms.push(aut);
-            my.automatismsTable.put($(this).attr("Name"), aut);
+            my.automatismsTable.put(autoData.attr.Name, aut);
         });
     }
     my.initAutomatisms();
@@ -64,9 +64,9 @@ gdjs.runtimeObject = function(runtimeScene, objectXml)
      * Note that common properties ( position, angle, z order... ) have already been setup.
      *
      * @method extraInitializationFromInitialInstance
-     * @param initialInstanceXml The xml structure of the initial instance.
+     * @param initialInstanceData The data of the initial instance.
      */
-    that.extraInitializationFromInitialInstance = function(initialInstanceXml) {
+    that.extraInitializationFromInitialInstance = function(initialInstanceData) {
         //Nothing to do.
     }
     

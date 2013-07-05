@@ -115,7 +115,7 @@ gdjs.evtTools.runtimeScene.getTime = function(what) {
 }
 
 gdjs.evtTools.runtimeScene.changeScene = function(currentScene, newSceneName) {
-    if ( currentScene.getGame().getSceneXml(newSceneName) != undefined )
+    if ( currentScene.getGame().getSceneData(newSceneName) != undefined )
         currentScene.requestSceneChange(newSceneName);
 }
 

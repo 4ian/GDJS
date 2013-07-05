@@ -11,6 +11,8 @@
 #include <wx/log.h>
 #include <wx/msgdlg.h>
 #include <wx/config.h>
+#include <boost/property_tree/xml_parser.hpp>
+#include <boost/property_tree/json_parser.hpp>
 #include "GDCore/TinyXml/tinyxml.h"
 #include "GDCore/PlatformDefinition/Project.h"
 #include "GDCore/PlatformDefinition/Layout.h"
@@ -18,16 +20,16 @@
 #include "GDCore/IDE/wxTools/RecursiveMkDir.h"
 #include "GDCore/IDE/ProjectResourcesCopier.h"
 #include "GDCore/CommonTools.h"
-#include <boost/property_tree/xml_parser.hpp>
-#include <boost/property_tree/json_parser.hpp>
 #include "GDJS/Exporter.h"
 #include "GDJS/EventsCodeGenerator.h"
 #include "GDJS/Dialogs/ProjectExportDialog.h"
 
+using namespace boost::property_tree;
+
 namespace gdjs
 {
 
-//Nice tool fonction
+//Nice tools functions
 static void InsertUnique(std::vector<std::string> & container, std::string str)
 {
     if ( std::find(container.begin(), container.end(), str) == container.end() )
@@ -68,9 +70,55 @@ static void GenerateFontsDeclaration(const std::string & outputDir, std::string 
     }
 }
 
+template<typename Ptree>
+static void NormalizeProjectPropertyTree(Ptree & pt)
+{
+    typedef typename Ptree::key_type::value_type Ch;
+    typedef typename std::basic_string<Ch> Str;
+
+    //When a node has a data and children ( which won't be accepted
+    //for writing the property tree to json ), the data is sent to a child called "value".
+    if (!pt.template get_value<Str>().empty() && !pt.empty())
+    {
+        pt.put("value", pt.template get_value<Str>());
+        pt.put_value("");
+    }
+
+    //Rename the child node "<xmlattr>" to "attr", if any.
+    if ( pt.find("<xmlattr>") != pt.not_found() )
+    {
+        pt.put_child("attr", pt.get_child("<xmlattr>"));
+        pt.erase("<xmlattr>");
+    }
+
+    //Transform multiple child with the same name into an array
+    typename Ptree::iterator it = pt.begin();
+    while (it != pt.end())
+    {
+        typename Ptree::key_type key = it->first;
+        if ( key != "" && pt.count(key) > 1 ) //More than one child with the same name..
+        {
+            Ptree array; //...put every children with this name into an array
+            for (typename Ptree::iterator arrElem = pt.begin(); arrElem != pt.end(); ++arrElem)
+            {
+                if ( arrElem->first == key ) array.push_back(std::make_pair("", arrElem->second));
+            }
+            pt.erase(key);
+            pt.put_child(key, array);
+            it = pt.begin();
+        }
+        else
+            ++it;
+    }
+
+    for (typename Ptree::iterator it = pt.begin(); it != pt.end(); ++it)
+        NormalizeProjectPropertyTree(it->second);
+}
+
 Exporter::~Exporter()
 {
 }
+
 
 bool Exporter::ExportLayoutForPreview(gd::Layout & layout, std::string exportDir)
 {
@@ -94,19 +142,70 @@ bool Exporter::ExportLayoutForPreview(gd::Layout & layout, std::string exportDir
     ExportResources(strippedProject, exportDir);
     strippedProject.GetLayout(layout.GetName()).GetEvents().clear();
 
+    //Export the project
+    std::string result = ExportToJSON(strippedProject, exportDir+"/data.js", "gdjs.projectData", false);
+    includesFiles.push_back("data.js");
+
     //Copy additional dependencies
     ExportIncludesAndLibs(includesFiles, exportDir, false);
 
     //Create the index file
     if ( !ExportIndexFile(*project, exportDir, includesFiles) ) return false;
 
-    //Export the project
-    if ( !strippedProject.SaveToFile(exportDir+"/data.xml") ) {
-        lastError = gd::ToString(_("Unable to write ")+exportDir+"/data.xml");
-        return false;
+    return true;
+}
+
+std::string Exporter::ExportToJSON(const gd::Project & project, std::string filename, std::string wrapIntoVariable, bool prettyPrinting)
+{
+    //Save the project in memory
+    TiXmlDocument doc;
+    TiXmlElement * root = new TiXmlElement( "Project" );
+    doc.LinkEndChild( root );
+    project.SaveToXml(root);
+
+    TiXmlPrinter printer;
+    printer.SetStreamPrinting();
+    doc.Accept( &printer );
+    std::string xml = printer.CStr();
+
+    //Convert it automatically to JSON
+    std::string output;
+    try
+    {
+        ptree pt;
+        std::stringstream input(xml);
+        xml_parser::read_xml(input, pt);
+        NormalizeProjectPropertyTree(pt);
+
+        std::stringstream outputStream;
+        json_parser::write_json(outputStream, pt, prettyPrinting);
+        output = outputStream.str();
+    }
+    catch(json_parser_error & e)
+    {
+        return e.what();
+    }
+    catch(...)
+    {
+        return "Unknown error!";
     }
 
-    return true;
+    if (!wrapIntoVariable.empty()) output = wrapIntoVariable + " = " + output + ";";
+
+    //Save to file
+    {
+        std::ofstream file;
+        file.open ( filename.c_str() );
+        if ( file.is_open() )
+        {
+            file << output;
+            file.close();
+        }
+        else
+            return "Unable to write "+filename;
+    }
+
+    return "";
 }
 
 bool Exporter::ExportIndexFile(gd::Project & project, std::string exportDir, const std::vector<std::string> & includesFiles)
@@ -190,7 +289,6 @@ bool Exporter::ExportEventsCode(gd::Project & project, std::string outputDir, st
 
     //First, do not forget common includes ( They must be included before events generated code files ).
     InsertUnique(includesFiles, "libs/pixi.js");
-    InsertUnique(includesFiles, "libs/jquery.js");
     InsertUnique(includesFiles, "libs/jshashtable.js");
     InsertUnique(includesFiles, "libs/hshg.js");
     InsertUnique(includesFiles, "gd.js");

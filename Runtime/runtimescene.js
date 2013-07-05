@@ -7,8 +7,6 @@
 /**
  * The runtimeScene object represents a scene being played and rendered in the browser in a canvas.
  *
- * TODO : position souris calques
- *
  * @class runtimeScene 
  * @param PixiRenderer The PIXI.Renderer to be used
  */
@@ -28,7 +26,7 @@ gdjs.runtimeScene = function(runtimeGame, pixiRenderer)
     my.variables = gdjs.variablesContainer();
     my.runtimeGame = runtimeGame;
     my.lastId = 0;
-    my.initialObjectsXml; 
+    my.initialObjectsData; 
     my.elapsedTime = 0;
     my.timeScale = 1;
     my.timeFromStart = 0;
@@ -45,10 +43,10 @@ gdjs.runtimeScene = function(runtimeGame, pixiRenderer)
     /**
      * Load the runtime scene from the given scene.
      * @method loadFromScene
-     * @param sceneXml A jquery object containing the scene in XML format.
+     * @param sceneData An object containing the scene data.
      */
-    that.loadFromScene = function(sceneXml) {
-        if ( sceneXml == undefined ) {
+    that.loadFromScene = function(sceneData) {
+        if ( sceneData == undefined ) {
             console.error("loadFromScene was called without a scene");
             return;
         }
@@ -56,37 +54,37 @@ gdjs.runtimeScene = function(runtimeGame, pixiRenderer)
         if ( my.isLoaded ) that.unloadScene();
     
         //Setup main properties
-        document.title = $(sceneXml).attr("titre");
+        document.title = sceneData.attr.titre;
         my.firstFrame = true;
-        that.setBackgroundColor(parseInt($(sceneXml).attr("r")), 
-                                parseInt($(sceneXml).attr("v")),
-                                parseInt($(sceneXml).attr("b")));
+        that.setBackgroundColor(parseInt(sceneData.attr.r), 
+                                parseInt(sceneData.attr.v),
+                                parseInt(sceneData.attr.b));
         
         //Load layers
-        $(sceneXml).find("Layers").find("Layer").each( function() { 
-            var name = $(this).attr("Name");
+        gdjs.iterateOver(sceneData.Layers, "Layer", function(layerData) { 
+            var name = layerData.attr.Name;
             
             my.layers.put(name, gdjs.layer(name, that));
             console.log("Created layer : \""+name+"\".");
         });
         
         //Load variables
-        my.variables = gdjs.variablesContainer($(sceneXml).find("Variables"));
+        my.variables = gdjs.variablesContainer(sceneData.Variables);
         
         //Load objects
-        my.initialObjectsXml = $(sceneXml).find("Objets");
-        $(sceneXml).find("Objets").find("Objet").each( function() { 
-            var objectName = $(this).attr("nom");
+        my.initialObjectsData = sceneData.Objets;
+        gdjs.iterateOver(my.initialObjectsData, "Objet", function(objData) {
+            var objectName = objData.attr.nom;
             
-            my.objects.put(objectName, $(this));
+            my.objects.put(objectName, objData);
             my.instances.put(objectName, []); //Also reserve an array for the instances
             console.log("Loaded "+objectName+" in memory");
         });
         
         //Create initial instances of objects
-        $(sceneXml).find("Positions").find("Objet").each( function() { 
-            
-            var objectName = $(this).attr("nom");
+        gdjs.iterateOver(sceneData.Positions, "Objet", function(instanceData) {
+
+            var objectName = instanceData.attr.nom;
             
             if ( my.objects.get(objectName) === null ) {
                 console.log("Unable to create an instance for object"+objectName+"!");
@@ -94,22 +92,22 @@ gdjs.runtimeScene = function(runtimeGame, pixiRenderer)
             else {
             
                 var associatedObject = my.objects.get(objectName);
-                var objectType = $(associatedObject).attr("type");
+                var objectType = associatedObject.attr.type;
                 
                 newObject = gdjs.getObjectConstructor(objectType)(that, associatedObject);
-                newObject.setPosition(parseFloat($(this).attr("x")), parseFloat($(this).attr("y")));
-                newObject.setZOrder(parseFloat($(this).attr("plan")));
-                newObject.setAngle(parseFloat($(this).attr("angle")));
-                newObject.setLayer($(this).attr("layer"));
-                newObject.getVariables().initFrom($(this).find("InitialVariables"));
-                newObject.extraInitializationFromInitialInstance($(this));
+                newObject.setPosition(parseFloat(instanceData.attr.x), parseFloat(instanceData.attr.y));
+                newObject.setZOrder(parseFloat(instanceData.attr.plan));
+                newObject.setAngle(parseFloat(instanceData.attr.angle));
+                newObject.setLayer(instanceData.attr.layer);
+                newObject.getVariables().initFrom(instanceData.InitialVariables);
+                newObject.extraInitializationFromInitialInstance(instanceData);
                 
                 that.addObject(newObject);
             }
         });
         
         //Set up the function to be executed at each tick
-        var module = gdjs[$(sceneXml).attr("mangledName")+"Code"];
+        var module = gdjs[sceneData.attr.mangledName+"Code"];
         if ( module && module.func ) my.eventsFunction = module.func;
         
         isLoaded = true;
@@ -402,11 +400,11 @@ gdjs.runtimeScene = function(runtimeGame, pixiRenderer)
     }
     
     /**
-     * Get the XML structure representing all the initial objects of the scene.
-     * @method getInitialObjectsXml
+     * Get the data representing all the initial objects of the scene.
+     * @method getInitialObjectsData
      */
-    that.getInitialObjectsXml = function() {
-        return my.initialObjectsXml;
+    that.getInitialObjectsData = function() {
+        return my.initialObjectsData;
     }
     
     that.getLayer = function(name) {

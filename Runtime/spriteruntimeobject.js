@@ -11,30 +11,29 @@
  * @class spriteAnimationFrame
  * @constructor
  */
-gdjs.spriteAnimationFrame = function(imageManager, frameXml)
+gdjs.spriteAnimationFrame = function(imageManager, frameData)
 {
     var that = {};
 
-    that.image = frameXml ? $(frameXml).attr("image") : "";
+    that.image = frameData ? frameData.attr.image : "";
     that.pixiTexture = imageManager.getPIXITexture(that.image);
     that.points = new Hashtable();
     that.center = { x:that.pixiTexture.width/2, y:that.pixiTexture.height/2 };
     that.origin = { x:0, y:0 };
 
-    if ( frameXml ) {
-        $(frameXml).find("Points").find("Point").each( function() {
-            //console.log("point:"+$(this).attr("nom"));
-            var point = {x:parseFloat($(this).attr("X")), y:parseFloat($(this).attr("Y"))};
-            that.points.put($(this).attr("nom"), point);
+    if ( frameData ) {
+        gdjs.iterateOver(frameData.Points, "Point", function(ptData) {
+            var point = {x:parseFloat(ptData.attr.X), y:parseFloat(ptData.attr.Y)};
+            that.points.put(ptData.attr.nom, point);
         });
-        var origin = $(frameXml).find("PointOrigine");
-        that.origin.x = parseFloat(origin.attr("X"));
-        that.origin.y = parseFloat(origin.attr("Y"));
+        var origin = frameData.PointOrigine;
+        that.origin.x = parseFloat(origin.attr.X);
+        that.origin.y = parseFloat(origin.attr.Y);
 
-        var center = $(frameXml).find("PointCentre");
-        if ( center.attr("automatic") != "true" ) {
-            that.center.x = parseFloat(center.attr("X"));
-            that.center.y = parseFloat(center.attr("Y"));
+        var center = frameData.PointCentre;
+        if ( center.attr.automatic !== "true" ) {
+            that.center.x = parseFloat(center.attr.X);
+            that.center.y = parseFloat(center.attr.Y);
         }
     }
 
@@ -61,21 +60,21 @@ gdjs.spriteAnimationFrame = function(imageManager, frameXml)
  * @class spriteAnimation
  * @constructor
  */
-gdjs.spriteAnimation = function(imageManager, animationXml)
+gdjs.spriteAnimation = function(imageManager, animData)
 {
 	//Internal object representing a direction of an animation.
-    var direction = function(imageManager, directionXml) {
+    var direction = function(imageManager, directionData) {
 
         var that = {};
 
-        that.timeBetweenFrames = directionXml ? parseFloat($(directionXml).attr("tempsEntre")) :
+        that.timeBetweenFrames = directionData ? parseFloat(directionData.attr.tempsEntre) :
                                  1.0;
-        that.loop = directionXml ? $(directionXml).attr("boucle") == "true" : false;
+        that.loop = directionData ? directionData.attr.boucle === "true" : false;
         that.frames = [];
 
-        if ( directionXml != undefined ) {
-            $(directionXml).find("Sprites").find("Sprite").each( function() {
-                that.frames.push(gdjs.spriteAnimationFrame(imageManager, $(this)));
+        if ( directionData != undefined ) {
+            gdjs.iterateOver(directionData.Sprites, "Sprite", function(frameData) {
+                that.frames.push(gdjs.spriteAnimationFrame(imageManager, frameData));
             });
         }
 
@@ -86,11 +85,11 @@ gdjs.spriteAnimation = function(imageManager, animationXml)
     var my = {};
 
     that.directions = [];
-    that.hasMultipleDirections = animationXml ? $(animationXml).attr("typeNormal") == "true" : false;
+    that.hasMultipleDirections = animData ? animData.attr.typeNormal === "true" : false;
 
-    if ( animationXml != undefined ) {
-        $(animationXml).find("Direction").each( function() {
-            var direc = direction(imageManager, $(this));
+    if ( animData != undefined ) {
+        gdjs.iterateOver(animData, "Direction", function(directionData) {
+            var direc = direction(imageManager, directionData);
             that.directions.push(direc);
         });
     }
@@ -106,9 +105,9 @@ gdjs.spriteAnimation = function(imageManager, animationXml)
  * @class spriteRuntimeObject
  * @extends runtimeObject
  */
-gdjs.spriteRuntimeObject = function(runtimeScene, objectXml)
+gdjs.spriteRuntimeObject = function(runtimeScene, objectData)
 {
-    var that = gdjs.runtimeObject(runtimeScene, objectXml);
+    var that = gdjs.runtimeObject(runtimeScene, objectData);
     var my = {};
 
     my.animations = [];
@@ -123,9 +122,9 @@ gdjs.spriteRuntimeObject = function(runtimeScene, objectXml)
     my.flippedX = false;
     my.flippedY = false;
     that.opacity = 255;
-    if ( objectXml ) {
-        $(objectXml).find("Animations").find("Animation").each( function() {
-            var anim = gdjs.spriteAnimation(runtimeScene.getGame().getImageManager(), $(this));
+    if ( objectData ) {
+        gdjs.iterateOver(objectData.Animations, "Animation", function(animData) {
+            var anim = gdjs.spriteAnimation(runtimeScene.getGame().getImageManager(), animData);
             my.animations.push(anim);
         });
     }
@@ -142,10 +141,10 @@ gdjs.spriteRuntimeObject = function(runtimeScene, objectXml)
     /**
      *
      */
-    that.extraInitializationFromInitialInstance = function(initialInstanceXml) {
-        if ( $(initialInstanceXml).attr("personalizedSize") === "true" ) {
-            that.setWidth(parseFloat($(initialInstanceXml).attr("width")));
-            that.setHeight(parseFloat($(initialInstanceXml).attr("height")));
+    that.extraInitializationFromInitialInstance = function(initialInstanceData) {
+        if ( initialInstanceData.attr.personalizedSize === "true" ) {
+            that.setWidth(parseFloat(initialInstanceData.attr.width));
+            that.setHeight(parseFloat(initialInstanceData.attr.height));
         }
     }
 

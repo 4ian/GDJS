@@ -28,14 +28,14 @@ gdjs.imageManager = function(runtimeGame)
             return my.invalidTexture;
         }
 
-        var resources = $(my.game.getXml()).find("Resources").find("Resources");
+        var resources = my.game.getGameData().Resources.Resources;
         if ( resources ) {
             var texture = null;
-            resources.find("Resource").each( function() {
-                if ( $(this).attr("name") === name &&
-                     $(this).attr("kind") === "image" ) {
+            gdjs.iterateOver(resources, "Resource", function(res) {
+                if ( res.attr.name === name &&
+                     res.attr.kind === "image" ) {
 
-                    texture = PIXI.Texture.fromImage($(this).attr("file"));
+                    texture = PIXI.Texture.fromImage(res.attr.file);
                     return false;
                 }
             });
