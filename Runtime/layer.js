@@ -10,7 +10,7 @@
  * but then it is objects responsibility to connect themselves to the layer's container
  * ( See addChildToPIXIContainer method ).<br>
  * Layers do not provide direct access to their pixi container as they do some extra work
- * to ensure that z orders remains correct.
+ * to ensure this.z orders remains correct.
  *
  * TODO : Viewports and support for multiple cameras
  *
@@ -18,237 +18,233 @@
  * @namespace gdjs
  * @constructor
  */
-gdjs.layer = function(name, runtimeScene)
+gdjs.Layer = function(name, runtimeScene)
 {
-    var that = {};
-    var my = {};
+    this._name = name;
+    this._cameraX = 0;
+    this._cameraY = 0;
+    this._cameraRotation = 0;
+    this._hidden = false;
+    this._pixiStage = runtimeScene.getPIXIStage();
+    this._pixiRenderer = runtimeScene.getPIXIRenderer();
+    this._pixiContainer = new PIXI.DisplayObjectContainer();
 
-    my.name = name;
-    my.cameraX = 0;
-    my.cameraY = 0;
-    my.cameraRotation = 0;
-    my.hidden = false;
-    my.pixiStage = runtimeScene.getPIXIStage();
-    my.pixiRenderer = runtimeScene.getPIXIRenderer();
-    my.pixiContainer = new PIXI.DisplayObjectContainer();
-
-    my.pixiStage.addChild(my.pixiContainer);
-
-    /**
-     * Update the position of the PIXI container. To be called after each change
-     * made to position or rotation of the camera.
-     * @private
-     */
-    my.updatePixiContainerPosition = function() {
-        var angle = gdjs.toRad(my.cameraRotation);
-        my.pixiContainer.rotation = angle;
-
-        var centerX = my.pixiRenderer.width/2*Math.cos(angle)-my.pixiRenderer.height/2*Math.sin(angle);
-        var centerY = my.pixiRenderer.width/2*Math.sin(angle)+my.pixiRenderer.height/2*Math.cos(angle);
-
-        my.pixiContainer.position.x = -my.cameraX+my.pixiRenderer.width/2-centerX;
-        my.pixiContainer.position.y = -my.cameraY+my.pixiRenderer.height/2-centerY;
-    }
-
-    /**
-     * Get the name of the layer
-     * @method getName
-     * @return {String} The name of the layer
-     */
-    that.getName = function() {
-        return my.name;
-    }
-
-    /**
-     * Add a child to the pixi container associated to the layer.<br>
-     * All objects which are on this layer must be children of this container.<br>
-     *
-     * @method addChildToPIXIContainer
-     * @param child The child ( PIXI object ) to be added.
-     * @param zOrder The z order of the associated object.
-     */
-    that.addChildToPIXIContainer = function(child, zOrder) {
-        child.zOrder = zOrder; //Extend the pixi object with a z order.
-
-        for( var i = 0, len = my.pixiContainer.children.length; i < len;++i) {
-            if ( my.pixiContainer.children[i].zOrder >= zOrder ) { //TODO : Dichotomic search
-                my.pixiContainer.addChildAt(child, i);
-                return;
-            }
-        }
-        my.pixiContainer.addChild(child);
-    }
-
-    /**
-     * Change the z order of a child associated to an object.
-     *
-     * @method changePIXIContainerChildZOrder
-     * @param child The child ( PIXI object ) to be modified.
-     * @param newZOrder The z order of the associated object.
-     */
-    that.changePIXIContainerChildZOrder = function(child, newZOrder) {
-        my.pixiContainer.removeChild(child);
-        that.addChildToPIXIContainer(child, newZOrder);
-    }
-
-    /**
-     * Remove a child from the internal pixi container.<br>
-     * Should be called when an object is deleted or removed from the layer.
-     *
-     * @method removePIXIContainerChild
-     * @param child The child ( PIXI object ) to be removed.
-     */
-    that.removePIXIContainerChild = function(child) {
-        my.pixiContainer.removeChild(child);
-    }
-
-    /**
-     * Change the camera X position.<br>
-     * The camera position refers to the position of top left point of the rendered view,
-     * expressed in world coordinates.
-     *
-     * @method getCameraX
-     * @param cameraId The camera number. Currently ignored.
-     * @return The x position of the camera
-     */
-    that.getCameraX = function(cameraId) {
-        return my.cameraX;
-    }
-
-    /**
-     * Change the camera Y position.<br>
-     * The camera position refers to the position of top left point of the rendered view,
-     * expressed in world coordinates.
-     *
-     * @method getCameraY
-     * @param cameraId The camera number. Currently ignored.
-     * @return The y position of the camera
-     */
-    that.getCameraY = function(cameraId) {
-        return my.cameraY;
-    }
-
-    /**
-     * Set the camera X position.<br>
-     * The camera position refers to the position of top left point of the rendered view,
-     * expressed in world coordinates.
-     *
-     * @method setCameraX
-     * @param x {Number} The new x position
-     * @param cameraId The camera number. Currently ignored.
-     */
-    that.setCameraX = function(x, cameraId) {
-        my.cameraX = x;
-        my.updatePixiContainerPosition();
-    }
-
-    /**
-     * Set the camera Y position.<br>
-     * The camera position refers to the position of top left point of the rendered view,
-     * expressed in world coordinates.
-     *
-     * @method setCameraY
-     * @param y {Number} The new y position
-     * @param cameraId The camera number. Currently ignored.
-     */
-    that.setCameraY = function(y, cameraId) {
-        my.cameraY = y;
-        my.updatePixiContainerPosition();
-    }
-
-    that.getCameraWidth = function(cameraId) {
-        return +my.pixiRenderer.width;
-    }
-
-    that.getCameraHeight = function(cameraId) {
-        return +my.pixiRenderer.height;
-    }
-
-    that.show = function(enable) {
-        my.hidden = !enable;
-        my.pixiContainer.visible = !!enable;
-    }
-
-    /**
-     * Check if the layer is visible.<br>
-     *
-     * @method isVisible
-     * @return true if the layer is visible.
-     */
-    that.isVisible = function() {
-        return !my.hidden;
-    }
-
-    /**
-     * Set the zoom of a camera.<br>
-     *
-     * @method setZoom
-     * @param The new zoom. Must be superior to 0. 1 is the default zoom.
-     * @param cameraId The camera number. Currently ignored.
-     */
-    that.setZoom = function(newZoom, cameraId) {
-        my.pixiContainer.scale.x = newZoom;
-        my.pixiContainer.scale.y = newZoom;
-    }
-
-    /**
-     * Get the zoom of a camera,.<br>
-     *
-     * @method getZoom
-     * @param cameraId The camera number. Currently ignored.
-     * @return The zoom.
-     */
-    that.getZoom = function(cameraId) {
-        return my.pixiContainer.scale.x;
-    }
-
-    /**
-     * Get the rotation of the camera, expressed in degrees.<br>
-     *
-     * @method getCameraRotation
-     * @param cameraId The camera number. Currently ignored.
-     * @return The rotation, in degrees.
-     */
-    that.getCameraRotation = function(cameraId) {
-        return my.cameraRotation;
-    }
-
-    /**
-     * Set the rotation of the camera, expressed in degrees.<br>
-     * The rotation is made around the camera center.
-     *
-     * @method setCameraRotation
-     * @param rotation {Number} The new rotation, in degrees.
-     * @param cameraId The camera number. Currently ignored.
-     */
-    that.setCameraRotation = function(rotation, cameraId) {
-        my.cameraRotation = rotation;
-        my.updatePixiContainerPosition();
-    }
-    
-    /**
-     * Convert a point from the canvas coordinates ( For example, the mouse position ) to the
-     * "world" coordinates.
-     *
-     * @method convertCoords
-     * @param x {Number} The x position, in canvas coordinates.
-     * @param y {Number} The y position, in canvas coordinates.
-     * @param cameraId The camera number. Currently ignored.
-     */
-    that.convertCoords = function(x,y, cameraId) {
-            
-        x -= that.getCameraWidth(cameraId)/2;
-        y -= that.getCameraHeight(cameraId)/2;
-        x /= Math.abs(my.pixiContainer.scale.x);
-        y /= Math.abs(my.pixiContainer.scale.y);
-
-        var tmp = x;
-        x = Math.cos(my.cameraRotation/180*3.14159)*x - Math.sin(my.cameraRotation/180*3.14159)*y;
-        y = Math.sin(my.cameraRotation/180*3.14159)*tmp + Math.cos(my.cameraRotation/180*3.14159)*y;
-
-        return [x+that.getCameraX(cameraId)+that.getCameraWidth(cameraId)/2, 
-                y+that.getCameraY(cameraId)+that.getCameraHeight(cameraId)/2];
-    }
-
-    return that;
+    this._pixiStage.addChild(this._pixiContainer);
 }
+
+/**
+ * Update the position of the PIXI container. To be called after each change
+ * made to position or rotation of the camera.
+ * @private
+ */
+gdjs.Layer.prototype._updatePixiContainerPosition = function() {
+	var angle = gdjs.toRad(this._cameraRotation);
+	this._pixiContainer.rotation = angle;
+
+	var centerX = this._pixiRenderer.width/2*Math.cos(angle)-this._pixiRenderer.height/2*Math.sin(angle);
+	var centerY = this._pixiRenderer.width/2*Math.sin(angle)+this._pixiRenderer.height/2*Math.cos(angle);
+
+	this._pixiContainer.position.x = -this._cameraX+this._pixiRenderer.width/2-centerX;
+	this._pixiContainer.position.y = -this._cameraY+this._pixiRenderer.height/2-centerY;
+}
+
+/**
+ * Get the name of the layer
+ * @method getName
+ * @return {String} The name of the layer
+ */
+gdjs.Layer.prototype.getName = function() {
+	return this._name;
+}
+
+/**
+ * Add a child to the pixi container associated to the layer.<br>
+ * All objects which are on this layer must be children of this container.<br>
+ *
+ * @method addChildToPIXIContainer
+ * @param child The child ( PIXI object ) to be added.
+ * @param zOrder The z order of the associated object.
+ */
+gdjs.Layer.prototype.addChildToPIXIContainer = function(child, zOrder) {
+	child.zOrder = zOrder; //Extend the pixi object with a z order.
+
+	for( var i = 0, len = this._pixiContainer.children.length; i < len;++i) {
+		if ( this._pixiContainer.children[i].zOrder >= zOrder ) { //TODO : Dichotomic search
+			this._pixiContainer.addChildAt(child, i);
+			return;
+		}
+	}
+	this._pixiContainer.addChild(child);
+}
+
+/**
+ * Change the z order of a child associated to an object.
+ *
+ * @method changePIXIContainerChildZOrder
+ * @param child The child ( PIXI object ) to be modified.
+ * @param newZOrder The z order of the associated object.
+ */
+gdjs.Layer.prototype.changePIXIContainerChildZOrder = function(child, newZOrder) {
+	this._pixiContainer.removeChild(child);
+	this.addChildToPIXIContainer(child, newZOrder);
+}
+
+/**
+ * Remove a child from the internal pixi container.<br>
+ * Should be called when an object is deleted or removed from the layer.
+ *
+ * @method removePIXIContainerChild
+ * @param child The child ( PIXI object ) to be removed.
+ */
+gdjs.Layer.prototype.removePIXIContainerChild = function(child) {
+	this._pixiContainer.removeChild(child);
+}
+
+/**
+ * Change the camera X position.<br>
+ * The camera position refers to the position of top left point of the rendered view,
+ * expressed in world coordinates.
+ *
+ * @method getCameraX
+ * @param cameraId The camera number. Currently ignored.
+ * @return The x position of the camera
+ */
+gdjs.Layer.prototype.getCameraX = function(cameraId) {
+	return this._cameraX;
+}
+
+/**
+ * Change the camera Y position.<br>
+ * The camera position refers to the position of top left point of the rendered view,
+ * expressed in world coordinates.
+ *
+ * @method getCameraY
+ * @param cameraId The camera number. Currently ignored.
+ * @return The y position of the camera
+ */
+gdjs.Layer.prototype.getCameraY = function(cameraId) {
+	return this._cameraY;
+}
+
+/**
+ * Set the camera X position.<br>
+ * The camera position refers to the position of top left point of the rendered view,
+ * expressed in world coordinates.
+ *
+ * @method setCameraX
+ * @param x {Number} The new x position
+ * @param cameraId The camera number. Currently ignored.
+ */
+gdjs.Layer.prototype.setCameraX = function(x, cameraId) {
+	this._cameraX = x;
+	this._updatePixiContainerPosition();
+}
+
+/**
+ * Set the camera Y position.<br>
+ * The camera position refers to the position of top left point of the rendered view,
+ * expressed in world coordinates.
+ *
+ * @method setCameraY
+ * @param y {Number} The new y position
+ * @param cameraId The camera number. Currently ignored.
+ */
+gdjs.Layer.prototype.setCameraY = function(y, cameraId) {
+	this._cameraY = y;
+	this._updatePixiContainerPosition();
+}
+
+gdjs.Layer.prototype.getCameraWidth = function(cameraId) {
+	return +this._pixiRenderer.width;
+}
+
+gdjs.Layer.prototype.getCameraHeight = function(cameraId) {
+	return +this._pixiRenderer.height;
+}
+
+gdjs.Layer.prototype.show = function(enable) {
+	this._hidden = !enable;
+	this._pixiContainer.visible = !!enable;
+}
+
+/**
+ * Check if the layer is visible.<br>
+ *
+ * @method isVisible
+ * @return true if the layer is visible.
+ */
+gdjs.Layer.prototype.isVisible = function() {
+	return !this._hidden;
+}
+
+/**
+ * Set the zoom of a camera.<br>
+ *
+ * @method setZoom
+ * @param The new zoom. Must be superior to 0. 1 is the default zoom.
+ * @param cameraId The camera number. Currently ignored.
+ */
+gdjs.Layer.prototype.setZoom = function(newZoom, cameraId) {
+	this._pixiContainer.scale.x = newZoom;
+	this._pixiContainer.scale.y = newZoom;
+}
+
+/**
+ * Get the zoom of a camera,.<br>
+ *
+ * @method getZoom
+ * @param cameraId The camera number. Currently ignored.
+ * @return The zoom.
+ */
+gdjs.Layer.prototype.getZoom = function(cameraId) {
+	return this._pixiContainer.scale.x;
+}
+
+/**
+ * Get the rotation of the camera, expressed in degrees.<br>
+ *
+ * @method getCameraRotation
+ * @param cameraId The camera number. Currently ignored.
+ * @return The rotation, in degrees.
+ */
+gdjs.Layer.prototype.getCameraRotation = function(cameraId) {
+	return this._cameraRotation;
+}
+
+/**
+ * Set the rotation of the camera, expressed in degrees.<br>
+ * The rotation is made around the camera center.
+ *
+ * @method setCameraRotation
+ * @param rotation {Number} The new rotation, in degrees.
+ * @param cameraId The camera number. Currently ignored.
+ */
+gdjs.Layer.prototype.setCameraRotation = function(rotation, cameraId) {
+	this._cameraRotation = rotation;
+	this._updatePixiContainerPosition();
+}
+
+/**
+ * Convert a point from the canvas coordinates ( For example, the mouse position ) to the
+ * "world" coordinates.
+ *
+ * @method convertCoords
+ * @param x {Number} The x position, in canvas coordinates.
+ * @param y {Number} The y position, in canvas coordinates.
+ * @param cameraId The camera number. Currently ignored.
+ */
+gdjs.Layer.prototype.convertCoords = function(x,y, cameraId) {
+
+	x -= this.getCameraWidth(cameraId)/2;
+	y -= this.getCameraHeight(cameraId)/2;
+	x /= Math.abs(this._pixiContainer.scale.x);
+	y /= Math.abs(this._pixiContainer.scale.y);
+
+	var tmp = x;
+	x = Math.cos(this._cameraRotation/180*3.14159)*x - Math.sin(this._cameraRotation/180*3.14159)*y;
+	y = Math.sin(this._cameraRotation/180*3.14159)*tmp + Math.cos(this._cameraRotation/180*3.14159)*y;
+
+	return [x+this.getCameraX(cameraId)+this.getCameraWidth(cameraId)/2, 
+		   y+this.getCameraY(cameraId)+this.getCameraHeight(cameraId)/2];
+}
+

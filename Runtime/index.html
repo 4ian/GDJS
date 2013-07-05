@@ -46,7 +46,7 @@
         gdjs.registerObjects();
         gdjs.registerAutomatisms();
 
-        var game = gdjs.runtimeGame(gdjs.projectData.Project);
+        var game = new gdjs.RuntimeGame(gdjs.projectData.Project);
     
         //Create a renderer
         var canvasWidth = parseInt(gdjs.projectData.Project.Info.WindowW.attr.value); 
@@ -130,7 +130,7 @@
         
         function onAssetsLoaded() {
             //Create the scene to be played
-            var currentScene = gdjs.runtimeScene(game, renderer);
+            var currentScene = new gdjs.RuntimeScene(game, renderer);
             var firstSceneName = gdjs.projectData.Project.Scenes.attr.firstScene;
             var firstsceneData = game.hasScene(firstSceneName) ? game.getSceneData(firstSceneName) : game.getSceneData();
                 
@@ -144,7 +144,7 @@
                         postGameScreen();
                     else {
                         var nextSceneName = currentScene.getRequestedScene();
-                        currentScene = gdjs.runtimeScene(game, renderer);
+                        currentScene = new gdjs.RuntimeScene(game, renderer);
                         currentScene.loadFromScene(game.getSceneData(nextSceneName));
                         requestAnimFrame( gameLoop );
                     }   

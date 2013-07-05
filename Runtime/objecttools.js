@@ -103,14 +103,14 @@ gdjs.evtTools.object.TwoListsTest = function(func, objectsLists1, objectsLists2,
 gdjs.evtTools.object.hitBoxesCollisionTest = function( objectsLists1, objectsLists2, inverted, runtimeScene) {
 
     //if ( inverted ) ( See below why it is commented )
-    return gdjs.evtTools.object.TwoListsTest(gdjs.runtimeObject.collisionTest,
+    return gdjs.evtTools.object.TwoListsTest(gdjs.RuntimeObject.collisionTest,
                                                  objectsLists1, objectsLists2, inverted);
                                                  
     //Using HSHG ( code below ) is *less* efficient in games like SoldierJS
     //but more efficient when no collision is really involved ( For example, testing a collision
     //with lots of objects which are very far ).
     //For now, use of HSHG is deactivated ( TwoListsTest is always called above ) : The bottleneck
-    //must come from the fact that HSHG performs collision test on all instances, and not on the
+    //must come from the fact this.HSHG performs collision test on all instances, and not on the
     //picked one. ( getPotentialCollidingObjects method is using all the objects of the scene. ) 
 
     var objects1 = [];
@@ -195,7 +195,7 @@ gdjs.evtTools.object.hitBoxesCollisionTest = function( objectsLists1, objectsLis
 gdjs.evtTools.object.distanceTest = function( objectsLists1, objectsLists2, distance, inverted) {
 
     distance *= distance;
-    return gdjs.evtTools.object.TwoListsTest(gdjs.runtimeObject.distanceTest, objectsLists1,
+    return gdjs.evtTools.object.TwoListsTest(gdjs.RuntimeObject.distanceTest, objectsLists1,
         objectsLists2, inverted, distance);
 }
 
@@ -275,17 +275,21 @@ gdjs.evtTools.object.pickRandomObject = function(runtimeScene, objectsLists) {
 gdjs.evtTools.object.doCreateObjectOnScene = function(runtimeScene, objectName, objectsLists, x, y, layer) {
 
     //Find the object to create
+    //TODO: Avoid iterateOver ( Build a hashtable with objects when loading the runtimeScene! )
+    //TODO: Recycle objects
     var obj = null;
     gdjs.iterateOver(runtimeScene.getInitialObjectsData(), "Objet", function(objData) {
         if ( objData.attr.nom === objectName ) {
-            obj = gdjs.getObjectConstructor(objData.attr.type)(runtimeScene, objData);
+            var ctor = gdjs.getObjectConstructor(objData.attr.type);
+            obj = new ctor(runtimeScene, objData);
             return false;
         }
     });
     if ( obj == null ) {
         gdjs.iterateOver(runtimeScene.getGame().getInitialObjectsData(), "Objet", function(objData){
             if ( objData.attr.nom === objectName ) {
-                obj = gdjs.getObjectConstructor(objData.attr.type)(runtimeScene, objData);
+                var ctor = gdjs.getObjectConstructor(objData.attr.type);
+                obj = new ctor(runtimeScene, objData);
                 return false;
             }
         });

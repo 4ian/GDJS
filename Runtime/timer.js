@@ -7,76 +7,71 @@
 /**
  * Represents a timer which must be updated manually.
  *
- * @class timer
+ * @class Timer
  * @namespace gdjs
  * @constructor
  */
-gdjs.timer = function(name)
+gdjs.Timer = function(name)
 {
-    var that = {};
-    var my = {};
+    this._name = name;
+    this._time = 0;
+    this._paused = false;
+}
 
-    my.name = name;
-    my.time = 0;
-    my.paused = false;
+/**
+ * Get the name of the timer
+ * @method getName
+ * @return {String} The name of the timer
+ */
+gdjs.Timer.prototype.getName = function() {
+	return this._name;
+}
 
-    /**
-     * Get the name of the timer
-     * @method getName
-     * @return {String} The name of the timer
-     */
-    that.getName = function() {
-        return my.name;
-    }
+/**
+ * Get the time elapsed
+ * @method getTime
+ * @return {String} The time of the timer
+ */
+gdjs.Timer.prototype.getTime = function() {
+	return this._time;
+}
 
-    /**
-     * Get the time elapsed
-     * @method getTime
-     * @return {String} The time of the timer
-     */
-    that.getTime = function() {
-        return my.time;
-    }
+/**
+ * Notify the timer this.some time elapsed.
+ * @method updateTime
+ */
+gdjs.Timer.prototype.updateTime = function(time) {
+	if ( !this._paused ) this._time += time;
+}
 
-    /**
-     * Notify the timer that some time elapsed.
-     * @method updateTime
-     */
-    that.updateTime = function(time) {
-        if ( !my.paused ) my.time += time;
-    }
+/**
+ * Change the time.
+ * @method setTime
+ */
+gdjs.Timer.prototype.setTime = function(time) {
+	this._time = time;
+}
 
-    /**
-     * Change the time.
-     * @method setTime
-     */
-    that.setTime = function(time) {
-        my.time = time;
-    }
+/**
+ * Set time to zero.
+ * @method reset
+ */
+gdjs.Timer.prototype.reset = function(time) {
+	this.setTime(0);
+}
 
-    /**
-     * Set time to zero.
-     * @method reset
-     */
-    that.reset = function(time) {
-        that.setTime(0);
-    }
+/**
+ * Set if the timer is paused.
+ * @method setPaused
+ */
+gdjs.Timer.prototype.setPaused = function(enable) {
+	this._paused = enable;
+}
 
-    /**
-     * Set if the timer is paused.
-     * @method setPaused
-     */
-    that.setPaused = function(enable) {
-        my.paused = enable;
-    }
-
-    /**
-     * Check if the timer is paused.
-     * @method isPaused
-     */
-    that.isPaused = function() {
-        return my.paused;
-    }
-
-    return that;
+/**
+ * Check if the timer is paused.
+ * @method isPaused
+ */
+gdjs.Timer.prototype.isPaused = function() {
+	return this._paused;
 }

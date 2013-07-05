@@ -7,84 +7,79 @@
 /**
  * variable is an object storing a number or a string
  * @namespace gdjs
- * @class variable
+ * @class Variable
  */
-gdjs.variable = function()
-{
-    var that = {};
-    var my = {};
-    
-    my.value = 0;
-    my.str = "";
-    my.numberDirty = false;
-    my.stringDirty = true;
-    
-    /**
-     * Get the value of the variable, considered as a number
-     * @method getAsNumber
-     * @return {Any} The number stored
-     */
-    that.getAsNumber = function() {
-        if ( my.numberDirty ) {
-            my.value = parseFloat(my.str);
-            my.numberDirty = false;
-        }
-        
-        return my.value;
-    }
-    
-    /**
-     * Change the value of the variable, considered as a number
-     * @method setNumber
-     * @param newValue {Any} The new value to be set
-     */
-    that.setNumber = function(newValue) {
-        my.value = newValue;
-        my.stringDirty = true;
-        my.numberDirty = false;
-    }
-    
-    /**
-     * Get the value of the variable, considered as a string
-     * @method getAsString
-     * @return {Any} The number stored
-     */
-    that.getAsString = function() {
-        if ( my.stringDirty ) {
-            my.str = my.value.toString();
-            my.stringDirty = false;
-        }
-        
-        return my.str;
-    }
-    
-    /**
-     * Change the value of the variable, considered as a string
-     * @method setString
-     * @param newValue {Any} The new string to be set
-     */
-    that.setString = function(newValue) {
-        my.str = newValue;
-        my.numberDirty = true;
-        my.stringDirty = false;
-    }
-    
-    that.add = function(val) {
-        that.setNumber(that.getAsNumber()+val);
-    }
-    that.sub = function(val) {
-        that.setNumber(that.getAsNumber()-val);
-    }
-    that.mul = function(val) {
-        that.setNumber(that.getAsNumber()*val);
-    }
-    that.div = function(val) {
-        that.setNumber(that.getAsNumber()/val);
-    }
-    
-    that.concatenate = function(str) {
-        that.setString(that.getAsString()+str);
-    }
-    
-    return that;
+gdjs.Variable = function()
+{ 
+    this._value = 0;
+    this._str = "";
+    this._numberDirty = false;
+    this._stringDirty = true;
+} 
+
+/**
+ * Get the value of the variable, considered as a number
+ * @method getAsNumber
+ * @return {Any} The number stored
+ */
+gdjs.Variable.prototype.getAsNumber = function() {
+	if ( this._numberDirty ) {
+		this._value = parseFloat(this._str);
+		this._numberDirty = false;
+	}
+
+	return this._value;
+}
+
+/**
+ * Change the value of the variable, considered as a number
+ * @method setNumber
+ * @param newValue {Any} The new value to be set
+ */
+gdjs.Variable.prototype.setNumber = function(newValue) {
+	this._value = newValue;
+	this._stringDirty = true;
+	this._numberDirty = false;
+}
+
+/**
+ * Get the value of the variable, considered as a string
+ * @method getAsString
+ * @return {Any} The number stored
+ */
+gdjs.Variable.prototype.getAsString = function() {
+	if ( this._stringDirty ) {
+		this._str = this._value.toString();
+		this._stringDirty = false;
+	}
+
+	return this._str;
+}
+
+/**
+ * Change the value of the variable, considered as a string
+ * @method setString
+ * @param newValue {Any} The new string to be set
+ */
+gdjs.Variable.prototype.setString = function(newValue) {
+	this._str = newValue;
+	this._numberDirty = true;
+	this._stringDirty = false;
+}
+
+gdjs.Variable.prototype.add = function(val) {
+	this.setNumber(this.getAsNumber()+val);
+}
+gdjs.Variable.prototype.sub = function(val) {
+	this.setNumber(this.getAsNumber()-val);
+}
+gdjs.Variable.prototype.mul = function(val) {
+	this.setNumber(this.getAsNumber()*val);
+}
+gdjs.Variable.prototype.div = function(val) {
+	this.setNumber(this.getAsNumber()/val);
+}
+
+gdjs.Variable.prototype.concatenate = function(str) {
+	this.setString(this.getAsString()+str);
 }

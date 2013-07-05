@@ -2616,8 +2616,8 @@ PIXI.WebGLRenderer.updateTextures = function()
 {
 	for (var i=0; i < PIXI.texturesToUpdate.length; i++) this.updateTexture(PIXI.texturesToUpdate[i]);
 	for (var i=0; i < PIXI.texturesToDestroy.length; i++) this.destroyTexture(PIXI.texturesToDestroy[i]);
-	PIXI.texturesToUpdate = [];
-	PIXI.texturesToDestroy = [];
+	PIXI.texturesToUpdate.length = 0;
+	PIXI.texturesToDestroy.length = 0;
 }
 
 PIXI.WebGLRenderer.updateTexture = function(texture)
@@ -4198,8 +4198,8 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	//stage.__childrenRemoved = [];
 	
 	// update textures if need be
-	PIXI.texturesToUpdate = [];
-	PIXI.texturesToDestroy = [];
+	PIXI.texturesToUpdate.length = 0;
+	PIXI.texturesToDestroy.length = 0;
 	
 	stage.updateTransform();
 	

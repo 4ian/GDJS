@@ -66,7 +66,7 @@ gdjs.getDocHeight = function() {
  * - If it exists and is an array, call func on each member of the array.<br>
  * - If it exists and is not array, call func directly on the property.<br>
  * <br>
- * Note that func must be remove elements from the array in the second case. If func
+ * Note this.func must be remove elements from the array in the second case. If func
  * return false, the iteration will stop.
  * @method iterateOver
  * @static
@@ -82,7 +82,7 @@ gdjs.iterateOver = function(object, propertyName, func) {
 }
 
 /**
- * Register the runtime objects that can be used in runtimeScene.<br>
+ * Register the runtime objects this.can be used in runtimeScene.<br>
  * Objects must be part of gdjs and have their property "thisIsARuntimeObjectConstructor"
  * defined and set to the name of the type of the object so as to be recognized.
  * The name of the type of the object must be complete, with the namespace if any. For
@@ -103,7 +103,7 @@ gdjs.registerObjects = function() {
 }
 
 /**
- * Register the runtime automatisms that can be used bt runtimeObject.<br>
+ * Register the runtime automatisms this.can be used bt runtimeObject.<br>
  * Automatisms must be part of gdjs and have their property "thisIsARuntimeAutomatismConstructor"
  * defined and set to the name of the type of the automatism so as to be recognized.
  * The name of the type of the automatism must be complete, with the namespace if any. For

@@ -5,105 +5,101 @@
  */
 
 /**
- * The polygon represents a polygon that can be used to create collisions masks for runtimeObject.
+ * The polygon represents a polygon this.can be used to create collisions masks for runtimeObject.
  *
  * @namespace gdjs
- * @class polygon
+ * @class Polygon
  */
-gdjs.polygon = function(runtimeGame, pixiRenderer)
+gdjs.Polygon = function(runtimeGame, pixiRenderer)
 {
-    var that = {};
-
     /**
      * The vertices of the polygon
      * @property vertices
      */
-    that.vertices = [];
+    this.vertices = [];
 
     /**
      * The edges of the polygon. This property is only valid after calling
      * computeEdges, and remains valid until vertices are modified.
      * @property edges
      */
-    that.edges = [];
-
-    that.move = function(x,y) {
-        for(var i = 0, len = that.vertices.length;i<len;++i) {
-
-            that.vertices[i][0] += x;
-            that.vertices[i][1] += y;
-        }
-    }
-
-    that.rotate = function(angle) {
-        var t, cosa = Math.cos(-angle),
-               sina = Math.sin(-angle); //We want a clockwise rotation
-
-        for (var i = 0, len = that.vertices.length;i<len;++i) {
-            t = that.vertices[i][0];
-            that.vertices[i][0] = t*cosa + that.vertices[i][1]*sina;
-            that.vertices[i][1] = -t*sina + that.vertices[i][1]*cosa;
-        }
-    }
-
-    that.computeEdges = function() {
-        var v1, v2;
-        //Ensure edge array has the right size. ( And avoid recreating an edge array ).
-        while ( that.edges.length < that.vertices.length ) {
-            that.edges.push([0,0]);
-        }
-        if ( that.edges.length != that.vertices.length )
-            that.edges.length = that.vertices.length;
-
-        for (var i = 0, len = that.vertices.length;i<len;++i) {
-            v1 = that.vertices[i];
-            if ((i + 1) >= len) v2 = that.vertices[0];
-            else v2 = that.vertices[i + 1];
-
-            that.edges[i] = [v2[0] - v1[0], v2[1] - v1[1]];
-        }
-    }
-
-    that.isConvex = function() {
-        that.computeEdges();
-        edgesLen = that.edges.length;
-
-        if ( edgesLen < 3 ) {
-            return false;
-        }
-
-        var zProductIsPositive = (that.edges[0][0]*that.edges[0+1][1] - that.edges[0][1]*that.edges[0+1][0]) > 0;
-
-        for (var i = 1;i<edgesLen-1;++i) {
-            var zCrossProduct = that.edges[i][0]*that.edges[i+1][1] - that.edges[i][1]*that.edges[i+1][0];
-            if ( (zCrossProduct > 0) !== zProductIsPositive ) return false;
-        }
-
-        var lastZCrossProduct = that.edges[edgesLen-1][0]*that.edges[0][1] - that.edges[edgesLen][1]*that.edges[0][0];
-        if ( (lastZCrossProduct > 0) !== zProductIsPositive ) return false;
-
-        return true;
-    }
-
-    that.computeCenter = function() {
-        var center = [0,0];
-        var len = that.vertices.length;
-
-        for (var i = 0;i<len;++i) {
-            center[0] += that.vertices[i][0];
-            center[1] += that.vertices[i][1];
-        }
-        center[0] /= len;
-        center[1] /= len;
-
-        return center;
-    }
-
-    return that;
+    this.edges = [];
 }
 
-gdjs.polygon.createRectangle = function(width, height) {
-    var rect = gdjs.polygon();
+gdjs.Polygon.prototype.move = function(x,y) {
+	for(var i = 0, len = this.vertices.length;i<len;++i) {
+
+		this.vertices[i][0] += x;
+		this.vertices[i][1] += y;
+	}
+}
+
+gdjs.Polygon.prototype.rotate = function(angle) {
+	var t, cosa = Math.cos(-angle),
+		sina = Math.sin(-angle); //We want a clockwise rotation
+
+	for (var i = 0, len = this.vertices.length;i<len;++i) {
+		t = this.vertices[i][0];
+		this.vertices[i][0] = t*cosa + this.vertices[i][1]*sina;
+		this.vertices[i][1] = -t*sina + this.vertices[i][1]*cosa;
+	}
+}
+
+gdjs.Polygon.prototype.computeEdges = function() {
+	var v1, v2;
+	//Ensure edge array has the right size. ( And avoid recreating an edge array ).
+	while ( this.edges.length < this.vertices.length ) {
+		this.edges.push([0,0]);
+	}
+	if ( this.edges.length != this.vertices.length )
+		this.edges.length = this.vertices.length;
+
+	for (var i = 0, len = this.vertices.length;i<len;++i) {
+		v1 = this.vertices[i];
+		if ((i + 1) >= len) v2 = this.vertices[0];
+		else v2 = this.vertices[i + 1];
+
+		this.edges[i] = [v2[0] - v1[0], v2[1] - v1[1]];
+	}
+}
+
+gdjs.Polygon.prototype.isConvex = function() {
+	this.computeEdges();
+	edgesLen = this.edges.length;
+
+	if ( edgesLen < 3 ) {
+		return false;
+	}
+
+	var zProductIsPositive = (this.edges[0][0]*this.edges[0+1][1] - this.edges[0][1]*this.edges[0+1][0]) > 0;
+
+	for (var i = 1;i<edgesLen-1;++i) {
+		var zCrossProduct = this.edges[i][0]*this.edges[i+1][1] - this.edges[i][1]*this.edges[i+1][0];
+		if ( (zCrossProduct > 0) !== zProductIsPositive ) return false;
+	}
+
+	var lastZCrossProduct = this.edges[edgesLen-1][0]*this.edges[0][1] - this.edges[edgesLen][1]*this.edges[0][0];
+	if ( (lastZCrossProduct > 0) !== zProductIsPositive ) return false;
+
+	return true;
+}
+
+gdjs.Polygon.prototype.computeCenter = function() {
+	var center = [0,0];
+	var len = this.vertices.length;
+
+	for (var i = 0;i<len;++i) {
+		center[0] += this.vertices[i][0];
+		center[1] += this.vertices[i][1];
+	}
+	center[0] /= len;
+	center[1] /= len;
+
+	return center;
+}
+
+gdjs.Polygon.createRectangle = function(width, height) {
+    var rect = new gdjs.Polygon();
     rect.vertices.push([-width/2.0, -height/2.0]);
     rect.vertices.push([+width/2.0, -height/2.0]);
     rect.vertices.push([+width/2.0, +height/2.0]);
@@ -114,7 +110,7 @@ gdjs.polygon.createRectangle = function(width, height) {
 
 /**
  * Do a collision test between two polygons.<br>
- * Please note that polygons must <b>convexes</b>!
+ * Please note this.polygons must <b>convexes</b>!
  *
  * Uses <a href="http://en.wikipedia.org/wiki/Hyperplane_separation_theorem">Separating Axis Theorem </a>.<br>
  * Based on <a href="http://www.codeproject.com/Articles/15573/2D-Polygon-Collision-Detection">this</a>
@@ -126,7 +122,7 @@ gdjs.polygon.createRectangle = function(width, height) {
  * @param p1 {polygon} The first polygon
  * @param p2 {polygon} The second polygon
  */
-gdjs.polygon.collisionTest = function(p1,p2) {
+gdjs.Polygon.collisionTest = function(p1,p2) {
 
     //Tools functions :
 
