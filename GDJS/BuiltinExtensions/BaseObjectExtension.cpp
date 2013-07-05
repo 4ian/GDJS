@@ -106,8 +106,8 @@ BaseObjectExtension::BaseObjectExtension()
     objectExpressions["Hauteur"].codeExtraInformation.SetFunctionName("getHeight"); //Deprecated
     objectExpressions["Variable"].codeExtraInformation.SetFunctionName("getVariableAsNumber");
     objectStrExpressions["VariableString"].codeExtraInformation.SetFunctionName("getVariableAsString");
-    objectExpressions["ForceX"].codeExtraInformation.SetFunctionName("getAverageForce().getX()");
-    objectExpressions["ForceY"].codeExtraInformation.SetFunctionName("getAverageForce().getY()");
+    objectExpressions["ForceX"].codeExtraInformation.SetFunctionName("getAverageForce().getX");
+    objectExpressions["ForceY"].codeExtraInformation.SetFunctionName("getAverageForce().getY");
     objectExpressions["ForceAngle"].codeExtraInformation.SetFunctionName("getAverageForce().getAngle");
     objectExpressions["Angle"].codeExtraInformation.SetFunctionName("getAverageForce().getAngle"); //Deprecated
     objectExpressions["ForceLength"].codeExtraInformation.SetFunctionName("getAverageForce().getLength");
@@ -228,7 +228,7 @@ BaseObjectExtension::BaseObjectExtension()
         obj.AddAction("AddForceTournePos",
                        _("Add a force so as to move around a position"),
                        _("Add a force to an object so as it rotates toward a position.\nNote that the moving is not precise, especially if the speed is high.\nTo position an object around a position more precisly, use the actions in the category  \"Position\"."),
-                       _("Rotate _PARAM0_ around _PARAM1_;_PARAM2_ with _PARAM3_°/sec and _PARAM4_ pixels away"),
+                       _("Rotate _PARAM0_ around _PARAM1_;_PARAM2_ with _PARAM3_ï¿½/sec and _PARAM4_ pixels away"),
                        _("Displacement"),
                        "res/actions/forceTourne24.png",
                        "res/actions/forceTourne.png")
@@ -270,7 +270,7 @@ BaseObjectExtension::BaseObjectExtension()
         obj.AddAction("AddForceTourne",
                        _("Add a force so as to move around an object"),
                        _("Add a force to an object so as it rotates around another.\nNote that the moving is not precise, especially if the speed is high.\nTo position an object around a position more precisly, use the actions in the category  \"Position\"."),
-                       _("Rotate _PARAM0_ around _PARAM1_ with _PARAM2_°/sec and _PARAM3_ pixels away"),
+                       _("Rotate _PARAM0_ around _PARAM1_ with _PARAM2_ï¿½/sec and _PARAM3_ pixels away"),
                        _("Displacement"),
                        "res/actions/forceTourne24.png",
                        "res/actions/forceTourne.png")
