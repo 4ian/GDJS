@@ -143,8 +143,9 @@ bool Exporter::ExportLayoutForPreview(gd::Layout & layout, std::string exportDir
     strippedProject.GetLayout(layout.GetName()).GetEvents().clear();
 
     //Export the project
-    std::string result = ExportToJSON(strippedProject, exportDir+"/data.js", "gdjs.projectData", false);
-    includesFiles.push_back("data.js");
+    std::string result = ExportToJSON(strippedProject, gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js"),
+                                      "gdjs.projectData", false);
+    includesFiles.push_back(gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js"));
 
     //Copy additional dependencies
     ExportIncludesAndLibs(includesFiles, exportDir, false);
@@ -157,6 +158,8 @@ bool Exporter::ExportLayoutForPreview(gd::Layout & layout, std::string exportDir
 
 std::string Exporter::ExportToJSON(const gd::Project & project, std::string filename, std::string wrapIntoVariable, bool prettyPrinting)
 {
+    gd::RecursiveMkDir::MkDir(wxFileName::FileName(filename).GetPath());
+
     //Save the project in memory
     TiXmlDocument doc;
     TiXmlElement * root = new TiXmlElement( "Project" );
@@ -481,21 +484,19 @@ void Exporter::ShowProjectExportDialog(gd::Project & project)
         return;
     }
 
+    //Export the project
     gd::Project strippedProject = StripProject(project);
     ExportResources(strippedProject, exportDir);
+    std::string result = ExportToJSON(strippedProject, gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js"),
+                                      "gdjs.projectData", false);
+    includesFiles.push_back(gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js"));
+
     ExportIncludesAndLibs(includesFiles, exportDir, minify);
     if ( !ExportIndexFile(project, exportDir, includesFiles) )
     {
         wxLogError(_("Error during exporting:\n"+lastError));
         return;
     }
-
-    if ( !strippedProject.SaveToFile(exportDir+"/data.xml") ) {
-        lastError = gd::ToString(_("Unable to write ")+exportDir+"/data.xml");
-        wxLogError(wxString(lastError));
-        return;
-    }
-
 
     if ( wxMessageBox(_("Compilation achieved. Do you want to open the folder where the project has been compiled\?"),
                       _("Compilation finished"), wxYES_NO) == wxYES )
