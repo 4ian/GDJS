@@ -97,7 +97,7 @@ gdjs.runtimeGame = function(data)
      * @return The data associated to the initial objects.
      */
     that.getInitialObjectsData = function() {
-        return my.data.Objets;
+        return my.data.Objects;
     }
 
     /**
