@@ -113,7 +113,7 @@ gdjs.evtTools.object.hitBoxesCollisionTest = function( objectsLists1, objectsLis
     //must come from the fact this.HSHG performs collision test on all instances, and not on the
     //picked one. ( getPotentialCollidingObjects method is using all the objects of the scene. ) 
 
-    var objects1 = [];
+    /*var objects1 = [];
     var objects2 = [];
     var objects1NameId = [];
     var objects2NameId = [];
@@ -188,7 +188,7 @@ gdjs.evtTools.object.hitBoxesCollisionTest = function( objectsLists1, objectsLis
         }
     }
 
-    return isTrue;
+    return isTrue;*/
 
 }
 
@@ -274,32 +274,13 @@ gdjs.evtTools.object.pickRandomObject = function(runtimeScene, objectsLists) {
  */
 gdjs.evtTools.object.doCreateObjectOnScene = function(runtimeScene, objectName, objectsLists, x, y, layer) {
 
-    //Find the object to create
-    //TODO: Avoid iterateOver ( Build a hashtable with objects when loading the runtimeScene! )
-    //TODO: Recycle objects
-    var obj = null;
-    gdjs.iterateOver(runtimeScene.getInitialObjectsData(), "Objet", function(objData) {
-        if ( objData.attr.nom === objectName ) {
-            var ctor = gdjs.getObjectConstructor(objData.attr.type);
-            obj = new ctor(runtimeScene, objData);
-            return false;
-        }
-    });
-    if ( obj == null ) {
-        gdjs.iterateOver(runtimeScene.getGame().getInitialObjectsData(), "Objet", function(objData){
-            if ( objData.attr.nom === objectName ) {
-                var ctor = gdjs.getObjectConstructor(objData.attr.type);
-                obj = new ctor(runtimeScene, objData);
-                return false;
-            }
-        });
-    }
+    //Let's ask the RuntimeScene to create the object
+    var obj = runtimeScene.createObject(objectName);
 
-    //Add it to the scene
     if ( obj != null ) {
+        //Do some extra setup
         obj.setPosition(x,y);
         obj.setLayer(layer);
-        runtimeScene.addObject(obj);
 
         //Let the new object be picked by next actions/conditions.
         if ( objectsLists.containsKey(objectName) ) {

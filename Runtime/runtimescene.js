@@ -13,8 +13,10 @@
 gdjs.RuntimeScene = function(runtimeGame, pixiRenderer)
 { 
     this._eventsFunction = null;
-    this._instances = new Hashtable();
-    this._objects = new Hashtable();
+    this._instances = new Hashtable(); //Contains the instances living on the scene
+	this._instancesCache = new Hashtable(); //Used to recycle destroyed instance instead of creating new ones.
+    this._objects = new Hashtable(); //Contains the objects data stored in the project
+    this._objectsCtor = new Hashtable(); 
     this._layers = new Hashtable();
     this._timers = new Hashtable();
     this._pixiRenderer = pixiRenderer;
@@ -31,7 +33,6 @@ gdjs.RuntimeScene = function(runtimeGame, pixiRenderer)
     this._soundManager = new gdjs.SoundManager();
     this._gameStopRequested = false;
     this._requestedScene = "";
-    this._collisionGrid = new HSHG();
     this._isLoaded = false; // True if loadFromScene was called and the scene is being played.
     this.layers = this._layers;
     this._postPoneObjectsDeletion = false; //If set to true, objects will only be removed when doObjectsDeletion will be called ( And not at markObjectForDeletion call ).
@@ -70,40 +71,47 @@ gdjs.RuntimeScene.prototype.loadFromScene = function(sceneData) {
     //Load variables
     this._variables = new gdjs.VariablesContainer(sceneData.Variables);
 
-    //Load objects
-    this._initialObjectsData = sceneData.Objets;
-    gdjs.iterateOver(this._initialObjectsData, "Objet", function(objData) {
+    //Load objects: Global objects first...
+	gdjs.iterateOver(this.getGame().getInitialObjectsData(), "Objet", function(objData){
         var objectName = objData.attr.nom;
+        var objectType = objData.attr.type;
 
         that._objects.put(objectName, objData);
         that._instances.put(objectName, []); //Also reserve an array for the instances
+        that._instancesCache.put(objectName, []); //and for cached instances
+		//And cache the constructor for the performance sake:
+		that._objectsCtor.put(objectName, gdjs.getObjectConstructor(objectType)); 
+
+        console.log("Loaded "+objectName+" in memory ( Global object )");
+	});
+	//...then the scene objects
+    this._initialObjectsData = sceneData.Objets;
+    gdjs.iterateOver(this._initialObjectsData, "Objet", function(objData) {
+        var objectName = objData.attr.nom;
+        var objectType = objData.attr.type;
+
+        that._objects.put(objectName, objData);
+        that._instances.put(objectName, []); //Also reserve an array for the instances
+        that._instancesCache.put(objectName, []); //and for cached instances
+		//And cache the constructor for the performance sake:
+		that._objectsCtor.put(objectName, gdjs.getObjectConstructor(objectType)); 
+
         console.log("Loaded "+objectName+" in memory");
     });
 
     //Create initial instances of objects
     gdjs.iterateOver(sceneData.Positions, "Objet", function(instanceData) {
-
         var objectName = instanceData.attr.nom;
+		var newObject = that.createObject(objectName);
 
-        if ( that._objects.get(objectName) === null ) {
-            console.log("Unable to create an instance for object"+objectName+"!");
-        }
-        else {
-
-            var associatedObject = that._objects.get(objectName);
-            var objectType = associatedObject.attr.type;
-
-            var ctor = gdjs.getObjectConstructor(objectType);
-            newObject = new ctor(that, associatedObject);
+		if ( newObject != null ) {
             newObject.setPosition(parseFloat(instanceData.attr.x), parseFloat(instanceData.attr.y));
             newObject.setZOrder(parseFloat(instanceData.attr.plan));
             newObject.setAngle(parseFloat(instanceData.attr.angle));
             newObject.setLayer(instanceData.attr.layer);
-            newObject.getVariables().initFrom(instanceData.InitialVariables);
+            newObject.getVariables().initFrom(instanceData.InitialVariables, true);
             newObject.extraInitializationFromInitialInstance(instanceData);
-
-            that.addObject(newObject);
-        }
+		}
     });
 
     //Set up the function to be executed at each tick
@@ -117,30 +125,6 @@ gdjs.RuntimeScene.prototype.unloadScene = function() {
 	if ( !this._isLoaded ) return;
 
 }
-
-/**
- * Update the list of the potentially colliding objects.
- * @method updatePotentialCollidingObjects
- */
-gdjs.RuntimeScene.prototype.updatePotentialCollidingObjects = function () {
-	this._collisionGrid.update();
-}
-
-/**
- * Get an array of potentially colliding objects having the specified name identifiers.<br>
- * You need to call updatePotentialCollidingObjects method before calling this.
- *
- * @method getPotentialCollidingObjects
- * @param obj1NameId {Number} The number representing the first objects.
- * @param obj2NameId {Number} The number representing the second objects.
- */
-gdjs.RuntimeScene.prototype.getPotentialCollidingObjects = function(obj1NameId, obj2NameId) {
-
-	var pairs = this._collisionGrid.queryForCollisionPairs(obj1NameId, obj2NameId,
-			gdjs.RuntimeObject.collisionTest);
-	return pairs;
-}
-
 
 /**
  * Set the function called each time the runtimeScene is stepped.<br>
@@ -293,7 +277,6 @@ gdjs.RuntimeScene.prototype.addObject = function(obj) {
 	}
 
 	this._instances.get(obj.name).push(obj);
-	this._collisionGrid.addObject(obj);
 }
 
 /**
@@ -311,6 +294,36 @@ gdjs.RuntimeScene.prototype.getObjects = function(name){
 }
 
 /**
+ * Create a new object from its name. The object is also added to the instances
+ * living on the scene ( No need to call RuntimeScene.addObject )
+ * @param objectName {String} The name of the object to be created
+ * @return The created object
+ */
+gdjs.RuntimeScene.prototype.createObject = function(objectName){
+
+	if ( !this._objectsCtor.containsKey(objectName) ||
+	     !this._objects.containsKey(objectName) )
+		return null; //There is no such object in this scene.
+
+	//Create a new object using the object constructor ( cached during loading )
+	//and the stored object's data:
+	var cache = this._instancesCache.get(objectName);
+	var ctor = this._objectsCtor.get(objectName);
+	var obj = null;
+	if ( cache.length === 0 ) {
+		obj = new ctor(this, this._objects.get(objectName));
+	}
+	else {
+		//Reuse an objet destroyed before:
+		obj = cache.pop();
+		ctor.call(obj, this, this._objects.get(objectName));
+	}
+
+	this.addObject(obj);
+	return obj;
+}
+
+/**
  * Remove an object from the scene, deleting it from the list of instances.<br>
  * Most of the time, do not call this method directly: Use markObjectForDeletion method
  * which will remove the objects either directly or when it can be done safely.
@@ -320,10 +333,13 @@ gdjs.RuntimeScene.prototype.getObjects = function(name){
  * @private
  */
 gdjs.RuntimeScene.prototype._removeObject = function(obj) {
-	this._collisionGrid.removeObject(obj);
-
 	if ( !this._instances.containsKey(obj.getName()) ) return;
 
+	//Cache the instance to recycle it into a new instance later.
+	var cache = this._instancesCache.get(obj.getName());
+	if ( cache.length < 128 ) cache.push(obj);
+    
+    //Delete from the living instances.
 	var objId = obj.id;
 	var allInstances = this._instances.get(obj.getName());
 	for(var i = 0, len = allInstances.length;i<len;++i) {
@@ -340,7 +356,7 @@ gdjs.RuntimeScene.prototype._removeObject = function(obj) {
  * @param object The object to be removed.
  */
 gdjs.RuntimeScene.prototype.markObjectForDeletion = function(obj) {
-	if ( this._postPoneObjectsDeletion ) {
+	if ( true ) {
 		if ( this._objectsToDestroy.indexOf(obj) === -1 ) this._objectsToDestroy.push(obj);
 		return;
 	}

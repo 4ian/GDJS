@@ -5,12 +5,17 @@
  */
 
 /**
- * The runtimeObject represents an object being used on a RuntimeScene.
- *
- * <b>TODO</b> : automatisms
+ * RuntimeObject represents an object being used on a RuntimeScene.<br>
+ * The constructor is can be called on an already existing RuntimeObject:
+ * In this case, the constructor will try to reuse as much already existing members
+ * as possible ( Recycling ).<br>
+ * However, you should not be calling the constructor on an already existing object
+ * which is not a RuntimeObject.
  *
  * @class runtimeObject
  * @constructor 
+ * @param runtimeScene The RuntimeScen owning the object.
+ * @param objectData The data defining the object
  */
 gdjs.RuntimeObject = function(runtimeScene, objectData)
 {
@@ -23,27 +28,66 @@ gdjs.RuntimeObject = function(runtimeScene, objectData)
     this.zOrder = 0;
     this.hidden = false;
     this.layer = "";
-    this.hitBoxes = [];
-    this.hitBoxes.push(gdjs.Polygon.createRectangle(0,0));
-    this.hitBoxesDirty = true;
     this.id = runtimeScene.createNewUniqueId();
-    this._variables = new gdjs.VariablesContainer(objectData ? objectData.Variables : undefined);
-    this._forces = [];
-    this._averageForce = new gdjs.Force(0,0,false); //A force returned by getAverageForce method.
-    this._forcesGarbage = []; //Container for unused garbage, avoiding recreating forces each tick.
-    this._automatisms = []; //Contains the automatisms of the object
-    this._automatismsTable = new Hashtable(); //Also contains the automatisms: Used when an automatism is accessed by its name ( see getAutomatism ).
-    this.aabb = { min:[0,0], max:[0,0] };
+    
+    //Hit boxes:
+    this.hitBoxes = [];
+    this.hitBoxes.push(gdjs.Polygon.createRectangle(0,0)); //TODO: Recycle
+    this.hitBoxesDirty = true;
+    if ( this.aabb == undefined )
+        this.aabb = { min:[0,0], max:[0,0] }; 
+    else {
+        this.aabb.min[0] = 0; this.aabb.min[1] = 0;
+        this.aabb.max[0] = 0; this.aabb.max[1] = 0;
+    }
+    
+    //Variables:
+    if ( !this._variables )
+        this._variables = new gdjs.VariablesContainer(objectData ? objectData.Variables : undefined);
+    else
+        gdjs.VariablesContainer.call(this._variables, objectData ? objectData.Variables : undefined);
+        
+    //Forces:
+    if ( this._forces == undefined ) 
+        this._forces = [];
+    else 
+        this.clearForces();
+        
+    //A force returned by getAverageForce method:
+    if (this._averageForce == undefined) this._averageForce = new gdjs.Force(0,0,false); 
+        
+    //Automatisms:
+    if (this._automatisms == undefined) 
+        this._automatisms = []; //Contains the automatisms of the object
+    
+    if (this._automatismsTable == undefined) 
+        this._automatismsTable = new Hashtable(); //Also contains the automatisms: Used when an automatism is accessed by its name ( see getAutomatism ).
+    else
+        this._automatismsTable.clear();
     
     var that = this;
+    var i = 0;
     gdjs.iterateOver(objectData, "Automatism", function(autoData) {
         var ctor = gdjs.getAutomatismConstructor(autoData.attr.Type);
-        var aut = new ctor(runtimeScene, autoData);
-        aut.setOwner(that);
-        that._automatisms.push(aut);
-        that._automatismsTable.put(autoData.attr.Name, aut);
+        
+        //Try to reuse already existing automatisms.
+        if ( i < this._automatisms.length ) {
+            if ( this._automatisms[i] instanceof ctor )
+                ctor.call(this._automatisms[i], runtimeScene, autoData);
+            else
+                that._automatisms[i] = new ctor(runtimeScene, autoData);
+        }
+        else that._automatisms.push(new ctor(runtimeScene, autoData));
+        
+        that._automatisms[i].setOwner(that);
+        that._automatismsTable.put(autoData.attr.Name, that._automatisms[i]);
+        
+        i++;
     });
+    this._automatisms.length = i;//Make sure to delete already existing automatisms which are not used anymore.
 }
+
+gdjs.RuntimeObject.forcesGarbage = []; //Global container for unused forces, avoiding recreating forces each tick.
     
 //Common members functions related to the object and its runtimeScene :
 
@@ -392,10 +436,10 @@ gdjs.RuntimeObject.prototype.getCenterY = function() {
  * @param isTemporary {Boolean} Set if the force is temporary or not.
  */
 gdjs.RuntimeObject.prototype._getRecycledForce = function(x, y, isTemporary) {
-    if ( this._forcesGarbage.length === 0 )
+    if ( gdjs.RuntimeObject.forcesGarbage.length === 0 )
         return new gdjs.Force(x, y, isTemporary);
     else {
-        var recycledForce = this._forcesGarbage.pop();
+        var recycledForce = gdjs.RuntimeObject.forcesGarbage.pop();
         recycledForce.setX(x);
         recycledForce.setY(y);
         recycledForce.setTemporary(isTemporary);
@@ -467,7 +511,7 @@ gdjs.RuntimeObject.prototype.addForceTowardObject = function(obj, len, isPermane
  * @method clearForces
  */
 gdjs.RuntimeObject.prototype.clearForces = function() {
-    this._forcesGarbage.push.apply(this._forcesGarbage, this._forces);
+    gdjs.RuntimeObject.forcesGarbage.push.apply(gdjs.RuntimeObject.forcesGarbage, this._forces);
     this._forces.length = 0;
 }
 
@@ -489,7 +533,7 @@ gdjs.RuntimeObject.prototype.updateForces = function() {
     for(var i = 0;i<this._forces.length;) {
     
         if ( this._forces[i].isTemporary() ) {
-            this._forcesGarbage.push(this._forces[i]);
+            gdjs.RuntimeObject.forcesGarbage.push(this._forces[i]);
             this._forces.remove(i);
         }
         else {

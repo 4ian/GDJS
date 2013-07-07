@@ -5,7 +5,7 @@
  */
 
 /**
- * A frame used by a SpriteAnimation in a spriteRuntimeObject.
+ * A frame used by a SpriteAnimation in a SpriteRuntimeObject.
  *
  * @namespace gdjs
  * @class SpriteAnimationFrame
@@ -15,25 +15,30 @@ gdjs.SpriteAnimationFrame = function(imageManager, frameData)
 {
     this.image = frameData ? frameData.attr.image : "";
     this.pixiTexture = imageManager.getPIXITexture(this.image);
-    this.points = new Hashtable();
-    this.center = { x:this.pixiTexture.width/2, y:this.pixiTexture.height/2 };
-    this.origin = { x:0, y:0 };
+    
+    if ( this.center == undefined ) this.center = { x:0, y:0 };
+    if ( this.origin == undefined ) this.origin = { x:0, y:0 };
+    if ( this.points == undefined ) this.points = new Hashtable();
+    else this.points.clear();
 
-    if ( frameData ) {
-        var that = this;
-        gdjs.iterateOver(frameData.Points, "Point", function(ptData) {
-            var point = {x:parseFloat(ptData.attr.X), y:parseFloat(ptData.attr.Y)};
-            that.points.put(ptData.attr.nom, point);
-        });
-        var origin = frameData.PointOrigine;
-        this.origin.x = parseFloat(origin.attr.X);
-        this.origin.y = parseFloat(origin.attr.Y);
+    //Initialize points:
+    var that = this;
+    gdjs.iterateOver(frameData.Points, "Point", function(ptData) {
+        var point = {x:parseFloat(ptData.attr.X), y:parseFloat(ptData.attr.Y)};
+        that.points.put(ptData.attr.nom, point);
+    });
+    var origin = frameData.PointOrigine;
+    this.origin.x = parseFloat(origin.attr.X);
+    this.origin.y = parseFloat(origin.attr.Y);
 
-        var center = frameData.PointCentre;
-        if ( center.attr.automatic !== "true" ) {
-            this.center.x = parseFloat(center.attr.X);
-            this.center.y = parseFloat(center.attr.Y);
-        }
+    var center = frameData.PointCentre;
+    if ( center.attr.automatic !== "true" ) {
+        this.center.x = parseFloat(center.attr.X);
+        this.center.y = parseFloat(center.attr.Y);
+    }
+    else  {
+        this.center.x = this.pixiTexture.width/2;
+        this.center.y = this.pixiTexture.height/2;
     }
 }
 
@@ -55,50 +60,60 @@ gdjs.SpriteAnimationFrame.prototype.getPoint = function(name) {
  * Represents an animation of a spriteRuntimeObject.
  *
  * @class SpriteAnimation
+ * @namespace gdjs
  * @constructor
  */
 gdjs.SpriteAnimation = function(imageManager, animData)
 {
-	//Internal object representing a direction of an animation.
+	//Constructor of internal object representing a direction of an animation.
     var Direction = function(imageManager, directionData) {
         this.timeBetweenFrames = directionData ? parseFloat(directionData.attr.tempsEntre) :
                                  1.0;
         this.loop = directionData ? directionData.attr.boucle === "true" : false;
-        this.frames = [];
-
-        if ( directionData != undefined ) {
-            var that = this;
-            gdjs.iterateOver(directionData.Sprites, "Sprite", function(frameData) {
-                that.frames.push(new gdjs.SpriteAnimationFrame(imageManager, frameData));
-            });
-        }
-    }
-
-    this.directions = [];
-    this.hasMultipleDirections = animData ? animData.attr.typeNormal === "true" : false;
-
-    if ( animData != undefined ) {
+        
         var that = this;
-        gdjs.iterateOver(animData, "Direction", function(directionData) {
-            var direc = new Direction(imageManager, directionData);
-            that.directions.push(direc);
+        var i = 0;
+        if ( this.frames == undefined ) this.frames = [];
+        gdjs.iterateOver(directionData.Sprites, "Sprite", function(frameData) {
+            if ( i < that.frames.length )
+                gdjs.SpriteAnimationFrame.call(that.frames[i], imageManager, frameData);
+            else
+                that.frames.push(new gdjs.SpriteAnimationFrame(imageManager, frameData));
+                
+            i++;
         });
+        this.frames.length = i;
     }
+
+    this.hasMultipleDirections = animData ? animData.attr.typeNormal === "true" : false;
+    
+    var that = this;
+    var i = 0;
+    if ( this.directions == undefined ) this.directions = [];
+    gdjs.iterateOver(animData, "Direction", function(directionData) {
+        if ( i < that.directions.length )
+            Direction.call(that.directions[i], imageManager, directionData);
+        else
+            that.directions.push(new Direction(imageManager, directionData));
+            
+        i++;
+    });
+    this.directions.length = i; //Make sure to delete already existing directions which are not used anymore.
 }
 
 /**
- * The spriteRuntimeObject represents an object this.can display images.
+ * The SpriteRuntimeObject represents an object this.can display images.
  *
  * <b>TODO:</b> custom collisions masks.
  *
- * @class spriteRuntimeObject
+ * @class SpriteRuntimeObject
+ * @namespace gdjs
  * @extends runtimeObject
  */
 gdjs.SpriteRuntimeObject = function(runtimeScene, objectData)
 {
 	gdjs.RuntimeObject.call( this, runtimeScene, objectData );
 
-    this._animations = [];
     this._currentAnimation = 0;
     this._currentDirection = 0;
     this._currentFrame = 0;
@@ -111,22 +126,32 @@ gdjs.SpriteRuntimeObject = function(runtimeScene, objectData)
     this._flippedY = false;
     this._runtimeScene = runtimeScene;
     this.opacity = 255;
-    if ( objectData ) {
-        var that = this;
-        gdjs.iterateOver(objectData.Animations, "Animation", function(animData) {
-            var anim = new gdjs.SpriteAnimation(runtimeScene.getGame().getImageManager(), animData);
-            that._animations.push(anim);
-        });
-    }
+    
+    //Animations:
+    var that = this;
+    var i = 0;
+    if ( this._animations == undefined ) this._animations = [];
+    gdjs.iterateOver(objectData.Animations, "Animation", function(animData) {
+        if ( i < that._animations.length )
+            gdjs.SpriteAnimation.call(that._animations[i], runtimeScene.getGame().getImageManager(), animData);
+        else
+            that._animations.push(new gdjs.SpriteAnimation(runtimeScene.getGame().getImageManager(), animData));
+            
+        i++;
+    });
+    this._animations.length = i; //Make sure to delete already existing animations which are not used anymore.
 
-    //PIXI sprite creation
+    //PIXI sprite related members:
     this._animationFrame = null;
     this._spriteDirty = true;
     this._textureDirty = true;
-    this._sprite = new PIXI.Sprite(runtimeScene.getGame().getImageManager().getInvalidPIXITexture());
+    this._spriteInContainer = true;
+    if ( this._sprite == undefined )
+        this._sprite = new PIXI.Sprite(runtimeScene.getGame().getImageManager().getInvalidPIXITexture());
     runtimeScene.getLayer("").addChildToPIXIContainer(this._sprite, this.zOrder);
 
 	this._updatePIXITexture();
+	this._updatePIXISprite();
 }
 
 gdjs.SpriteRuntimeObject.prototype = Object.create( gdjs.RuntimeObject.prototype );
@@ -215,7 +240,10 @@ gdjs.SpriteRuntimeObject.prototype.updateTime = function(elapsedTime) {
 
 gdjs.SpriteRuntimeObject.prototype.deleteFromScene = function(runtimeScene) {
     runtimeScene.markObjectForDeletion(this);
-    runtimeScene.getLayer(this.layer).removePIXIContainerChild(this._sprite);
+    if ( this._spriteInContainer ) {
+        runtimeScene.getLayer(this.layer).removePIXIContainerChild(this._sprite);
+        this._spriteInContainer = false;
+    }
 }
 
 //Animations :

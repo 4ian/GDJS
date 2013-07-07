@@ -5,7 +5,9 @@
  */
 
 /**
- * The variablesContainer stores variables for a runtimeScene or a runtimeObject.
+ * VariablesContainer stores variables, usually for a a RuntimeGame, a RuntimeScene
+ * or a RuntimeObject.
+ *
  * @namespace gdjs
  * @class VariablesContainer
  * @constructor
@@ -13,8 +15,7 @@
  */
 gdjs.VariablesContainer = function(initialVariablesData)
 {
-    this._variables = new Hashtable();
-    
+    if ( this._variables == undefined ) this._variables = new Hashtable();
     if ( initialVariablesData != undefined ) this.initFrom(initialVariablesData);
 }
 
@@ -22,11 +23,24 @@ gdjs.VariablesContainer = function(initialVariablesData)
  * Initialize variables from a container data.
  * @method initFrom
  * @param data The object containing the variables.
+ * @param keepOldVariables {Boolean} If set to true, already existing variables won't be erased.
  */
-gdjs.VariablesContainer.prototype.initFrom = function(data) {
+gdjs.VariablesContainer.prototype.initFrom = function(data, keepOldVariables) {
+    if ( keepOldVariables == undefined ) keepOldVariables = false;
+    if ( !keepOldVariables ) var deletedVars = this._variables.keys();
+    
     var that = this;
 	gdjs.iterateOver(data, "Variable", function(varData) {
-		var variable = new gdjs.Variable();
+		
+        //Get the variable: If it already exists, use it.
+        var variable = null; 
+        if ( !that._variables.containsKey(varData.attr.Name) ) {
+            variable = new gdjs.Variable();
+            that._variables.put(varData.attr.Name, variable);
+        }
+        else
+            variable = that._variables.get(varData.attr.Name);
+
 		var initialValue = varData.attr.Value;
 		//Try to guess the type of the value, as GD has no way ( for now ) to specify
 		//the type of a variable.
@@ -39,9 +53,18 @@ gdjs.VariablesContainer.prototype.initFrom = function(data) {
 			else
 				variable.setString(initialValue);
 		}
-
-		that._variables.put(varData.attr.Name, variable);
+        
+        if ( !keepOldVariables ) {
+            var idx = deletedVars.indexOf(varData.attr.Name)
+            if (idx !== -1) deletedVars[idx] = undefined;
+        }
 	});
+    
+    if ( !keepOldVariables ) {
+        for(var i =0, len = deletedVars.length;i<len;++i) {
+            if ( deletedVars[i] != undefined ) this._variables.remove(deletedVars[i]);
+        }
+    }
 }
 
 /**
