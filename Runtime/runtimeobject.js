@@ -73,9 +73,9 @@ gdjs.RuntimeObject = function(runtimeScene, objectData)
         var ctor = gdjs.getAutomatismConstructor(autoData.attr.Type);
         
         //Try to reuse already existing automatisms.
-        if ( i < this._automatisms.length ) {
-            if ( this._automatisms[i] instanceof ctor )
-                ctor.call(this._automatisms[i], runtimeScene, autoData);
+        if ( i < that._automatisms.length ) {
+            if ( that._automatisms[i] instanceof ctor )
+                ctor.call(that._automatisms[i], runtimeScene, autoData);
             else
                 that._automatisms[i] = new ctor(runtimeScene, autoData);
         }
