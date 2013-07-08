@@ -36,7 +36,7 @@ function Hashtable(obj)
     this.remove = function(key)
     {
         if (this.items.hasOwnProperty(key)) {
-            previous = this.items[key];
+            var previous = this.items[key];
             this.length--;
             delete this.items[key];
             return previous;
@@ -81,7 +81,11 @@ function Hashtable(obj)
     
     this.clear = function()
     {
-        this.items = {}
+        for (var k in this.items) {
+            if (this.items.hasOwnProperty(k)) {
+                delete this.items[k];
+            }
+        }
         this.length = 0;
     }
     

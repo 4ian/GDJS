@@ -31,8 +31,10 @@ gdjs.RuntimeObject = function(runtimeScene, objectData)
     this.id = runtimeScene.createNewUniqueId();
     
     //Hit boxes:
-    this.hitBoxes = [];
-    this.hitBoxes.push(gdjs.Polygon.createRectangle(0,0)); //TODO: Recycle
+    if ( this.hitBoxes == undefined ) { //TODO: To be adapted for custom hit boxes.
+        this.hitBoxes = [];
+        this.hitBoxes.push(gdjs.Polygon.createRectangle(0,0));
+    }
     this.hitBoxesDirty = true;
     if ( this.aabb == undefined )
         this.aabb = { min:[0,0], max:[0,0] }; 
@@ -607,19 +609,19 @@ gdjs.RuntimeObject.prototype.getHitBoxes = function() {
  * getHeight. 
  */
 gdjs.RuntimeObject.prototype.updateHitBoxes = function() {
-        var width = this.getWidth();
-        var height = this.getHeight();
-        this.hitBoxes[0].vertices[0][0] =-width/2.0;
-        this.hitBoxes[0].vertices[0][1] =-height/2.0;
-        this.hitBoxes[0].vertices[1][0] =+width/2.0;
-        this.hitBoxes[0].vertices[1][1] =-height/2.0;
-        this.hitBoxes[0].vertices[2][0] =+width/2.0;
-        this.hitBoxes[0].vertices[2][1] =+height/2.0;
-        this.hitBoxes[0].vertices[3][0] =-width/2.0;
-        this.hitBoxes[0].vertices[3][1] =+height/2.0;
-        
-        this.hitBoxes[0].rotate(this.getAngle()/180*3.14159);
-        this.hitBoxes[0].move(this.getX()+this.getCenterX(), this.getY()+this.getCenterY());
+    var width = this.getWidth();
+    var height = this.getHeight();
+    this.hitBoxes[0].vertices[0][0] =-width/2.0;
+    this.hitBoxes[0].vertices[0][1] =-height/2.0;
+    this.hitBoxes[0].vertices[1][0] =+width/2.0;
+    this.hitBoxes[0].vertices[1][1] =-height/2.0;
+    this.hitBoxes[0].vertices[2][0] =+width/2.0;
+    this.hitBoxes[0].vertices[2][1] =+height/2.0;
+    this.hitBoxes[0].vertices[3][0] =-width/2.0;
+    this.hitBoxes[0].vertices[3][1] =+height/2.0;
+    
+    this.hitBoxes[0].rotate(this.getAngle()/180*3.14159);
+    this.hitBoxes[0].move(this.getX()+this.getCenterX(), this.getY()+this.getCenterY());
 }
 
 //Experimental

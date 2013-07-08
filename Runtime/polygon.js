@@ -24,6 +24,13 @@ gdjs.Polygon = function(runtimeGame, pixiRenderer)
      * @property edges
      */
     this.edges = [];
+    
+    /**
+     * The center of the polygon. This property is only valid after calling
+     * computeCenter, and remains valid until vertices are modified.
+     * @property center
+     */
+    this.center = [0,0];
 }
 
 gdjs.Polygon.prototype.move = function(x,y) {
@@ -59,7 +66,8 @@ gdjs.Polygon.prototype.computeEdges = function() {
 		if ((i + 1) >= len) v2 = this.vertices[0];
 		else v2 = this.vertices[i + 1];
 
-		this.edges[i] = [v2[0] - v1[0], v2[1] - v1[1]];
+		this.edges[i][0] = v2[0] - v1[0];
+        this.edges[i][1] = v2[1] - v1[1];
 	}
 }
 
@@ -85,17 +93,18 @@ gdjs.Polygon.prototype.isConvex = function() {
 }
 
 gdjs.Polygon.prototype.computeCenter = function() {
-	var center = [0,0];
+	this.center[0] = 0;
+	this.center[1] = 0;
 	var len = this.vertices.length;
 
 	for (var i = 0;i<len;++i) {
-		center[0] += this.vertices[i][0];
-		center[1] += this.vertices[i][1];
+		this.center[0] += this.vertices[i][0];
+		this.center[1] += this.vertices[i][1];
 	}
-	center[0] /= len;
-	center[1] /= len;
+	this.center[0] /= len;
+	this.center[1] /= len;
 
-	return center;
+	return this.center;
 }
 
 gdjs.Polygon.createRectangle = function(width, height) {

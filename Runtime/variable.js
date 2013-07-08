@@ -15,7 +15,27 @@ gdjs.Variable = function()
     this._str = "";
     this._numberDirty = false;
     this._stringDirty = true;
+    this._undefinedInContainer = false;
 } 
+
+/** 
+ * Used ( usually by VariablesContainer ) to set that the variable must be
+ * considered as not existing in the container.
+ * @method setUndefinedInContainer
+ */
+gdjs.Variable.prototype.setUndefinedInContainer = function() {
+    this._undefinedInContainer = true;
+}
+
+/** 
+ * Check if the variable must be considered as not existing in its container
+ * ( Usually a VariablesContainer ).
+ * @method isUndefinedInContainer
+ * @return true if the container must consider that the variable does not exist.
+ */
+gdjs.Variable.prototype.isUndefinedInContainer = function() {
+    return this._undefinedInContainer;
+}
 
 /**
  * Get the value of the variable, considered as a number

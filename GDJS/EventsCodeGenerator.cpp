@@ -245,15 +245,14 @@ std::string EventsCodeGenerator::GenerateObjectCondition(const std::string & obj
     if ( conditionInverted ) predicat = GenerateNegatedPredicat(predicat);
 
     //Generate whole condition code
-    conditionCode += "for(var i = 0;i < "+GetObjectListName(objectName, context)+".length;) {\n";
+    conditionCode += "for(var i = 0, k = 0, l = "+GetObjectListName(objectName, context)+".length;i<l;++i) {\n";
     conditionCode += "    if ( "+predicat+" ) {\n";
     conditionCode += "        "+GenerateBooleanFullName(returnBoolean, context)+".val = true;\n";
-    conditionCode += "        ++i;\n";
-    conditionCode += "    }\n";
-    conditionCode += "    else {\n";
-    conditionCode += "        "+GetObjectListName(objectName, context)+".remove(i);\n";
+    conditionCode += "        "+GetObjectListName(objectName, context)+"[k] = "+GetObjectListName(objectName, context)+"[i];\n";
+    conditionCode += "        ++k;\n";
     conditionCode += "    }\n";
     conditionCode += "}\n";
+    conditionCode += GetObjectListName(objectName, context)+".length = k;";
 
     return conditionCode;
 }
@@ -300,15 +299,14 @@ std::string EventsCodeGenerator::GenerateAutomatismCondition(const std::string &
     }
     else
     {
-        conditionCode += "for(var i = 0;i < "+GetObjectListName(objectName, context)+".length;) {\n";
+        conditionCode += "for(var i = 0, k = 0, l = "+GetObjectListName(objectName, context)+".length;i<l;++i) {\n";
         conditionCode += "    if ( "+predicat+" ) {\n";
         conditionCode += "        "+GenerateBooleanFullName(returnBoolean, context)+".val = true;\n";
-        conditionCode += "        ++i;\n";
+        conditionCode += "        "+GetObjectListName(objectName, context)+"[k] = "+GetObjectListName(objectName, context)+"[i];\n";
+        conditionCode += "        ++k;\n";
         conditionCode += "    }\n";
-        conditionCode += "    else {\n";
-        conditionCode += "        "+GetObjectListName(objectName, context)+".remove(i);\n";
-        conditionCode += "    }\n";
-        conditionCode += "}";
+        conditionCode += "}\n";
+        conditionCode += GetObjectListName(objectName, context)+".length = k;";
     }
 
 

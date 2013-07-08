@@ -204,6 +204,7 @@ gdjs.SpriteRuntimeObject.prototype._updatePIXITexture = function() {
 
     this._animationFrame = direction.frames[this._currentFrame];
     this._sprite.setTexture(this._animationFrame.pixiTexture);
+    this._textureDirty = false;
     this._spriteDirty = true;
 }
 
@@ -313,7 +314,7 @@ gdjs.SpriteRuntimeObject.prototype.setAnimationFrame = function(newFrame) {
     }
     var direction = this._animations[this._currentAnimation].directions[this._currentDirection];
 
-    if ( newFrame < direction.frames.length ) {
+    if ( newFrame < direction.frames.length && newFrame != this._currentFrame ) {
         this._currentFrame = newFrame;
         this._textureDirty = true;
     }
@@ -425,14 +426,18 @@ gdjs.SpriteRuntimeObject.prototype.getCenterY = function() {
 
 gdjs.SpriteRuntimeObject.prototype.setX = function(x) {
     this.x = x;
+    
     this.hitBoxesDirty = true;
-    this._sprite.position.x = x;
+    this._sprite.position.x = this.x + (this._animationFrame.center.x - this._animationFrame.origin.x)*Math.abs(this._scaleX);
+    if ( this._flippedX ) this._sprite.position.x += (this._sprite.texture.frame.width/2-this._animationFrame.center.x)*Math.abs(this._scaleX)*2;
 }
 
 gdjs.SpriteRuntimeObject.prototype.setY = function(y) {
     this.y = y;
+    
     this.hitBoxesDirty = true;
-    this._sprite.position.y = y;
+    this._sprite.position.y = this.y + (this._animationFrame.center.y - this._animationFrame.origin.y)*Math.abs(this._scaleY);
+    if ( this._flippedY ) this._sprite.position.y += (this._sprite.texture.frame.height/2-this._animationFrame.center.y)*Math.abs(this._scaleY)*2;
 }
 
 gdjs.SpriteRuntimeObject.prototype.setAngle = function(angle) {
