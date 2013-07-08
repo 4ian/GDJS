@@ -18,6 +18,8 @@
 #endif
 #define _(s) std::string(wxGetTranslation((s)).mb_str())
 
+using namespace gd;
+
 namespace gdjs
 {
 
@@ -45,11 +47,18 @@ VariablesExtension::VariablesExtension()
                 std::string op = instruction.GetParameters()[2].GetPlainString();
                 std::string var = codeGenerator.ConvertToString(instruction.GetParameters()[1].GetPlainString());
                 std::string boolean = codeGenerator.GenerateBooleanFullName("conditionTrue", context)+".val";
+                std::string varGetter = "runtimeScene.getVariables().get(\""+var+"\")";
+                //Optimize the lookup when the variable position is known:
+                {
+                    unsigned int index = codeGenerator.GetLayout().GetVariables().GetVariablePosition(instruction.GetParameters()[1].GetPlainString());
+                    if ( index < codeGenerator.GetLayout().GetVariables().GetVariableCount() )
+                        varGetter = "runtimeScene.getVariables().getFromIndex("+ToString(index)+")";
+                }
 
                 if ( op == "=" || op.empty() )
-                    return boolean+" = runtimeScene.getVariables().get(\""+var+"\").getAsNumber() === "+expressionCode+";";
+                    return boolean+" = "+varGetter+".getAsNumber() === "+expressionCode+";";
                 else if ( op == ">" || op == "<" || op == ">=" || op == "<=" || op == "!=" )
-                    return boolean+" = runtimeScene.getVariables().get(\""+var+"\").getAsNumber() "+op+" "+expressionCode+";";
+                    return boolean+" = "+varGetter+".getAsNumber() "+op+" "+expressionCode+";";
 
                 return "";
             };
@@ -72,6 +81,13 @@ VariablesExtension::VariablesExtension()
                 std::string op = instruction.GetParameters()[2].GetPlainString();
                 std::string var = codeGenerator.ConvertToString(instruction.GetParameters()[1].GetPlainString());
                 std::string boolean = codeGenerator.GenerateBooleanFullName("conditionTrue", context)+".val";
+                std::string varGetter = "runtimeScene.getVariables().get(\""+var+"\")";
+                //Optimize the lookup when the variable position is known:
+                {
+                    unsigned int index = codeGenerator.GetLayout().GetVariables().GetVariablePosition(instruction.GetParameters()[1].GetPlainString());
+                    if ( index < codeGenerator.GetLayout().GetVariables().GetVariableCount() )
+                        varGetter = "runtimeScene.getVariables().getFromIndex("+ToString(index)+")";
+                }
 
                 if ( op == "=" || op.empty() )
                     return boolean+" = runtimeScene.getVariables().get(\""+var+"\").getAsString() === "+expressionCode+";";
@@ -112,18 +128,24 @@ VariablesExtension::VariablesExtension()
 
                 std::string op = instruction.GetParameters()[2].GetPlainString();
                 std::string var = codeGenerator.ConvertToString(instruction.GetParameters()[1].GetPlainString());
-                std::string getCode = "runtimeScene.getVariables().get(\""+var+"\")";
+                std::string varGetter = "runtimeScene.getVariables().get(\""+var+"\")";
+                //Optimize the lookup when the variable position is known:
+                {
+                    unsigned int index = codeGenerator.GetLayout().GetVariables().GetVariablePosition(instruction.GetParameters()[1].GetPlainString());
+                    if ( index < codeGenerator.GetLayout().GetVariables().GetVariableCount() )
+                        varGetter = "runtimeScene.getVariables().getFromIndex("+ToString(index)+")";
+                }
 
                 if ( op == "=" )
-                    return getCode+".setNumber("+expressionCode+");\n";
+                    return varGetter+".setNumber("+expressionCode+");\n";
                 else if ( op == "+" )
-                    return getCode+".add("+expressionCode+");\n";
+                    return varGetter+".add("+expressionCode+");\n";
                 else if ( op == "-" )
-                    return getCode+".sub("+expressionCode+");\n";
+                    return varGetter+".sub("+expressionCode+");\n";
                 else if ( op == "*" )
-                    return getCode+".mul("+expressionCode+");\n";
+                    return varGetter+".mul("+expressionCode+");\n";
                 else if ( op == "/" )
-                    return getCode+".div("+expressionCode+");\n";
+                    return varGetter+".div("+expressionCode+");\n";
 
                 return "";
             };
@@ -145,12 +167,18 @@ VariablesExtension::VariablesExtension()
 
                 std::string op = instruction.GetParameters()[2].GetPlainString();
                 std::string var = codeGenerator.ConvertToString(instruction.GetParameters()[1].GetPlainString());
-                std::string getCode = "runtimeScene.getVariables().get(\""+var+"\")";
+                std::string varGetter = "runtimeScene.getVariables().get(\""+var+"\")";
+                //Optimize the lookup when the variable position is known:
+                {
+                    unsigned int index = codeGenerator.GetLayout().GetVariables().GetVariablePosition(instruction.GetParameters()[1].GetPlainString());
+                    if ( index < codeGenerator.GetLayout().GetVariables().GetVariableCount() )
+                        varGetter = "runtimeScene.getVariables().getFromIndex("+ToString(index)+")";
+                }
 
                 if ( op == "=" )
-                    return getCode+".setString("+expressionCode+");\n";
+                    return varGetter+".setString("+expressionCode+");\n";
                 else if ( op == "+" )
-                    return getCode+".concatenate("+expressionCode+");\n";
+                    return varGetter+".concatenate("+expressionCode+");\n";
 
                 return "";
             };
@@ -173,11 +201,18 @@ VariablesExtension::VariablesExtension()
                 std::string op = instruction.GetParameters()[2].GetPlainString();
                 std::string var = codeGenerator.ConvertToString(instruction.GetParameters()[1].GetPlainString());
                 std::string boolean = codeGenerator.GenerateBooleanFullName("conditionTrue", context)+".val";
+                std::string varGetter = "runtimeScene.getGame().getVariables().get(\""+var+"\")";
+                //Optimize the lookup when the variable position is known:
+                {
+                    unsigned int index = codeGenerator.GetProject().GetVariables().GetVariablePosition(instruction.GetParameters()[1].GetPlainString());
+                    if ( index < codeGenerator.GetProject().GetVariables().GetVariableCount() )
+                        varGetter = "runtimeScene.getGame().getVariables().getFromIndex("+ToString(index)+")";
+                }
 
                 if ( op == "=" || op.empty() )
-                    return boolean+" = runtimeScene.getGame().getVariables().get(\""+var+"\").getAsNumber() === "+expressionCode+";";
+                    return boolean+" = "+varGetter+".getAsNumber() === "+expressionCode+";";
                 else if ( op == ">" || op == "<" || op == ">=" || op == "<=" || op == "!=" )
-                    return boolean+" = runtimeScene.getGame().getVariables().get(\""+var+"\").getAsNumber() "+op+" "+expressionCode+";";
+                    return boolean+" = "+varGetter+".getAsNumber() "+op+" "+expressionCode+";";
 
                 return "";
             };
@@ -200,11 +235,18 @@ VariablesExtension::VariablesExtension()
                 std::string op = instruction.GetParameters()[2].GetPlainString();
                 std::string var = codeGenerator.ConvertToString(instruction.GetParameters()[1].GetPlainString());
                 std::string boolean = codeGenerator.GenerateBooleanFullName("conditionTrue", context)+".val";
+                std::string varGetter = "runtimeScene.getGame().getVariables().get(\""+var+"\")";
+                //Optimize the lookup when the variable position is known:
+                {
+                    unsigned int index = codeGenerator.GetProject().GetVariables().GetVariablePosition(instruction.GetParameters()[1].GetPlainString());
+                    if ( index < codeGenerator.GetProject().GetVariables().GetVariableCount() )
+                        varGetter = "runtimeScene.getGame().getVariables().getFromIndex("+ToString(index)+")";
+                }
 
                 if ( op == "=" || op.empty() )
-                    return boolean+" = runtimeScene.getGame().getVariables().get(\""+var+"\").getAsString() === "+expressionCode+";";
+                    return boolean+" = "+varGetter+".getAsString() === "+expressionCode+";";
                 else if ( op == "!=" )
-                    return boolean+" = runtimeScene.getGame().getVariables().get(\""+var+"\").getAsString() !== "+expressionCode+";";
+                    return boolean+" = "+varGetter+".getAsString() !== "+expressionCode+";";
 
                 return "";
             };
@@ -240,18 +282,24 @@ VariablesExtension::VariablesExtension()
 
                 std::string op = instruction.GetParameters()[2].GetPlainString();
                 std::string var = codeGenerator.ConvertToString(instruction.GetParameters()[1].GetPlainString());
-                std::string getCode = "runtimeScene.getGame().getVariables().get(\""+var+"\")";
+                std::string varGetter = "runtimeScene.getGame().getVariables().get(\""+var+"\")";
+                //Optimize the lookup when the variable position is known:
+                {
+                    unsigned int index = codeGenerator.GetProject().GetVariables().GetVariablePosition(instruction.GetParameters()[1].GetPlainString());
+                    if ( index < codeGenerator.GetProject().GetVariables().GetVariableCount() )
+                        varGetter = "runtimeScene.getGame().getVariables().getFromIndex("+ToString(index)+")";
+                }
 
                 if ( op == "=" )
-                    return getCode+".setNumber("+expressionCode+");\n";
+                    return varGetter+".setNumber("+expressionCode+");\n";
                 else if ( op == "+" )
-                    return getCode+".add("+expressionCode+");\n";
+                    return varGetter+".add("+expressionCode+");\n";
                 else if ( op == "-" )
-                    return getCode+".sub("+expressionCode+");\n";
+                    return varGetter+".sub("+expressionCode+");\n";
                 else if ( op == "*" )
-                    return getCode+".mul("+expressionCode+");\n";
+                    return varGetter+".mul("+expressionCode+");\n";
                 else if ( op == "/" )
-                    return getCode+".div("+expressionCode+");\n";
+                    return varGetter+".div("+expressionCode+");\n";
 
                 return "";
             };
@@ -273,12 +321,18 @@ VariablesExtension::VariablesExtension()
 
                 std::string op = instruction.GetParameters()[2].GetPlainString();
                 std::string var = codeGenerator.ConvertToString(instruction.GetParameters()[1].GetPlainString());
-                std::string getCode = "runtimeScene.getGame().getVariables().get(\""+var+"\")";
+                std::string varGetter = "runtimeScene.getGame().getVariables().get(\""+var+"\")";
+                //Optimize the lookup when the variable position is known:
+                {
+                    unsigned int index = codeGenerator.GetProject().GetVariables().GetVariablePosition(instruction.GetParameters()[1].GetPlainString());
+                    if ( index < codeGenerator.GetProject().GetVariables().GetVariableCount() )
+                        varGetter = "runtimeScene.getGame().getVariables().getFromIndex("+ToString(index)+")";
+                }
 
                 if ( op == "=" )
-                    return getCode+".setString("+expressionCode+");\n";
+                    return varGetter+".setString("+expressionCode+");\n";
                 else if ( op == "+" )
-                    return getCode+".concatenate("+expressionCode+");\n";
+                    return varGetter+".concatenate("+expressionCode+");\n";
 
                 return "";
             };
@@ -294,7 +348,14 @@ VariablesExtension::VariablesExtension()
             virtual std::string GenerateCode(const std::vector<gd::Expression> & parameters, gd::EventsCodeGenerator & codeGenerator, gd::EventsCodeGenerationContext & context)
             {
                 std::string var = codeGenerator.ConvertToString(parameters[1].GetPlainString());
-                return "runtimeScene.getVariables().get(\""+var+"\").getAsNumber()";
+                std::string varGetter = "runtimeScene.getVariables().get(\""+var+"\")";
+                //Optimize the lookup when the variable position is known:
+                {
+                    unsigned int index = codeGenerator.GetLayout().GetVariables().GetVariablePosition(parameters[1].GetPlainString());
+                    if ( index < codeGenerator.GetLayout().GetVariables().GetVariableCount() )
+                        varGetter = "runtimeScene.getVariables().getFromIndex("+ToString(index)+")";
+                }
+                return varGetter+".getAsNumber()";
             };
         };
         gd::ExpressionMetadata::ExtraInformation::CustomCodeGenerator * codeGenerator = new CodeGenerator;
@@ -309,7 +370,14 @@ VariablesExtension::VariablesExtension()
             virtual std::string GenerateCode(const std::vector<gd::Expression> & parameters, gd::EventsCodeGenerator & codeGenerator, gd::EventsCodeGenerationContext & context)
             {
                 std::string var = codeGenerator.ConvertToString(parameters[1].GetPlainString());
-                return "runtimeScene.getVariables().get(\""+var+"\").getAsString()";
+                std::string varGetter = "runtimeScene.getVariables().get(\""+var+"\")";
+                //Optimize the lookup when the variable position is known:
+                {
+                    unsigned int index = codeGenerator.GetLayout().GetVariables().GetVariablePosition(parameters[1].GetPlainString());
+                    if ( index < codeGenerator.GetLayout().GetVariables().GetVariableCount() )
+                        varGetter = "runtimeScene.getVariables().getFromIndex("+ToString(index)+")";
+                }
+                return varGetter+".getAsString()";
             };
         };
         gd::StrExpressionMetadata::ExtraInformation::CustomCodeGenerator * codeGenerator = new CodeGenerator; //Need for code to compile
@@ -323,7 +391,14 @@ VariablesExtension::VariablesExtension()
             virtual std::string GenerateCode(const std::vector<gd::Expression> & parameters, gd::EventsCodeGenerator & codeGenerator, gd::EventsCodeGenerationContext & context)
             {
                 std::string var = codeGenerator.ConvertToString(parameters[1].GetPlainString());
-                return "runtimeScene.getGame().getVariables().get(\""+var+"\").getAsNumber()";
+                std::string varGetter = "runtimeScene.getGame().getVariables().get(\""+var+"\")";
+                //Optimize the lookup when the variable position is known:
+                {
+                    unsigned int index = codeGenerator.GetProject().GetVariables().GetVariablePosition(parameters[1].GetPlainString());
+                    if ( index < codeGenerator.GetProject().GetVariables().GetVariableCount() )
+                        varGetter = "runtimeScene.getGame().getVariables().getFromIndex("+ToString(index)+")";
+                }
+                return varGetter+".getAsNumber()";
             };
         };
         gd::ExpressionMetadata::ExtraInformation::CustomCodeGenerator * codeGenerator = new CodeGenerator;
@@ -339,7 +414,14 @@ VariablesExtension::VariablesExtension()
             virtual std::string GenerateCode(const std::vector<gd::Expression> & parameters, gd::EventsCodeGenerator & codeGenerator, gd::EventsCodeGenerationContext & context)
             {
                 std::string var = codeGenerator.ConvertToString(parameters[1].GetPlainString());
-                return "runtimeScene.getGame().getVariables().get(\""+var+"\").getAsString()";
+                std::string varGetter = "runtimeScene.getGame().getVariables().get(\""+var+"\")";
+                //Optimize the lookup when the variable position is known:
+                {
+                    unsigned int index = codeGenerator.GetProject().GetVariables().GetVariablePosition(parameters[1].GetPlainString());
+                    if ( index < codeGenerator.GetProject().GetVariables().GetVariableCount() )
+                        varGetter = "runtimeScene.getGame().getVariables().getFromIndex("+ToString(index)+")";
+                }
+                return varGetter+".getAsString()";
             };
         };
         gd::StrExpressionMetadata::ExtraInformation::CustomCodeGenerator * codeGenerator = new CodeGenerator; //Need for code to compile

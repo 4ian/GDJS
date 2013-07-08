@@ -12,11 +12,10 @@
  */
 gdjs.RuntimeGame = function(data)
 {
-    this._variables = new gdjs.VariablesContainer();
+    this._variables = new gdjs.VariablesContainer(data.Variables);
     this._data = data;
     this._imageManager = new gdjs.ImageManager(this);
     this._minFPS = data ? parseInt(data.Info.FPSmin.attr.value) : 15;
-    this._variables.initFrom(data.Variables);
 
     //Inputs :
     this._pressedKeys = new Hashtable();
