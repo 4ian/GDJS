@@ -107,8 +107,13 @@ gdjs.evtTools.camera.centerCameraWithinLimits = function(runtimeScene, object, l
         yOffset = objectAverageForce.getY()*runtimeScene.getElapsedTime()/1000;
     }
 
-    var newX = Math.min(Math.max(object.getX()+object.getCenterX()+xOffset-layer.getCameraWidth(cameraId)/2, left), right-layer.getCameraWidth(cameraId));
-    var newY = Math.min(Math.max(object.getY()+object.getCenterY()+yOffset-layer.getCameraHeight(cameraId)/2, top), bottom-layer.getCameraHeight(cameraId));
+    var newX = object.getX()+object.getCenterX()+xOffset-layer.getCameraWidth(cameraId)/2;
+    if ( newX < left ) newX = left;
+    if ( newX > right-layer.getCameraWidth(cameraId) ) newX = right-layer.getCameraWidth(cameraId);
+    
+    var newY = object.getY()+object.getCenterY()+yOffset-layer.getCameraHeight(cameraId)/2;
+    if ( newY < top ) newY = top;
+    if ( newY > bottom-layer.getCameraHeight(cameraId) ) newY = bottom-layer.getCameraHeight(cameraId);
 
     console.log(newX);
 

@@ -52,12 +52,13 @@
         var canvasWidth = parseInt(gdjs.projectData.Project.Info.WindowW.attr.value); 
         var canvasHeight = parseInt(gdjs.projectData.Project.Info.WindowH.attr.value); 
         var renderer = PIXI.autoDetectRenderer(canvasWidth, canvasHeight);
-        var canvasArea = document.getElementById("canvasArea")
+        var canvasArea = document.getElementById("canvasArea");
         //Manage canvas position. TODO: Factor this into a function and manage window resizing.
         canvasArea.style["padding-top"] = (gdjs.getDocHeight()-canvasHeight)/2+"px";
         canvasArea.style.width = canvasWidth+"px";
         canvasArea.style.height = canvasHeight+"px";
         canvasArea.appendChild(renderer.view); // add the renderer view element to the DOM
+        canvasArea.tabindex="1";
         
         //Bind keyboards and mouse events
         document.onkeydown = function(e) {

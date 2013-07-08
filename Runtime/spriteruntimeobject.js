@@ -216,7 +216,7 @@ gdjs.SpriteRuntimeObject.prototype.updateTime = function(elapsedTime) {
     if ( this._animationPaused ) return;
 
     var oldFrame = this._currentFrame;
-    this._frameElapsedTime = this._frameElapsedTime+elapsedTime;
+    this._frameElapsedTime += elapsedTime;
 
     if ( this._currentAnimation >= this._animations.length ||
          this._currentDirection >= this._animations[this._currentAnimation].directions.length) {
@@ -228,7 +228,8 @@ gdjs.SpriteRuntimeObject.prototype.updateTime = function(elapsedTime) {
     if ( this._frameElapsedTime > direction.timeBetweenFrames ) {
         var count = Math.floor(this._frameElapsedTime / direction.timeBetweenFrames);
         this._currentFrame += count;
-        this._frameElapsedTime = Math.max(this._frameElapsedTime-count*direction.timeBetweenFrames, 0);
+        this._frameElapsedTime = this._frameElapsedTime-count*direction.timeBetweenFrames;
+        if ( this._frameElapsedTime < 0 ) this._frameElapsedTime = 0;
     }
 
     if ( this._currentFrame >= direction.frames.length ) {
