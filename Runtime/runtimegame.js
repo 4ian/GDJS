@@ -226,3 +226,173 @@ gdjs.RuntimeGame.prototype.getMinimalFramerate = function() {
 	return this._minFPS;
 }
 
+/** 
+ * Add the standard events handler.
+ * @method bindStandardEvents
+ */
+gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document, renderer, canvasArea) {
+
+    var isMSIE = /*@cc_on!@*/0;
+        
+    var game = this;
+    document.onkeydown = function(e) {
+        game.onKeyPressed(e.keyCode);
+    };
+    document.onkeyup = function(e) {
+        game.onKeyReleased(e.keyCode);
+    };
+    renderer.view.onmousemove = function(e){
+        game.onMouseMove(e.pageX-canvasArea.getBoundingClientRect().left, 
+                         e.pageY-canvasArea.getBoundingClientRect().top);
+    }; 
+    renderer.view.onmousedown = function(e){
+        game.onMouseButtonPressed(e.button === 2 ? 1 : 0);
+        return false;
+    };
+    renderer.view.onmouseup = function(e){
+        game.onMouseButtonReleased(e.button === 2 ? 1 : 0);
+        return false;
+    };
+    renderer.view.onmouseout = function(e){
+        game.onMouseButtonReleased(0);
+        game.onMouseButtonReleased(1);
+        game.onMouseWheel(0);
+        return false;
+    };
+    window.addEventListener('click', function(e) {
+        e.preventDefault();
+        return false;
+    }, false);
+    renderer.view.oncontextmenu = function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        return false;
+    };
+    renderer.view.onmousewheel = function (event){
+        game.onMouseWheel(event.wheelDelta);
+    }
+    //Simulate mouse events when receiving touch events
+    renderer.view.ontouchmove = function(e){
+        game.onMouseMove(e.pageX-canvasArea.getBoundingClientRect().left, 
+                         e.pageY-canvasArea.getBoundingClientRect().top);
+    }; 
+    renderer.view.ontouchstart = function(e){
+        game.onMouseButtonPressed(0);
+        return false;
+    };
+    renderer.view.ontouchend = function(e){
+        game.onMouseButtonReleased(0);
+        return false;
+    };
+    //Hide the adress bar on handheld devices.
+    window.addEventListener('load', function(e) {
+        setTimeout(function() { 
+            if ( document.documentElement.clientWidth < 600 ) {
+                window.scrollTo(0, 1);
+            }
+        }, 1);
+    }, false);
+}
+
+/** 
+ * Create a standard canvas inside canvasArea.
+ * @method createStandardCanvas
+ */
+gdjs.RuntimeGame.prototype.createStandardCanvas = function(canvasArea) {
+
+    var canvasWidth = parseInt(gdjs.projectData.Project.Info.WindowW.attr.value); 
+    var canvasHeight = parseInt(gdjs.projectData.Project.Info.WindowH.attr.value); 
+    var renderer = PIXI.autoDetectRenderer(canvasWidth, canvasHeight);
+    
+    //Manage the canvas position.
+    canvasArea.style["padding-top"] = (gdjs.getDocHeight()-canvasHeight)/2+"px";
+    canvasArea.style.width = canvasWidth+"px";
+    canvasArea.style.height = canvasHeight+"px";
+    canvasArea.appendChild(renderer.view); // add the renderer view element to the DOM
+    canvasArea.tabindex="1"; //Ensure that the canvas has the focus.
+    
+    return renderer;
+}
+
+/** 
+ * Load all assets, displaying progress in renderer.
+ * @method loadAllAssets
+ */
+gdjs.RuntimeGame.prototype.loadAllAssets = function(renderer, callback) {
+
+    //Load all assets
+    var loadingStage = new PIXI.Stage();
+    var text = new PIXI.Text(" ", {font: "bold 60px Arial", fill: "#FFFFFF", align: "center"});
+    loadingStage.addChild(text);
+    text.position.x = renderer.width/2-50;
+    text.position.y = renderer.height/2;
+    var loadingCount = 0;
+    
+    var assets = [];
+    gdjs.iterateOver(gdjs.projectData.Project.Resources.Resources, "Resource", function(res) {
+        if ( res.attr.file ) {
+            assets.push(res.attr.file);
+        }
+        console.log(res.attr.file);
+    });
+    
+    if ( assets.length !== 0 ) {
+        var assetLoader = new PIXI.AssetLoader(assets);
+        assetLoader.onComplete = onAssetsLoaded;
+        assetLoader.onProgress = onAssetsLoadingProgress;
+        assetLoader.load();
+    }
+    else {
+        onAssetsLoaded();
+    }
+    
+    function onAssetsLoaded() {
+        callback();
+    }
+    
+    function onAssetsLoadingProgress() {
+        renderer.render(loadingStage);
+        loadingCount++;
+        text.setText(Math.floor(loadingCount/assets.length*100) + "%");
+    }
+}
+
+/** 
+ * Launch the game, displayed in renderer.<br>
+ * The method returns when the game is closed.
+ * @method startStandardGameLoop
+ */
+gdjs.RuntimeGame.prototype.startStandardGameLoop = function(renderer) {
+
+    if ( !this.hasScene() ) {
+        console.log("The game has no scene.");
+        return;
+    }
+
+    //Create the scene to be played
+    var currentScene = new gdjs.RuntimeScene(this, renderer);
+    var firstSceneName = gdjs.projectData.Project.Scenes.attr.firstScene;
+    var firstsceneData = this.hasScene(firstSceneName) ? this.getSceneData(firstSceneName) : this.getSceneData();
+        
+    currentScene.loadFromScene(firstsceneData);
+    
+    requestAnimFrame(gameLoop);
+    
+    //The standard game loop
+    var game = this;
+    function gameLoop() {
+        if ( !currentScene.renderAndStep() ) {
+            if ( currentScene.gameStopRequested() )
+                postGameScreen();
+            else {
+                var nextSceneName = currentScene.getRequestedScene();
+                currentScene = new gdjs.RuntimeScene(game, renderer);
+                currentScene.loadFromScene(game.getSceneData(nextSceneName));
+                requestAnimFrame( gameLoop );
+            }   
+        }
+        else { 
+            requestAnimFrame( gameLoop );
+        }
+    }
+}
