@@ -272,18 +272,26 @@ gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document, rende
         game.onMouseWheel(event.wheelDelta);
     }
     //Simulate mouse events when receiving touch events
-    renderer.view.ontouchmove = function(e){
-        game.onMouseMove(e.pageX-canvasArea.getBoundingClientRect().left, 
-                         e.pageY-canvasArea.getBoundingClientRect().top);
-    }; 
-    renderer.view.ontouchstart = function(e){
+    renderer.view.addEventListener('touchmove', function(e){
+        e.preventDefault();
+        if ( e.offsetX )
+            game.onMouseMove(e.offsetX, e.offsetY);
+        else if ( e.layerX )
+            game.onMouseMove(e.layerX, e.layerY);
+        else
+            game.onMouseMove(e.pageX-canvasArea.getBoundingClientRect().left, 
+                             e.pageY-canvasArea.getBoundingClientRect().top);
+    }); 
+    renderer.view.addEventListener('touchstart', function(e){
+        e.preventDefault();
         game.onMouseButtonPressed(0);
         return false;
-    };
-    renderer.view.ontouchend = function(e){
+    });
+    rrenderer.view.addEventListener('touchend', function(e){
+        e.preventDefault();
         game.onMouseButtonReleased(0);
         return false;
-    };
+    });
     //Hide the adress bar on handheld devices.
     window.addEventListener('load', function(e) {
         setTimeout(function() { 
