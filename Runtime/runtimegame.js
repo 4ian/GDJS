@@ -287,7 +287,7 @@ gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document, rende
         game.onMouseButtonPressed(0);
         return false;
     });
-    rrenderer.view.addEventListener('touchend', function(e){
+    renderer.view.addEventListener('touchend', function(e){
         e.preventDefault();
         game.onMouseButtonReleased(0);
         return false;
