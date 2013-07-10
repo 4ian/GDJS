@@ -242,8 +242,11 @@ gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document, rende
         game.onKeyReleased(e.keyCode);
     };
     renderer.view.onmousemove = function(e){
-        game.onMouseMove(e.pageX-canvasArea.getBoundingClientRect().left, 
-                         e.pageY-canvasArea.getBoundingClientRect().top);
+        if (e.pageX)
+            game.onMouseMove(e.pageX-canvasArea.offsetLeft, e.pageY-canvasArea.offsetTop);
+        else
+            game.onMouseMove(e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft-canvasArea.offsetLeft, 
+                             e.clientY + document.body.scrollTop + document.documentElement.scrollTop-canvasArea.offsetTop);
     }; 
     renderer.view.onmousedown = function(e){
         game.onMouseButtonPressed(e.button === 2 ? 1 : 0);
@@ -274,21 +277,35 @@ gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document, rende
     //Simulate mouse events when receiving touch events
     renderer.view.addEventListener('touchmove', function(e){
         e.preventDefault();
-        if ( e.offsetX )
-            game.onMouseMove(e.offsetX, e.offsetY);
-        else if ( e.layerX )
-            game.onMouseMove(e.layerX, e.layerY);
-        else
-            game.onMouseMove(e.pageX-canvasArea.getBoundingClientRect().left, 
-                             e.pageY-canvasArea.getBoundingClientRect().top);
+        if ( e.touches && e.touches.length > 0 ) {
+            if (e.touches[0].pageX)
+                game.onMouseMove(e.touches[0].pageX-canvasArea.offsetLeft, e.touches[0].pageY-canvasArea.offsetTop);
+            else
+                game.onMouseMove(e.touches[0].clientX + document.body.scrollLeft + document.documentElement.scrollLeft-canvasArea.offsetLeft, 
+                                 e.touches[0].clientY + document.body.scrollTop + document.documentElement.scrollTop-canvasArea.offsetTop);
+        }
     }); 
     renderer.view.addEventListener('touchstart', function(e){
         e.preventDefault();
+        if ( e.touches && e.touches.length > 0 ) {
+            if (e.touches[0].pageX)
+                game.onMouseMove(e.touches[0].pageX-canvasArea.offsetLeft, e.touches[0].pageY-canvasArea.offsetTop);
+            else
+                game.onMouseMove(e.touches[0].clientX + document.body.scrollLeft + document.documentElement.scrollLeft-canvasArea.offsetLeft, 
+                                 e.touches[0].clientY + document.body.scrollTop + document.documentElement.scrollTop-canvasArea.offsetTop);
+        }
         game.onMouseButtonPressed(0);
         return false;
     });
     renderer.view.addEventListener('touchend', function(e){
         e.preventDefault();
+        if ( e.touches && e.touches.length > 0 ) {
+            if (e.touches[0].pageX)
+                game.onMouseMove(e.touches[0].pageX-canvasArea.offsetLeft, e.touches[0].pageY-canvasArea.offsetTop);
+            else
+                game.onMouseMove(e.touches[0].clientX + document.body.scrollLeft + document.documentElement.scrollLeft-canvasArea.offsetLeft, 
+                                 e.touches[0].clientY + document.body.scrollTop + document.documentElement.scrollTop-canvasArea.offsetTop);
+        }
         game.onMouseButtonReleased(0);
         return false;
     });
@@ -313,7 +330,9 @@ gdjs.RuntimeGame.prototype.createStandardCanvas = function(canvasArea) {
     var renderer = PIXI.autoDetectRenderer(canvasWidth, canvasHeight);
     
     //Manage the canvas position.
-    canvasArea.style["padding-top"] = (gdjs.getDocHeight()-canvasHeight)/2+"px";
+    canvasArea.style["position"] = "absolute";
+    canvasArea.style["top"] = (gdjs.getDocHeight()-canvasHeight)/2+"px";
+    canvasArea.style["left"] = (gdjs.getDocWidth()-canvasWidth)/2+"px";
     canvasArea.style.width = canvasWidth+"px";
     canvasArea.style.height = canvasHeight+"px";
     canvasArea.appendChild(renderer.view); // add the renderer view element to the DOM

@@ -61,6 +61,21 @@ gdjs.getDocHeight = function() {
 }
 
 /**
+ * Get the width of the document ( or of the viewport ) displayed in browser
+ * @method getDocWidth
+ * @static
+ */
+gdjs.getDocWidth = function() {
+    var D = document;
+    return Math.max(
+        D.body.scrollWidth, D.documentElement.scrollWidth,
+        D.body.offsetWidth, D.documentElement.offsetWidth,
+        D.body.clientWidth, D.documentElement.clientWidth
+    );
+}
+
+
+/**
  * Iterate over a property of an object:<br>
  * - If the property does not exist, do nothing.<br>
  * - If it exists and is an array, call func on each member of the array.<br>
