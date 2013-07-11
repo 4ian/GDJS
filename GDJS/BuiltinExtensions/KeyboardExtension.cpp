@@ -25,7 +25,7 @@ KeyboardExtension::KeyboardExtension()
                           _("Keyboard features"),
                           _("Built-in extensions allowing to use keyboard"),
                           "Florian Rival",
-                          "Freeware");
+                          "Open source ( LGPL )");
 
     CloneExtension("Game Develop C++ platform", "BuiltinKeyboard");
 

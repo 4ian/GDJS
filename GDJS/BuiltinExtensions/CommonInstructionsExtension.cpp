@@ -40,7 +40,7 @@ CommonInstructionsExtension::CommonInstructionsExtension()
                           _("Standard events"),
                           _("Built-in extension providing standard events."),
                           "Florian Rival",
-                          "Freeware");
+                          "Open source ( LGPL )");
 
     CloneExtension("Game Develop C++ platform", "BuiltinCommonInstructions");
 

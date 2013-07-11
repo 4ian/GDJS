@@ -22,7 +22,7 @@ AdvancedExtension::AdvancedExtension()
                           _("Advanced control features"),
                           _("Built-in extension providing advanced control features."),
                           "Florian Rival",
-                          "Freeware");
+                          "Open source ( LGPL )");
 
     CloneExtension("Game Develop C++ platform", "BuiltinAdvanced");
 

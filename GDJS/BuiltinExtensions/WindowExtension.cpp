@@ -23,7 +23,7 @@ WindowExtension::WindowExtension()
                           _("Window features"),
                           _("Built-in extension allowing to manipulate the game's window"),
                           "Florian Rival",
-                          "Freeware");
+                          "Open source ( LGPL )");
 
     CloneExtension("Game Develop C++ platform", "BuiltinWindow");
 

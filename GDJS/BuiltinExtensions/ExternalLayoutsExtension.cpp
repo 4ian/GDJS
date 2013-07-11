@@ -23,7 +23,7 @@ ExternalLayoutsExtension::ExternalLayoutsExtension()
                           _("External layouts"),
                           _("Built-in extension providing actions and conditions related to external layouts"),
                           "Florian Rival",
-                          "Freeware");
+                          "Open source ( LGPL )");
 
     CloneExtension("Game Develop C++ platform", "BuiltinExternalLayouts");
 

@@ -21,7 +21,7 @@ SpriteExtension::SpriteExtension()
                           _("Sprite"),
                           _("Extension for adding animated objects in the scene, which can contain animations with directions within each."),
                           "Florian Rival",
-                          "Freeware");
+                          "Open source ( LGPL )");
     CloneExtension("Game Develop C++ platform", "Sprite");
 
     std::map<std::string, gd::InstructionMetadata > & spriteActions = GetAllActionsForObject("Sprite");

@@ -25,7 +25,7 @@ MouseExtension::MouseExtension()
                           _("Mouse features"),
                           _("Built-in extensions allowing to use the mouse"),
                           "Florian Rival",
-                          "Freeware");
+                          "Open source ( LGPL )");
     CloneExtension("Game Develop C++ platform", "BuiltinMouse");
 
     GetAllConditions()["SourisX"].codeExtraInformation

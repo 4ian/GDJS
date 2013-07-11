@@ -7,7 +7,6 @@
 /**
  * Tools related to input ( Keyboard, mouse ), for events generated code.
  *
- * TODO : Handle camera rotation for GetMouseX/GetMouseY.<br>
  * TODO : Map all keys<br>
  * TODO : Implement others buttons for mouse<br>
  *

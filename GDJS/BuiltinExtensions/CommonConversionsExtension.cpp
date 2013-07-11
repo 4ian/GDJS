@@ -23,7 +23,7 @@ CommonConversionsExtension::CommonConversionsExtension()
                           _("Standard Conversions"),
                           _("Built-in extension providing standard conversions expressions."),
                           "Florian Rival",
-                          "Freeware");
+                          "Open source ( LGPL )");
 
     CloneExtension("Game Develop C++ platform", "BuiltinCommonConversions");
 

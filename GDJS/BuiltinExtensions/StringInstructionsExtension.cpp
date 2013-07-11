@@ -23,7 +23,7 @@ StringInstructionsExtension::StringInstructionsExtension()
                           _("Text manipulation"),
                           _("Built-in extension providing expressions related to strings."),
                           "Florian Rival",
-                          "Freeware");
+                          "Open source ( LGPL )");
 
 
     CloneExtension("Game Develop C++ platform", "BuiltinStringInstructions");

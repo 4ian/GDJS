@@ -25,7 +25,7 @@ BaseObjectExtension::BaseObjectExtension()
                           _("Base object"),
                           _("Base object"),
                           "Florian Rival",
-                          "Freeware");
+                          "Open source ( LGPL )");
     CloneExtension("Game Develop C++ platform", "BuiltinObject");
 
     std::map<std::string, gd::InstructionMetadata > & objectActions = GetAllActionsForObject("");

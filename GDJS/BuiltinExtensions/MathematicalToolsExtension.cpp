@@ -25,7 +25,7 @@ MathematicalToolsExtension::MathematicalToolsExtension()
                           _("Mathematical tools"),
                           _("Built-in extension providing mathematical tools"),
                           "Florian Rival",
-                          "Freeware");
+                          "Open source ( LGPL )");
     CloneExtension("Game Develop C++ platform", "BuiltinMathematicalTools");
 
     GetAllExpressions()["cos"]

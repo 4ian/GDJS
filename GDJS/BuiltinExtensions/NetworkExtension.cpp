@@ -23,7 +23,7 @@ NetworkExtension::NetworkExtension()
                           _("Basic internet features"),
                           _("Built-in extension providing network features."),
                           "Florian Rival",
-                          "Freeware");
+                          "Open source ( LGPL )");
 
     CloneExtension("Game Develop C++ platform", "BuiltinNetwork");
 

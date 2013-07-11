@@ -11,7 +11,7 @@ namespace gdjs
 {
 
 /**
- * \brief Built-in extension providing features related to external layouts.
+ * \brief Built-in extension providing functions for storing data.
  *
  * \ingroup BuiltinExtensions
  */

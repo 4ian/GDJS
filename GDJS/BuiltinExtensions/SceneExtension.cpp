@@ -25,7 +25,7 @@ SceneExtension::SceneExtension()
                           _("Scene management features"),
                           _("Built-in extension allowing to manipulate scenes"),
                           "Florian Rival",
-                          "Freeware");
+                          "Open source ( LGPL )");
     CloneExtension("Game Develop C++ platform", "BuiltinScene");
 
     GetAllExpressions()["Random"].codeExtraInformation

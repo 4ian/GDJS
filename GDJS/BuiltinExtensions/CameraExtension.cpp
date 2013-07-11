@@ -21,7 +21,7 @@ CameraExtension::CameraExtension()
                           _("Cameras and layers features"),
                           _("Builtin camera extension"),
                           "Florian Rival",
-                          "Freeware");
+                          "Open source ( LGPL )");
 
     CloneExtension("Game Develop C++ platform", "BuiltinCamera");
 

@@ -29,7 +29,7 @@ VariablesExtension::VariablesExtension()
                           _("Variable features"),
                           _("Built-in extension allowing to manipulate variables"),
                           "Florian Rival",
-                          "Freeware");
+                          "Open source ( LGPL )");
 
     CloneExtension("Game Develop C++ platform", "BuiltinVariables");
 

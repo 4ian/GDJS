@@ -23,7 +23,7 @@ AudioExtension::AudioExtension()
                           _("Audio"),
                           _("Builtin audio extension"),
                           "Florian Rival",
-                          "Freeware");
+                          "Open source ( LGPL )");
 
     CloneExtension("Game Develop C++ platform", "BuiltinAudio");
 

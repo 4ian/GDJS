@@ -25,7 +25,7 @@ TimeExtension::TimeExtension()
                           _("Time"),
                           _("Built-in extension providing actions and conditions about the time."),
                           "Florian Rival",
-                          "Freeware");
+                          "Open source ( LGPL )");
     CloneExtension("Game Develop C++ platform", "BuiltinTime");
 
     GetAllConditions()["Timer"].codeExtraInformation

@@ -25,7 +25,7 @@ JoystickExtension::JoystickExtension()
                           _("Joysticks features"),
                           _("Built-in extension allowing to use joysticks"),
                           "Florian Rival",
-                          "Freeware");
+                          "Open source ( LGPL )");
 
     CloneExtension("Game Develop C++ platform", "BuiltinJoystick");
 
