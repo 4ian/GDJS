@@ -25,7 +25,7 @@ gdjs.evtTools.storage = gdjs.evtTools.storage || {loadedFiles:new Hashtable()};
  * @private
  */
 gdjs.evtTools.storage.loadJSONFileFromStorage = function(filename) {
-	if (  gdjs.evtTools.storage.loadedFiles.containsKey(filename) )
+	if ( gdjs.evtTools.storage.loadedFiles.containsKey(filename) )
 		return; //Already loaded.
 
 	var rawStr = localStorage.getItem("GDJS_"+filename);
@@ -46,7 +46,7 @@ gdjs.evtTools.storage.loadJSONFileFromStorage = function(filename) {
  * @private
  */
 gdjs.evtTools.storage.unloadJSONFile = function(filename) {
-	if ( ! gdjs.evtTools.storage.loadedFiles.containsKey(filename) )
+	if ( !gdjs.evtTools.storage.loadedFiles.containsKey(filename) )
 		return; //Not loaded.
 
 	var JSONobject = gdjs.evtTools.storage.loadedFiles.get(filename);
@@ -62,21 +62,24 @@ gdjs.evtTools.storage.unloadJSONFile = function(filename) {
 
 gdjs.evtTools.storage.clearJSONFile = function(filename) {
 	var notPermanentlyLoaded = false;
-	if ( ! gdjs.evtTools.storage.loadedFiles.containsKey(filename) ) {
+	if ( !gdjs.evtTools.storage.loadedFiles.containsKey(filename) ) {
 		notPermanentlyLoaded = true;
 		gdjs.evtTools.storage.loadJSONFileFromStorage(filename);
 	}
     
     var JSONobject = gdjs.evtTools.storage.loadedFiles.get(filename);
-    JSONobject = {};
+    for ( var p in JSONobject ) {
+        if ( JSONobject.hasOwnProperty(p) )
+            delete JSONobject[p];
+    }
     
-	if ( !notPermanentlyLoaded ) gdjs.evtTools.storage.unloadJSONFile(filename);
+	if ( notPermanentlyLoaded ) gdjs.evtTools.storage.unloadJSONFile(filename);
 	return true;
 }
 
 gdjs.evtTools.storage.elementExistsInJSONFile = function(filename, element) {
 	var notPermanentlyLoaded = false;
-	if ( ! gdjs.evtTools.storage.loadedFiles.containsKey(filename) ) {
+	if ( !gdjs.evtTools.storage.loadedFiles.containsKey(filename) ) {
 		notPermanentlyLoaded = true;
 		gdjs.evtTools.storage.loadJSONFileFromStorage(filename);
 	}
@@ -93,13 +96,13 @@ gdjs.evtTools.storage.elementExistsInJSONFile = function(filename, element) {
 		currentElem = currentElem[elemArray[i]];
 	}
 
-	if ( !notPermanentlyLoaded ) gdjs.evtTools.storage.unloadJSONFile(filename);
+	if ( notPermanentlyLoaded ) gdjs.evtTools.storage.unloadJSONFile(filename);
 	return true;
 }
 
 gdjs.evtTools.storage.deleteElementFromJSONFile = function(filename, element) {
 	var notPermanentlyLoaded = false;
-	if ( ! gdjs.evtTools.storage.loadedFiles.containsKey(filename) ) {
+	if ( !gdjs.evtTools.storage.loadedFiles.containsKey(filename) ) {
 		notPermanentlyLoaded = true;
 		gdjs.evtTools.storage.loadJSONFileFromStorage(filename);
 	}
@@ -119,13 +122,13 @@ gdjs.evtTools.storage.deleteElementFromJSONFile = function(filename, element) {
 			currentElem = currentElem[elemArray[i]];
 	}
 
-	if ( !notPermanentlyLoaded ) gdjs.evtTools.storage.unloadJSONFile(filename);
+	if ( notPermanentlyLoaded ) gdjs.evtTools.storage.unloadJSONFile(filename);
 	return true;
 }
 
 gdjs.evtTools.storage.writeNumberInJSONFile = function(filename, element, val) {
 	var notPermanentlyLoaded = false;
-	if ( ! gdjs.evtTools.storage.loadedFiles.containsKey(filename) ) {
+	if ( !gdjs.evtTools.storage.loadedFiles.containsKey(filename) ) {
 		notPermanentlyLoaded = true;
 		gdjs.evtTools.storage.loadJSONFileFromStorage(filename);
 	}
@@ -142,13 +145,13 @@ gdjs.evtTools.storage.writeNumberInJSONFile = function(filename, element, val) {
 			currentElem = currentElem[elemArray[i]];
 	}
 
-	if ( !notPermanentlyLoaded ) gdjs.evtTools.storage.unloadJSONFile(filename);
+	if ( notPermanentlyLoaded ) gdjs.evtTools.storage.unloadJSONFile(filename);
 	return true;
 }
 
 gdjs.evtTools.storage.writeStringInJSONFile = function(filename, element, str) {
 	var notPermanentlyLoaded = false;
-	if ( ! gdjs.evtTools.storage.loadedFiles.containsKey(filename) ) {
+	if ( !gdjs.evtTools.storage.loadedFiles.containsKey(filename) ) {
 		notPermanentlyLoaded = true;
 		gdjs.evtTools.storage.loadJSONFileFromStorage(filename);
 	}
@@ -165,13 +168,13 @@ gdjs.evtTools.storage.writeStringInJSONFile = function(filename, element, str) {
 			currentElem = currentElem[elemArray[i]];
 	}
 
-	if ( !notPermanentlyLoaded ) gdjs.evtTools.storage.unloadJSONFile(filename);
+	if ( notPermanentlyLoaded ) gdjs.evtTools.storage.unloadJSONFile(filename);
 	return true;
 }
 
 gdjs.evtTools.storage.readNumberFromJSONFile = function(filename, element, runtimeScene, variable) {
 	var notPermanentlyLoaded = false;
-	if ( ! gdjs.evtTools.storage.loadedFiles.containsKey(filename) ) {
+	if ( !gdjs.evtTools.storage.loadedFiles.containsKey(filename) ) {
 		notPermanentlyLoaded = true;
 		gdjs.evtTools.storage.loadJSONFileFromStorage(filename);
 	}
@@ -192,13 +195,13 @@ gdjs.evtTools.storage.readNumberFromJSONFile = function(filename, element, runti
 			currentElem = currentElem[elemArray[i]];
 	}
 
-	if ( !notPermanentlyLoaded ) gdjs.evtTools.storage.unloadJSONFile(filename);
+	if ( notPermanentlyLoaded ) gdjs.evtTools.storage.unloadJSONFile(filename);
 	return true;
 }
 
 gdjs.evtTools.storage.readStringFromJSONFile = function(filename, element, runtimeScene, variable) {
 	var notPermanentlyLoaded = false;
-	if ( ! gdjs.evtTools.storage.loadedFiles.containsKey(filename) ) {
+	if ( !gdjs.evtTools.storage.loadedFiles.containsKey(filename) ) {
 		notPermanentlyLoaded = true;
 		gdjs.evtTools.storage.loadJSONFileFromStorage(filename);
 	}
@@ -219,6 +222,6 @@ gdjs.evtTools.storage.readStringFromJSONFile = function(filename, element, runti
 			currentElem = currentElem[elemArray[i]];
 	}
 
-	if ( !notPermanentlyLoaded ) gdjs.evtTools.storage.unloadJSONFile(filename);
+	if ( notPermanentlyLoaded ) gdjs.evtTools.storage.unloadJSONFile(filename);
 	return true;
 }

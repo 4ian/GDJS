@@ -95,6 +95,10 @@ BaseObjectExtension::BaseObjectExtension()
         .SetFunctionName("separateObjectsWithoutForces").SetIncludeFile("runtimeobject.js");
     objectActions["Rebondir"].codeExtraInformation //Deprecated
         .SetFunctionName("separateObjectsWithForces").SetIncludeFile("runtimeobject.js");
+    objectConditions["AutomatismActivated"].codeExtraInformation
+        .SetFunctionName("automatismActivated").SetIncludeFile("runtimeobject.js");
+    objectActions["ActivateAutomatism"].codeExtraInformation
+        .SetFunctionName("activateAutomatism").SetIncludeFile("runtimeobject.js");
 
     objectExpressions["X"].codeExtraInformation.SetFunctionName("getX");
     objectExpressions["Y"].codeExtraInformation.SetFunctionName("getY");
@@ -240,32 +244,6 @@ BaseObjectExtension::BaseObjectExtension()
             .AddParameter("expression", _("Distance ( in pixels )"))
             .AddParameter("expression", _("Damping ( Default : 0 )"))
             .codeExtraInformation.SetFunctionName("AddForceToMoveAround");
-
-        obj.AddCondition("AutomatismActivated",
-                       _("Automatism activated"),
-                       _("Return true if the automatism is activated for the object."),
-                       _("Automatism _PARAM1_ of _PARAM0_ is activated"),
-                       _("Automatisms"),
-                       "res/automatism24.png",
-                       "res/automatism16.png")
-
-            .AddParameter("object", _("Object"))
-            .AddParameter("automatism", _("Automatism"))
-            .codeExtraInformation.SetFunctionName("AutomatismActivated");
-
-        obj.AddAction("ActivateAutomatism",
-                       _("De/activate an automatism"),
-                       _("De/activate the automatism for the object."),
-                       _("Activate automatism _PARAM1_ of _PARAM0_: _PARAM2_"),
-                       _("Automatisms"),
-                       "res/automatism24.png",
-                       "res/automatism16.png")
-
-            .AddParameter("object", _("Object"))
-            .AddParameter("automatism", _("Automatism"))
-            .AddParameter("yesorno", _("Activate \?"))
-            .codeExtraInformation.SetFunctionName("ActivateAutomatism");
-
 
         obj.AddAction("AddForceTourne",
                        _("Add a force so as to move around an object"),

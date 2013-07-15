@@ -674,6 +674,34 @@ gdjs.RuntimeObject.prototype.getAutomatism = function(name) {
     return this._automatismsTable.get(name);
 }
 
+/** 
+ * De/activate an automatism of the object.<br>
+ *
+ * @method activateAutomatism
+ * @param name {String} The automatism name.
+ * @param enable {Boolean} true to activate the automatism
+ */
+gdjs.RuntimeObject.prototype.activateAutomatism = function(name, enable) {
+    if ( this._automatismsTable.containsKey(name) ) {
+        this._automatismsTable.get(name).activate(enable);
+    }
+}
+
+/** 
+ * De/activate an automatism of the object.<br>
+ *
+ * @method activateAutomatism
+ * @param name {String} The automatism name.
+ * @return true if the automatism is activated.
+ */
+gdjs.RuntimeObject.prototype.automatismActivated = function(name, enable) {
+    if ( this._automatismsTable.containsKey(name) ) {
+        this._automatismsTable.get(name).activated();
+    }
+    
+    return false;
+}
+
 //Other :
 
 /**
