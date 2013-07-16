@@ -19,6 +19,7 @@ gdjs.RuntimeScene = function(runtimeGame, pixiRenderer)
     this._objectsCtor = new Hashtable(); 
     this._layers = new Hashtable();
     this._timers = new Hashtable();
+	this._initialAutomatismSharedData = new Hashtable();
     this._pixiRenderer = pixiRenderer;
     this._pixiStage = new PIXI.Stage();
     this._latestFrameDate = new Date;
@@ -30,6 +31,7 @@ gdjs.RuntimeScene = function(runtimeGame, pixiRenderer)
     this._timeScale = 1;
     this._timeFromStart = 0;
     this._firstFrame = true;
+	this._name = "";
     this._soundManager = new gdjs.SoundManager();
     this._gameStopRequested = false;
     this._requestedScene = "";
@@ -54,6 +56,7 @@ gdjs.RuntimeScene.prototype.loadFromScene = function(sceneData) {
 
 	//Setup main properties
 	document.title = sceneData.attr.titre;
+	this._name = sceneData.attr.nom;
 	this._firstFrame = true;
 	this.setBackgroundColor(parseInt(sceneData.attr.r), 
 			parseInt(sceneData.attr.v),
@@ -70,6 +73,12 @@ gdjs.RuntimeScene.prototype.loadFromScene = function(sceneData) {
 
     //Load variables
     this._variables = new gdjs.VariablesContainer(sceneData.Variables);
+
+	//Cache the initial shared data of the automatisms
+    gdjs.iterateOver(sceneData.AutomatismsSharedDatas, "AutomatismSharedDatas", function(data) {
+		console.log("Initializing shared data for "+data.attr.Name);
+		that._initialAutomatismSharedData.put(data.attr.Name, data);
+	});
 
     //Load objects: Global objects first...
 	gdjs.iterateOver(this.getGame().getInitialObjectsData(), "Objet", function(objData){
@@ -245,6 +254,14 @@ gdjs.RuntimeScene.prototype.setBackgroundColor = function(r,g,b) {
 }
 
 /**
+ * Get the name of the scene.
+ * @method getName
+ */
+gdjs.RuntimeScene.prototype.getName = function() {
+	return this._name;
+}
+
+/**
  * Update the objects positions according to their forces
  * @method updateObjectsForces
  */
@@ -415,11 +432,16 @@ gdjs.RuntimeScene.prototype.getVariables = function() {
 }
 
 /**
- * Get the data representing all the initial objects of the scene.
- * @method getInitialObjectsData
+ * Get the data representing the initial shared data of the scene for the specified automatism.
+ * @method getInitialSharedDataForAutomatism
+ * @param name {String} The name of the automatism
  */
-gdjs.RuntimeScene.prototype.getInitialObjectsData = function() {
-	return this._initialObjectsData;
+gdjs.RuntimeScene.prototype.getInitialSharedDataForAutomatism = function(name) {
+	if ( this._initialAutomatismSharedData.containsKey(name) ) {
+		return this._initialAutomatismSharedData.get(name);
+	}
+
+	return null;
 }
 
 gdjs.RuntimeScene.prototype.getLayer = function(name) {

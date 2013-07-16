@@ -9,14 +9,17 @@
  *
  * @class RuntimeAutomatism
  * @constructor 
+ * @param runtimeScene The scene owning the object of the automatism
+ * @param automatismData The data to setup the automatism
+ * @param owner The object owning the automatism
  */
-gdjs.RuntimeAutomatism = function(runtimeScene, automatismData)
+gdjs.RuntimeAutomatism = function(runtimeScene, automatismData, owner)
 { 
     this.name = automatismData.attr.Name || "";
     this.type = automatismData.attr.Type || "";
     this._nameId = gdjs.RuntimeObject.getNameIdentifier(this.name);
     this._activated = true;
-    this.owner = null;
+    this.owner = owner;
 }
 /**
  * Get the name of the automatism.
@@ -34,15 +37,6 @@ gdjs.RuntimeAutomatism.prototype.getName = function() {
  */
 gdjs.RuntimeAutomatism.prototype.getNameId = function() {
 	return this._nameId;
-}
-
-/**
- * Set the object owning this automatism
- * @method setOwner
- * @param obj The object using the automatism
- */
-gdjs.RuntimeAutomatism.prototype.setOwner = function(obj) {
-	this.owner = obj;
 }
 
 /**

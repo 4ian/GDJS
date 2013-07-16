@@ -75,13 +75,12 @@ gdjs.RuntimeObject = function(runtimeScene, objectData)
         //Try to reuse already existing automatisms.
         if ( i < that._automatisms.length ) {
             if ( that._automatisms[i] instanceof ctor )
-                ctor.call(that._automatisms[i], runtimeScene, autoData);
+                ctor.call(that._automatisms[i], runtimeScene, autoData, that);
             else
-                that._automatisms[i] = new ctor(runtimeScene, autoData);
+                that._automatisms[i] = new ctor(runtimeScene, autoData, that);
         }
-        else that._automatisms.push(new ctor(runtimeScene, autoData));
+        else that._automatisms.push(new ctor(runtimeScene, autoData, that));
         
-        that._automatisms[i].setOwner(that);
         that._automatismsTable.put(autoData.attr.Name, that._automatisms[i]);
         
         i++;
