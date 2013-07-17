@@ -688,6 +688,16 @@ gdjs.RuntimeObject.prototype.getAutomatism = function(name) {
 }
 
 /** 
+ * Check if an automatism is used by the object.
+ *
+ * @method hasAutomatism
+ * @param name {String} The automatism name.
+ */
+gdjs.RuntimeObject.prototype.hasAutomatism = function(name) {
+    return this._automatismsTable.containsKey(name);
+}
+
+/** 
  * De/activate an automatism of the object.<br>
  *
  * @method activateAutomatism
