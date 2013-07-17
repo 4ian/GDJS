@@ -240,12 +240,8 @@ gdjs.SpriteRuntimeObject.prototype.updateTime = function(elapsedTime) {
     if ( this._spriteDirty ) this._updatePIXISprite();
 }
 
-gdjs.SpriteRuntimeObject.prototype.deleteFromScene = function(runtimeScene) {
-    runtimeScene.markObjectForDeletion(this);
-    if ( this._spriteInContainer ) {
-        runtimeScene.getLayer(this.layer).removePIXIContainerChild(this._sprite);
-        this._spriteInContainer = false;
-    }
+gdjs.SpriteRuntimeObject.prototype.onDeletedFromScene = function(runtimeScene) {
+    runtimeScene.getLayer(this.layer).removePIXIContainerChild(this._sprite);
 }
 
 //Animations :

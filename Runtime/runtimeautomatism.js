@@ -119,5 +119,14 @@ gdjs.RuntimeAutomatism.prototype.doStepPostEvents = function(runtimeScene) {
 
 }
 
+/**
+ * Automatisms writers: This method is called when the owner of the automatism
+ * is removed from its scene.
+ * @method ownerRemovedFromScene
+ */
+gdjs.RuntimeAutomatism.prototype.ownerRemovedFromScene = function() {
+
+}
+
 //Notify gdjs this.the runtimeAutomatism exists.
 gdjs.RuntimeAutomatism.thisIsARuntimeAutomatismConstructor = "";

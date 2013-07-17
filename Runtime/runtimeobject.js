@@ -6,7 +6,7 @@
 
 /**
  * RuntimeObject represents an object being used on a RuntimeScene.<br>
- * The constructor is can be called on an already existing RuntimeObject:
+ * The constructor can be called on an already existing RuntimeObject:
  * In this case, the constructor will try to reuse as much already existing members
  * as possible ( Recycling ).<br>
  * However, you should not be calling the constructor on an already existing object
@@ -28,6 +28,7 @@ gdjs.RuntimeObject = function(runtimeScene, objectData)
     this.zOrder = 0;
     this.hidden = false;
     this.layer = "";
+    this.livingOnScene = true;
     this.id = runtimeScene.createNewUniqueId();
     
     //Hit boxes:
@@ -114,12 +115,25 @@ gdjs.RuntimeObject.prototype.extraInitializationFromInitialInstance = function(i
 }
 
 /**
- * Remove an object from a scene:
- * Just clear the object name and let the scene destroy it after.
+ * Remove an object from a scene.<br>
+ * Extensions writers, do not change this method. Instead, redefine the onDeletedFromScene method.
  * @method deleteFromScene
+ * @param runtimeScene The RuntimeScene owning the object.
  */
 gdjs.RuntimeObject.prototype.deleteFromScene = function(runtimeScene) {
-    runtimeScene.markObjectForDeletion(this);
+    if ( this.livingOnScene ) {
+        runtimeScene.markObjectForDeletion(this);
+        this.livingOnScene = false;
+    }
+}
+
+/**
+ * Called when the object is removed from its scene.
+ *
+ * @method onDeletedFromScene
+ * @param runtimeScene The RuntimeScene owning the object.
+ */
+gdjs.RuntimeObject.prototype.onDeletedFromScene = function(runtimeScene) {
 }
 
 //Common properties:

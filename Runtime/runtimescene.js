@@ -229,8 +229,9 @@ gdjs.RuntimeScene.prototype._updateObjectsPreEvents = function() {
  * @private
  */
 gdjs.RuntimeScene.prototype._updateObjects = function() {
-	var allObjectsLists = this._instances.entries();
+	this._doObjectsDeletion(); 
 
+	var allObjectsLists = this._instances.entries();
 	this.updateObjectsForces(allObjectsLists);
 
 	this._postPoneObjectsDeletion = true;
@@ -242,7 +243,7 @@ gdjs.RuntimeScene.prototype._updateObjects = function() {
 		}
 	}
 	this._postPoneObjectsDeletion = false;
-	this._doObjectsDeletion();
+	this._doObjectsDeletion(); //Some automatisms may have request objects to be deleted.
 }
 
 /**
@@ -361,6 +362,12 @@ gdjs.RuntimeScene.prototype._removeObject = function(obj) {
 	var allInstances = this._instances.get(obj.getName());
 	for(var i = 0, len = allInstances.length;i<len;++i) {
 		if (allInstances[i].id == objId) {
+
+			allInstances[i].onDeletedFromScene(this);
+			for(var j = 0, lenj = allInstances[j]._automatisms.length;j<lenj;++j) {
+			    allInstances[i]._automatisms[j].ownerRemovedFromScene();
+			}
+
 			allInstances.remove(i);
 			return;
 		}
