@@ -766,7 +766,7 @@ gdjs.RuntimeObject.prototype.separateFromObjects = function(objectsLists) {
 }
 
 gdjs.RuntimeObject.prototype.getDistanceFrom = function(otherObject) {
-    return Math.sqrt(this.getSqDistanceFrom(useless, otherObject));
+    return Math.sqrt(this.getSqDistanceFrom(otherObject));
 }
 
 gdjs.RuntimeObject.prototype.getSqDistanceFrom = function(otherObject) {

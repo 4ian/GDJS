@@ -92,8 +92,8 @@ gdjs.evtTools.camera.centerCamera = function(runtimeScene, object, anticipateMov
         yOffset = objectAverageForce.getY()*runtimeScene.getElapsedTime()/1000;
     }
 
-    layer.setCameraX(object.getX()+object.getCenterX()+xOffset-layer.getCameraWidth(cameraId)/2, cameraId);
-    layer.setCameraY(object.getY()+object.getCenterY()+yOffset-layer.getCameraHeight(cameraId)/2, cameraId);
+    layer.setCameraX(object.getDrawableX()+object.getCenterX(), cameraId);
+    layer.setCameraY(object.getDrawableY()+object.getCenterY(), cameraId);
 }
 
 gdjs.evtTools.camera.centerCameraWithinLimits = function(runtimeScene, object, left, top, right, bottom, anticipateMove, layer, cameraId) {
@@ -107,15 +107,13 @@ gdjs.evtTools.camera.centerCameraWithinLimits = function(runtimeScene, object, l
         yOffset = objectAverageForce.getY()*runtimeScene.getElapsedTime()/1000;
     }
 
-    var newX = object.getX()+object.getCenterX()+xOffset-layer.getCameraWidth(cameraId)/2;
-    if ( newX < left ) newX = left;
-    if ( newX > right-layer.getCameraWidth(cameraId) ) newX = right-layer.getCameraWidth(cameraId);
+    var newX = object.getDrawableX()+object.getCenterX()+xOffset;
+    if ( newX < left +layer.getCameraWidth(cameraId)/2 ) newX = left+layer.getCameraWidth(cameraId)/2;
+    if ( newX > right-layer.getCameraWidth(cameraId)/2 ) newX = right-layer.getCameraWidth(cameraId)/2;
     
-    var newY = object.getY()+object.getCenterY()+yOffset-layer.getCameraHeight(cameraId)/2;
-    if ( newY < top ) newY = top;
-    if ( newY > bottom-layer.getCameraHeight(cameraId) ) newY = bottom-layer.getCameraHeight(cameraId);
-
-    console.log(newX);
+    var newY = object.getDrawableY()+object.getCenterY()+yOffset;
+    if ( newY < top   +layer.getCameraHeight(cameraId)/2 ) newY = top+layer.getCameraHeight(cameraId)/2;
+    if ( newY > bottom-layer.getCameraHeight(cameraId)/2 ) newY = bottom-layer.getCameraHeight(cameraId)/2;
 
     layer.setCameraX(newX, cameraId);
     layer.setCameraY(newY, cameraId);

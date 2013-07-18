@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <Project>
-    <GDVersion Major="3" Minor="0" Build="11297" Revision="57008" />
+    <GDVersion Major="3" Minor="0" Build="11298" Revision="57009" />
     <Info winExecutableFilename="" winExecutableIconFile="" linuxExecutableFilename="" macExecutableFilename="" useExternalSourceFiles="false">
         <Nom value="Basic breakout" />
         <Auteur value="" />
@@ -28,6 +28,7 @@
         </Extensions>
         <Platforms current="Game Develop JS platform">
             <Platform name="Game Develop JS platform" />
+            <Platform name="Game Develop C++ platform" />
         </Platforms>
         <WindowW value="800" />
         <WindowH value="600" />
@@ -49,9 +50,9 @@
     <Objects />
     <ObjectGroups />
     <Variables />
-    <Scenes>
-        <Scene nom="Nouvelle scène" r="192.000000" v="192.000000" b="192.000000" titre="" oglFOV="90.000000" oglZNear="1.000000" oglZFar="500.000000" standardSortMethod="true" stopSoundsOnStartup="true" disableInputWhenNotFocused="true">
-            <UISettings gridWidth="32.000000" grid="false" snap="true" gridHeight="32.000000" gridR="158.000000" gridG="180.000000" gridB="255.000000" zoomFactor="0.698925" windowMask="false" associatedLayout="" />
+    <Scenes firstScene="">
+        <Scene nom="Nouvelle scène" mangledName="Nouvelle_32sc__4524ne" r="192.000000" v="192.000000" b="192.000000" titre="" oglFOV="90.000000" oglZNear="1.000000" oglZFar="500.000000" standardSortMethod="true" stopSoundsOnStartup="true" disableInputWhenNotFocused="true">
+            <UISettings gridWidth="32.000000" grid="false" snap="true" gridHeight="32.000000" gridR="158.000000" gridG="180.000000" gridB="255.000000" zoomFactor="0.698925" windowMask="true" associatedLayout="" />
             <GroupesObjets />
             <Objets>
                 <Objet nom="terrain" type="Sprite">
@@ -108,7 +109,7 @@
                 <Objet nom="brick" type="Sprite">
                     <Variables />
                     <Animations>
-                        <Animation typeNormal="true">
+                        <Animation typeNormal="false">
                             <Direction boucle="false" tempsEntre="1.000000">
                                 <Sprites>
                                     <Sprite image="brick.png">
@@ -120,25 +121,74 @@
                                 </Sprites>
                             </Direction>
                             <Direction boucle="false" tempsEntre="1.000000">
-                                <Sprites />
+                                <Sprites>
+                                    <Sprite image="brick.png">
+                                        <Points />
+                                        <PointOrigine nom="origine" X="0.000000" Y="0.000000" />
+                                        <PointCentre nom="centre" X="14.000000" Y="7.000000" automatic="true" />
+                                        <CustomCollisionMask custom="false" />
+                                    </Sprite>
+                                </Sprites>
                             </Direction>
                             <Direction boucle="false" tempsEntre="1.000000">
-                                <Sprites />
+                                <Sprites>
+                                    <Sprite image="brick.png">
+                                        <Points />
+                                        <PointOrigine nom="origine" X="0.000000" Y="0.000000" />
+                                        <PointCentre nom="centre" X="14.000000" Y="7.000000" automatic="true" />
+                                        <CustomCollisionMask custom="false" />
+                                    </Sprite>
+                                </Sprites>
                             </Direction>
                             <Direction boucle="false" tempsEntre="1.000000">
-                                <Sprites />
+                                <Sprites>
+                                    <Sprite image="brick.png">
+                                        <Points />
+                                        <PointOrigine nom="origine" X="0.000000" Y="0.000000" />
+                                        <PointCentre nom="centre" X="14.000000" Y="7.000000" automatic="true" />
+                                        <CustomCollisionMask custom="false" />
+                                    </Sprite>
+                                </Sprites>
                             </Direction>
                             <Direction boucle="false" tempsEntre="1.000000">
-                                <Sprites />
+                                <Sprites>
+                                    <Sprite image="brick.png">
+                                        <Points />
+                                        <PointOrigine nom="origine" X="0.000000" Y="0.000000" />
+                                        <PointCentre nom="centre" X="14.000000" Y="7.000000" automatic="true" />
+                                        <CustomCollisionMask custom="false" />
+                                    </Sprite>
+                                </Sprites>
                             </Direction>
                             <Direction boucle="false" tempsEntre="1.000000">
-                                <Sprites />
+                                <Sprites>
+                                    <Sprite image="brick.png">
+                                        <Points />
+                                        <PointOrigine nom="origine" X="0.000000" Y="0.000000" />
+                                        <PointCentre nom="centre" X="14.000000" Y="7.000000" automatic="true" />
+                                        <CustomCollisionMask custom="false" />
+                                    </Sprite>
+                                </Sprites>
                             </Direction>
                             <Direction boucle="false" tempsEntre="1.000000">
-                                <Sprites />
+                                <Sprites>
+                                    <Sprite image="brick.png">
+                                        <Points />
+                                        <PointOrigine nom="origine" X="0.000000" Y="0.000000" />
+                                        <PointCentre nom="centre" X="14.000000" Y="7.000000" automatic="true" />
+                                        <CustomCollisionMask custom="false" />
+                                    </Sprite>
+                                </Sprites>
                             </Direction>
                             <Direction boucle="false" tempsEntre="1.000000">
-                                <Sprites />
+                                <Sprites>
+                                    <Sprite image="brick.png">
+                                        <Points />
+                                        <PointOrigine nom="origine" X="0.000000" Y="0.000000" />
+                                        <PointCentre nom="centre" X="14.000000" Y="7.000000" automatic="true" />
+                                        <CustomCollisionMask custom="false" />
+                                    </Sprite>
+                                </Sprites>
                             </Direction>
                         </Animation>
                     </Animations>
@@ -160,137 +210,137 @@
             </Variables>
             <AutomatismsSharedDatas />
             <Positions>
-                <Objet nom="brick" x="350.000000" y="191.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="375.753815" y="222.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="321.000000" y="205.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="346.753815" y="236.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="379.000000" y="205.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="404.753815" y="236.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="408.000000" y="219.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="433.753815" y="250.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="437.000000" y="233.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="462.753815" y="264.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="292.000000" y="219.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="317.753815" y="250.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="263.000000" y="233.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="288.753815" y="264.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="263.000000" y="247.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="288.753815" y="278.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="263.000000" y="261.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="288.753815" y="292.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="263.000000" y="275.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="288.753815" y="306.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="437.000000" y="247.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="462.753815" y="278.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="437.000000" y="261.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="462.753815" y="292.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="437.000000" y="275.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="462.753815" y="306.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="292.000000" y="289.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="317.753815" y="320.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="321.000000" y="289.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="346.753815" y="320.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="350.000000" y="289.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="375.753815" y="320.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="379.000000" y="289.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="404.753815" y="320.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="408.000000" y="289.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="433.753815" y="320.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="350.000000" y="219.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="375.753815" y="250.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="350.000000" y="233.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="375.753815" y="264.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="350.000000" y="247.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="375.753815" y="278.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="350.000000" y="261.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="375.753815" y="292.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="350.000000" y="275.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="375.753815" y="306.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="292.000000" y="261.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="317.753815" y="292.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="321.000000" y="247.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="346.753815" y="278.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="379.000000" y="247.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="404.753815" y="278.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="brick" x="408.000000" y="261.000000" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="brick" x="433.753815" y="292.476898" plan="0" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
@@ -320,7 +370,7 @@
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
-                <Objet nom="balle" x="362.500000" y="358.000000" plan="1" layer="Nouveau calque 1" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="balle" x="389.684570" y="287.892303" plan="1" layer="Nouveau calque 1" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
@@ -362,6 +412,25 @@
                             <Parametre value="" />
                             <Parametre value="+" />
                             <Parametre value="1" />
+                            <Parametre value="" />
+                            <Parametre value="" />
+                        </Action>
+                        <Action>
+                            <Type value="ChangeDirection" />
+                            <Parametre value="brick" />
+                            <Parametre value="+" />
+                            <Parametre value="1" />
+                        </Action>
+                    </Actions>
+                </Event>
+                <Event disabled="false" folded="false">
+                    <Type value="BuiltinCommonInstructions::Standard" />
+                    <Conditions />
+                    <Actions>
+                        <Action>
+                            <Type value="ZoomCamera" />
+                            <Parametre value="" />
+                            <Parametre value="0.5" />
                             <Parametre value="" />
                             <Parametre value="" />
                         </Action>
@@ -528,6 +597,26 @@
                             <Parametre value="1500" />
                             <Parametre value="1500" />
                             <Parametre value="" />
+                            <Parametre value='&quot;Nouveau calque 1&quot;' />
+                            <Parametre value="" />
+                        </Action>
+                    </Actions>
+                </Event>
+                <Event disabled="false" folded="false">
+                    <Type value="BuiltinCommonInstructions::Standard" />
+                    <Conditions>
+                        <Condition>
+                            <Type value="KeyPressed" Contraire="false" />
+                            <Parametre value="" />
+                            <Parametre value="Space" />
+                        </Condition>
+                    </Conditions>
+                    <Actions>
+                        <Action>
+                            <Type value="RotateCamera" />
+                            <Parametre value="" />
+                            <Parametre value="+" />
+                            <Parametre value="1" />
                             <Parametre value='&quot;Nouveau calque 1&quot;' />
                             <Parametre value="" />
                         </Action>
