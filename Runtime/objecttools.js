@@ -36,6 +36,8 @@ gdjs.evtTools.object.TwoListsTest = function(func, objectsLists1, objectsLists2,
         }
     }
 
+    //Launch the function for each object of the first list with each object
+    //of the second list.
     for(var i = 0, leni = objects1Values.length;i<leni;++i) {
         var arr1 = objects1Values[i];
 
@@ -61,7 +63,8 @@ gdjs.evtTools.object.TwoListsTest = function(func, objectsLists1, objectsLists2,
                 }
             }
             
-            if ( !atLeastOneObject && inverted ) { //The object is not overlapping any other object.
+            if ( !atLeastOneObject && inverted ) { 
+                //For example, the object is not overlapping any other object.
                 isTrue = true;
                 arr1[k].pick = true;
             }

@@ -805,7 +805,7 @@ gdjs.RuntimeObject.prototype.putAround = function(x,y,distance,angleInDegrees) {
  * @param angleInDegrees {Number} The angle between the object and the target, in degrees.
  */
 gdjs.RuntimeObject.prototype.putAroundObject = function(obj,distance,angleInDegrees) {
-    this.putAround(obj.getY()+obj.getCenterY(), obj.getX()+obj.getCenterX(),
+    this.putAround(obj.getX()+obj.getCenterX(), obj.getY()+obj.getCenterY(),
                    distance, angleInDegrees);
 }
 

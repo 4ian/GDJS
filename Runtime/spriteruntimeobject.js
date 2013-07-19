@@ -167,6 +167,13 @@ gdjs.SpriteRuntimeObject.prototype.extraInitializationFromInitialInstance = func
         this.setWidth(parseFloat(initialInstanceData.attr.width));
         this.setHeight(parseFloat(initialInstanceData.attr.height));
     }
+    if ( initialInstanceData.floatInfos ) {
+        var that = this;
+        gdjs.iterateOver(initialInstanceData.floatInfos, "Info", function(extraData) {
+            if ( extraData.attr.name === "animation" )
+                that.setAnimation(parseFloat(extraData.attr.value));
+        });
+    }
 }
 
 /**
