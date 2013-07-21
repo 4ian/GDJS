@@ -11,7 +11,7 @@
  * @param PixiRenderer The PIXI.Renderer to be used
  */
 gdjs.RuntimeScene = function(runtimeGame, pixiRenderer)
-{ 
+{
     this._eventsFunction = null;
     this._instances = new Hashtable(); //Contains the instances living on the scene
 	this._instancesCache = new Hashtable(); //Used to recycle destroyed instance instead of creating new ones.
@@ -39,7 +39,7 @@ gdjs.RuntimeScene = function(runtimeGame, pixiRenderer)
     this.layers = this._layers;
     this._postPoneObjectsDeletion = false; //If set to true, objects will only be removed when doObjectsDeletion will be called ( And not at markObjectForDeletion call ).
     this._objectsToDestroy = []; //The objects to be destroyed when doObjectsDeletion is called.
-} 
+};
 
 /**
  * Load the runtime scene from the given scene.
@@ -47,7 +47,7 @@ gdjs.RuntimeScene = function(runtimeGame, pixiRenderer)
  * @param sceneData An object containing the scene data.
  */
 gdjs.RuntimeScene.prototype.loadFromScene = function(sceneData) {
-	if ( sceneData == undefined ) {
+	if ( sceneData === undefined ) {
 		console.error("loadFromScene was called without a scene");
 		return;
 	}
