@@ -174,7 +174,7 @@ gdjs.SpriteRuntimeObject.prototype.extraInitializationFromInitialInstance = func
                 that.setAnimation(parseFloat(extraData.attr.value));
         });
     }
-}
+};
 
 /**
  * Update the internal PIXI.Sprite position, angle...
@@ -197,7 +197,7 @@ gdjs.SpriteRuntimeObject.prototype._updatePIXISprite = function() {
     this._cachedHeight = this._sprite.height;
 
     this._spriteDirty = false;
-}
+};
 
 /**
  * Update the internal texture of the PIXI sprite.
@@ -249,13 +249,14 @@ gdjs.SpriteRuntimeObject.prototype.updateTime = function(elapsedTime) {
 
 gdjs.SpriteRuntimeObject.prototype.onDeletedFromScene = function(runtimeScene) {
     runtimeScene.getLayer(this.layer).removePIXIContainerChild(this._sprite);
-}
+};
 
 //Animations :
 
 gdjs.SpriteRuntimeObject.prototype.setAnimation = function(newAnimation) {
-    if ( newAnimation < this._animations.length 
-         && this._currentAnimation !== newAnimation) {
+    if ( newAnimation < this._animations.length &&
+        this._currentAnimation !== newAnimation &&
+        newAnimation >= 0) {
         this._currentAnimation = newAnimation;
         this._currentFrame = 0;
         this._frameElapsedTime = 0;
@@ -263,11 +264,11 @@ gdjs.SpriteRuntimeObject.prototype.setAnimation = function(newAnimation) {
         this._textureDirty = true;
         this.hitBoxesDirty = true;
     }
-}
+};
 
 gdjs.SpriteRuntimeObject.prototype.getAnimation = function() {
     return this._currentAnimation;
-}
+};
 
 gdjs.SpriteRuntimeObject.prototype.setDirectionOrAngle = function(newValue) {
     if ( this._currentAnimation >= this._animations.length ) {
