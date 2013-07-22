@@ -29,9 +29,9 @@ CommonConversionsExtension::CommonConversionsExtension()
 
     GetAllExpressions()["ToNumber"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.common.toNumber").SetIncludeFile("commontools.js");
-    GetAllExpressions()["ToString"].codeExtraInformation
+    GetAllStrExpressions()["ToString"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.common.toString").SetIncludeFile("commontools.js");
-    GetAllExpressions()["LargeNumberToString"].codeExtraInformation //TODO: Check if scientific notation is added or not by toString.
+    GetAllStrExpressions()["LargeNumberToString"].codeExtraInformation //TODO: Check if scientific notation is added or not by toString.
         .SetFunctionName("gdjs.evtTools.common.toString").SetIncludeFile("commontools.js");
     GetAllExpressions()["ToRad"].codeExtraInformation
         .SetFunctionName("gdjs.toRad");

@@ -6,7 +6,7 @@
 
 /**
  * RuntimeObject represents an object being used on a RuntimeScene.<br>
- * The constructor is can be called on an already existing RuntimeObject:
+ * The constructor can be called on an already existing RuntimeObject:
  * In this case, the constructor will try to reuse as much already existing members
  * as possible ( Recycling ).<br>
  * However, you should not be calling the constructor on an already existing object
@@ -28,6 +28,7 @@ gdjs.RuntimeObject = function(runtimeScene, objectData)
     this.zOrder = 0;
     this.hidden = false;
     this.layer = "";
+    this.livingOnScene = true;
     this.id = runtimeScene.createNewUniqueId();
     
     //Hit boxes:
@@ -75,13 +76,12 @@ gdjs.RuntimeObject = function(runtimeScene, objectData)
         //Try to reuse already existing automatisms.
         if ( i < that._automatisms.length ) {
             if ( that._automatisms[i] instanceof ctor )
-                ctor.call(that._automatisms[i], runtimeScene, autoData);
+                ctor.call(that._automatisms[i], runtimeScene, autoData, that);
             else
-                that._automatisms[i] = new ctor(runtimeScene, autoData);
+                that._automatisms[i] = new ctor(runtimeScene, autoData, that);
         }
-        else that._automatisms.push(new ctor(runtimeScene, autoData));
+        else that._automatisms.push(new ctor(runtimeScene, autoData, that));
         
-        that._automatisms[i].setOwner(that);
         that._automatismsTable.put(autoData.attr.Name, that._automatisms[i]);
         
         i++;
@@ -115,12 +115,25 @@ gdjs.RuntimeObject.prototype.extraInitializationFromInitialInstance = function(i
 }
 
 /**
- * Remove an object from a scene:
- * Just clear the object name and let the scene destroy it after.
+ * Remove an object from a scene.<br>
+ * Extensions writers, do not change this method. Instead, redefine the onDeletedFromScene method.
  * @method deleteFromScene
+ * @param runtimeScene The RuntimeScene owning the object.
  */
 gdjs.RuntimeObject.prototype.deleteFromScene = function(runtimeScene) {
-    runtimeScene.markObjectForDeletion(this);
+    if ( this.livingOnScene ) {
+        runtimeScene.markObjectForDeletion(this);
+        this.livingOnScene = false;
+    }
+}
+
+/**
+ * Called when the object is removed from its scene.
+ *
+ * @method onDeletedFromScene
+ * @param runtimeScene The RuntimeScene owning the object.
+ */
+gdjs.RuntimeObject.prototype.onDeletedFromScene = function(runtimeScene) {
 }
 
 //Common properties:
@@ -675,6 +688,16 @@ gdjs.RuntimeObject.prototype.getAutomatism = function(name) {
 }
 
 /** 
+ * Check if an automatism is used by the object.
+ *
+ * @method hasAutomatism
+ * @param name {String} The automatism name.
+ */
+gdjs.RuntimeObject.prototype.hasAutomatism = function(name) {
+    return this._automatismsTable.containsKey(name);
+}
+
+/** 
  * De/activate an automatism of the object.<br>
  *
  * @method activateAutomatism
@@ -743,7 +766,7 @@ gdjs.RuntimeObject.prototype.separateFromObjects = function(objectsLists) {
 }
 
 gdjs.RuntimeObject.prototype.getDistanceFrom = function(otherObject) {
-    return Math.sqrt(this.getSqDistanceFrom(useless, otherObject));
+    return Math.sqrt(this.getSqDistanceFrom(otherObject));
 }
 
 gdjs.RuntimeObject.prototype.getSqDistanceFrom = function(otherObject) {
@@ -782,7 +805,7 @@ gdjs.RuntimeObject.prototype.putAround = function(x,y,distance,angleInDegrees) {
  * @param angleInDegrees {Number} The angle between the object and the target, in degrees.
  */
 gdjs.RuntimeObject.prototype.putAroundObject = function(obj,distance,angleInDegrees) {
-    this.putAround(obj.getY()+obj.getCenterY(), obj.getX()+obj.getCenterX(),
+    this.putAround(obj.getX()+obj.getCenterX(), obj.getY()+obj.getCenterY(),
                    distance, angleInDegrees);
 }
 

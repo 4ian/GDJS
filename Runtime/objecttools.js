@@ -18,11 +18,11 @@ gdjs.evtTools.object = gdjs.evtTools.object || {};
  * @method TwoListsTest
  */
 gdjs.evtTools.object.TwoListsTest = function(func, objectsLists1, objectsLists2, inverted, extraParam) {
-    
+
     var isTrue = false;
     var objects1Values = objectsLists1.values();
     var objects2Values = objectsLists2.values();
-    
+
     for(var i = 0, leni = objects1Values.length;i<leni;++i) {
         var arr = objects1Values[i];
         for(var k = 0, lenk = arr.length;k<lenk;++k) {
@@ -35,19 +35,21 @@ gdjs.evtTools.object.TwoListsTest = function(func, objectsLists1, objectsLists2,
             arr[k].pick = false;
         }
     }
-    
+
+    //Launch the function for each object of the first list with each object
+    //of the second list.
     for(var i = 0, leni = objects1Values.length;i<leni;++i) {
         var arr1 = objects1Values[i];
-        
+
         for(var k = 0, lenk = arr1.length;k<lenk;++k) {
             var atLeastOneObject = false;
-        
+
             for(var j = 0, lenj = objects2Values.length;j<lenj;++j) {
                 var arr2 = objects2Values[j];
-                
+
                 for(var l = 0, lenl = arr2.length;l<lenl;++l) {
                     
-                    if ( func(arr1[k], arr2[l], extraParam) ) {
+                    if ( arr1[k].id !== arr2[l].id && func(arr1[k], arr2[l], extraParam) ) {
                         if ( !inverted ) {
                             isTrue = true;
 
@@ -61,7 +63,8 @@ gdjs.evtTools.object.TwoListsTest = function(func, objectsLists1, objectsLists2,
                 }
             }
             
-            if ( !atLeastOneObject && inverted ) { //The object is not overlapping any other object.
+            if ( !atLeastOneObject && inverted ) { 
+                //For example, the object is not overlapping any other object.
                 isTrue = true;
                 arr1[k].pick = true;
             }
@@ -82,19 +85,21 @@ gdjs.evtTools.object.TwoListsTest = function(func, objectsLists1, objectsLists2,
         }
         arr.length = finalSize;
     }
-    
-    for(var i = 0, leni = objects2Values.length;i<leni;++i) {
-        var arr = objects2Values[i];
-        var finalSize = 0;
-        
-        for(var k = 0, lenk = arr.length;k<lenk;++k) {
-            var obj = arr[k];
-            if ( arr[k].pick ) {
-                arr[finalSize] = obj;
-                finalSize++;
+
+    if ( !inverted ) {
+        for(var i = 0, leni = objects2Values.length;i<leni;++i) {
+            var arr = objects2Values[i];
+            var finalSize = 0;
+
+            for(var k = 0, lenk = arr.length;k<lenk;++k) {
+                var obj = arr[k];
+                if ( arr[k].pick ) {
+                    arr[finalSize] = obj;
+                    finalSize++;
+                }
             }
+            arr.length = finalSize;
         }
-        arr.length = finalSize;
     }
     
     return isTrue;
@@ -210,7 +215,6 @@ gdjs.evtTools.object.movesTowardTest = function( objectsLists1, objectsLists2, t
                                   obj2.getX()+obj2.getCenterX() - (obj1.getX()+obj1.getCenterX()));
         objAngle *= 180/3.14159;
 
-        console.log(Math.abs(objAngle-obj1.getAverageForce().getAngle()));
         return Math.abs(objAngle-obj1.getAverageForce().getAngle()) <= tolerance/2;
     }
 
@@ -227,7 +231,6 @@ gdjs.evtTools.object.turnedTowardTest = function( objectsLists1, objectsLists2, 
                                   obj2.getX()+obj2.getCenterX() - (obj1.getX()+obj1.getCenterX()));
         objAngle *= 180/3.14159;
 
-        console.log(Math.abs(objAngle-obj1.getAverageForce().getAngle()));
         return Math.abs(objAngle-obj1.getAngle()) <= tolerance/2;
     }
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <Project>
-    <GDVersion Major="3" Minor="0" Build="11297" Revision="57008" />
+    <GDVersion Major="3" Minor="0" Build="11298" Revision="57009" />
     <Info winExecutableFilename="" winExecutableIconFile="" linuxExecutableFilename="" macExecutableFilename="" useExternalSourceFiles="false">
         <Nom value="Projet" />
         <Auteur value="" />
@@ -27,6 +27,7 @@
         </Extensions>
         <Platforms current="Game Develop JS platform">
             <Platform name="Game Develop JS platform" />
+            <Platform name="Game Develop C++ platform" />
         </Platforms>
         <WindowW value="800" />
         <WindowH value="600" />

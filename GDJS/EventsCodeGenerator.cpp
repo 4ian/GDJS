@@ -59,14 +59,14 @@ std::string EventsCodeGenerator::GenerateSceneEventsCompleteCode(gd::Project & p
         //Ensure needed files are included.
         std::string type = gd::GetTypeOfObject(project, scene, object.GetName());
         const gd::ObjectMetadata & metadata = gd::MetadataProvider::GetObjectMetadata(JsPlatform::Get(), type);
-        if ( !metadata.optionalIncludeFile.empty() ) includeFiles.insert(metadata.optionalIncludeFile);
+        codeGenerator.AddIncludeFiles(metadata.includeFiles);
 
         std::vector<std::string> automatisms = object.GetAllAutomatismNames();
         for (unsigned int j = 0;j<automatisms.size();++j)
         {
             const gd::AutomatismMetadata & metadata = gd::MetadataProvider::GetAutomatismMetadata(JsPlatform::Get(),
                                                                                                   object.GetAutomatism(automatisms[j]).GetTypeName());
-            if ( !metadata.optionalIncludeFile.empty() ) includeFiles.insert(metadata.optionalIncludeFile);
+            codeGenerator.AddIncludeFiles(metadata.includeFiles);
         }
 
         //Generate declarations for the objects lists
@@ -85,14 +85,14 @@ std::string EventsCodeGenerator::GenerateSceneEventsCompleteCode(gd::Project & p
         //Ensure needed files are included.
         std::string type = gd::GetTypeOfObject(project, scene, object.GetName());
         const gd::ObjectMetadata & metadata = gd::MetadataProvider::GetObjectMetadata(JsPlatform::Get(), type);
-        if ( !metadata.optionalIncludeFile.empty() ) includeFiles.insert(metadata.optionalIncludeFile);
+        codeGenerator.AddIncludeFiles(metadata.includeFiles);
 
         std::vector<std::string> automatisms = object.GetAllAutomatismNames();
         for (unsigned int j = 0;j<automatisms.size();++j)
         {
             const gd::AutomatismMetadata & metadata = gd::MetadataProvider::GetAutomatismMetadata(JsPlatform::Get(),
                                                                                                   object.GetAutomatism(automatisms[j]).GetTypeName());
-            if ( !metadata.optionalIncludeFile.empty() ) includeFiles.insert(metadata.optionalIncludeFile);
+            codeGenerator.AddIncludeFiles(metadata.includeFiles);
         }
 
         //Generate declarations for the objects lists
