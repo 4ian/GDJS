@@ -21,31 +21,45 @@
 gdjs.Layer = function(name, runtimeScene)
 {
     this._name = name;
-    this._cameraX = 0;
-    this._cameraY = 0;
     this._cameraRotation = 0;
+    this._zoomFactor = 1;
     this._hidden = false;
     this._pixiStage = runtimeScene.getPIXIStage();
     this._pixiRenderer = runtimeScene.getPIXIRenderer();
     this._pixiContainer = new PIXI.DisplayObjectContainer();
+    this._cameraX = this._pixiRenderer.width/2;
+    this._cameraY = this._pixiRenderer.height/2;
 
     this._pixiStage.addChild(this._pixiContainer);
 }
 
 /**
  * Update the position of the PIXI container. To be called after each change
- * made to position or rotation of the camera.
+ * made to position, zoom or rotation of the camera.
  * @private
  */
 gdjs.Layer.prototype._updatePixiContainerPosition = function() {
-	var angle = gdjs.toRad(this._cameraRotation);
+	var angle = -gdjs.toRad(this._cameraRotation);
 	this._pixiContainer.rotation = angle;
+	this._pixiContainer.scale.x = this._zoomFactor;
+	this._pixiContainer.scale.y = this._zoomFactor;
 
-	var centerX = this._pixiRenderer.width/2*Math.cos(angle)-this._pixiRenderer.height/2*Math.sin(angle);
+	var centerX = (this._cameraX*this._zoomFactor)*Math.cos(angle)-(this._cameraY*this._zoomFactor)*Math.sin(angle);
+	var centerY = (this._cameraX*this._zoomFactor)*Math.sin(angle)+(this._cameraY*this._zoomFactor)*Math.cos(angle);
+
+	this._pixiContainer.position.x = -centerX;
+	this._pixiContainer.position.y = -centerY;
+	this._pixiContainer.position.x += this._pixiRenderer.width/2;
+	this._pixiContainer.position.y += this._pixiRenderer.height/2;
+
+	/*var centerX = this._pixiRenderer.width/2*Math.cos(angle)-this._pixiRenderer.height/2*Math.sin(angle);
 	var centerY = this._pixiRenderer.width/2*Math.sin(angle)+this._pixiRenderer.height/2*Math.cos(angle);
 
 	this._pixiContainer.position.x = -this._cameraX+this._pixiRenderer.width/2-centerX;
 	this._pixiContainer.position.y = -this._cameraY+this._pixiRenderer.height/2-centerY;
+
+	this._pixiContainer.position.x += this._pixiRenderer.width/2;
+	this._pixiContainer.position.y += this._pixiRenderer.height/2;*/
 }
 
 /**
@@ -101,9 +115,7 @@ gdjs.Layer.prototype.removePIXIContainerChild = function(child) {
 }
 
 /**
- * Change the camera X position.<br>
- * The camera position refers to the position of top left point of the rendered view,
- * expressed in world coordinates.
+ * Change the camera center X position.<br>
  *
  * @method getCameraX
  * @param cameraId The camera number. Currently ignored.
@@ -114,9 +126,7 @@ gdjs.Layer.prototype.getCameraX = function(cameraId) {
 }
 
 /**
- * Change the camera Y position.<br>
- * The camera position refers to the position of top left point of the rendered view,
- * expressed in world coordinates.
+ * Change the camera center Y position.<br>
  *
  * @method getCameraY
  * @param cameraId The camera number. Currently ignored.
@@ -127,9 +137,7 @@ gdjs.Layer.prototype.getCameraY = function(cameraId) {
 }
 
 /**
- * Set the camera X position.<br>
- * The camera position refers to the position of top left point of the rendered view,
- * expressed in world coordinates.
+ * Set the camera center X position.<br>
  *
  * @method setCameraX
  * @param x {Number} The new x position
@@ -141,9 +149,7 @@ gdjs.Layer.prototype.setCameraX = function(x, cameraId) {
 }
 
 /**
- * Set the camera Y position.<br>
- * The camera position refers to the position of top left point of the rendered view,
- * expressed in world coordinates.
+ * Set the camera center Y position.<br>
  *
  * @method setCameraY
  * @param y {Number} The new y position
@@ -155,11 +161,11 @@ gdjs.Layer.prototype.setCameraY = function(y, cameraId) {
 }
 
 gdjs.Layer.prototype.getCameraWidth = function(cameraId) {
-	return +this._pixiRenderer.width;
+	return (+this._pixiRenderer.width)*1/this._pixiContainer.scale.x;
 }
 
 gdjs.Layer.prototype.getCameraHeight = function(cameraId) {
-	return +this._pixiRenderer.height;
+	return (+this._pixiRenderer.height)*1/this._pixiContainer.scale.y;
 }
 
 gdjs.Layer.prototype.show = function(enable) {
@@ -180,13 +186,14 @@ gdjs.Layer.prototype.isVisible = function() {
 /**
  * Set the zoom of a camera.<br>
  *
- * @method setZoom
+ * @method setCameraZoom
  * @param The new zoom. Must be superior to 0. 1 is the default zoom.
  * @param cameraId The camera number. Currently ignored.
  */
-gdjs.Layer.prototype.setZoom = function(newZoom, cameraId) {
-	this._pixiContainer.scale.x = newZoom;
-	this._pixiContainer.scale.y = newZoom;
+gdjs.Layer.prototype.setCameraZoom = function(newZoom, cameraId) {
+
+	this._zoomFactor = newZoom;
+	this._updatePixiContainerPosition();
 }
 
 /**
@@ -196,8 +203,8 @@ gdjs.Layer.prototype.setZoom = function(newZoom, cameraId) {
  * @param cameraId The camera number. Currently ignored.
  * @return The zoom.
  */
-gdjs.Layer.prototype.getZoom = function(cameraId) {
-	return this._pixiContainer.scale.x;
+gdjs.Layer.prototype.getCameraZoom = function(cameraId) {
+	return this._zoomFactor;
 }
 
 /**
@@ -235,8 +242,8 @@ gdjs.Layer.prototype.setCameraRotation = function(rotation, cameraId) {
  */
 gdjs.Layer.prototype.convertCoords = function(x,y, cameraId) {
 
-	x -= this.getCameraWidth(cameraId)/2;
-	y -= this.getCameraHeight(cameraId)/2;
+	x -= this._pixiRenderer.width/2;
+	y -= this._pixiRenderer.height/2;
 	x /= Math.abs(this._pixiContainer.scale.x);
 	y /= Math.abs(this._pixiContainer.scale.y);
 
@@ -244,7 +251,6 @@ gdjs.Layer.prototype.convertCoords = function(x,y, cameraId) {
 	x = Math.cos(this._cameraRotation/180*3.14159)*x - Math.sin(this._cameraRotation/180*3.14159)*y;
 	y = Math.sin(this._cameraRotation/180*3.14159)*tmp + Math.cos(this._cameraRotation/180*3.14159)*y;
 
-	return [x+this.getCameraX(cameraId)+this.getCameraWidth(cameraId)/2, 
-		   y+this.getCameraY(cameraId)+this.getCameraHeight(cameraId)/2];
+	return [x+this.getCameraX(cameraId), y+this.getCameraY(cameraId)];
 }
 

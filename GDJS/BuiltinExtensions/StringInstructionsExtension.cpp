@@ -28,6 +28,9 @@ StringInstructionsExtension::StringInstructionsExtension()
 
     CloneExtension("Game Develop C++ platform", "BuiltinStringInstructions");
 
+    GetAllStrExpressions()["NewLine"]
+        .codeExtraInformation.SetFunctionName("gdjs.evtTools.string.newLine");
+
     StripUnimplementedInstructionsAndExpressions(); //Unimplemented things are listed here:
 /*
 

@@ -11,7 +11,7 @@
  * @param PixiRenderer The PIXI.Renderer to be used
  */
 gdjs.RuntimeScene = function(runtimeGame, pixiRenderer)
-{ 
+{
     this._eventsFunction = null;
     this._instances = new Hashtable(); //Contains the instances living on the scene
 	this._instancesCache = new Hashtable(); //Used to recycle destroyed instance instead of creating new ones.
@@ -19,6 +19,7 @@ gdjs.RuntimeScene = function(runtimeGame, pixiRenderer)
     this._objectsCtor = new Hashtable(); 
     this._layers = new Hashtable();
     this._timers = new Hashtable();
+	this._initialAutomatismSharedData = new Hashtable();
     this._pixiRenderer = pixiRenderer;
     this._pixiStage = new PIXI.Stage();
     this._latestFrameDate = new Date;
@@ -30,6 +31,7 @@ gdjs.RuntimeScene = function(runtimeGame, pixiRenderer)
     this._timeScale = 1;
     this._timeFromStart = 0;
     this._firstFrame = true;
+	this._name = "";
     this._soundManager = new gdjs.SoundManager();
     this._gameStopRequested = false;
     this._requestedScene = "";
@@ -37,7 +39,7 @@ gdjs.RuntimeScene = function(runtimeGame, pixiRenderer)
     this.layers = this._layers;
     this._postPoneObjectsDeletion = false; //If set to true, objects will only be removed when doObjectsDeletion will be called ( And not at markObjectForDeletion call ).
     this._objectsToDestroy = []; //The objects to be destroyed when doObjectsDeletion is called.
-} 
+};
 
 /**
  * Load the runtime scene from the given scene.
@@ -45,7 +47,7 @@ gdjs.RuntimeScene = function(runtimeGame, pixiRenderer)
  * @param sceneData An object containing the scene data.
  */
 gdjs.RuntimeScene.prototype.loadFromScene = function(sceneData) {
-	if ( sceneData == undefined ) {
+	if ( sceneData === undefined ) {
 		console.error("loadFromScene was called without a scene");
 		return;
 	}
@@ -54,6 +56,7 @@ gdjs.RuntimeScene.prototype.loadFromScene = function(sceneData) {
 
 	//Setup main properties
 	document.title = sceneData.attr.titre;
+	this._name = sceneData.attr.nom;
 	this._firstFrame = true;
 	this.setBackgroundColor(parseInt(sceneData.attr.r), 
 			parseInt(sceneData.attr.v),
@@ -70,6 +73,12 @@ gdjs.RuntimeScene.prototype.loadFromScene = function(sceneData) {
 
     //Load variables
     this._variables = new gdjs.VariablesContainer(sceneData.Variables);
+
+	//Cache the initial shared data of the automatisms
+    gdjs.iterateOver(sceneData.AutomatismsSharedDatas, "AutomatismSharedDatas", function(data) {
+		console.log("Initializing shared data for "+data.attr.Name);
+		that._initialAutomatismSharedData.put(data.attr.Name, data);
+	});
 
     //Load objects: Global objects first...
 	gdjs.iterateOver(this.getGame().getInitialObjectsData(), "Objet", function(objData){
@@ -220,8 +229,9 @@ gdjs.RuntimeScene.prototype._updateObjectsPreEvents = function() {
  * @private
  */
 gdjs.RuntimeScene.prototype._updateObjects = function() {
-	var allObjectsLists = this._instances.entries();
+	this._doObjectsDeletion(); 
 
+	var allObjectsLists = this._instances.entries();
 	this.updateObjectsForces(allObjectsLists);
 
 	this._postPoneObjectsDeletion = true;
@@ -233,7 +243,7 @@ gdjs.RuntimeScene.prototype._updateObjects = function() {
 		}
 	}
 	this._postPoneObjectsDeletion = false;
-	this._doObjectsDeletion();
+	this._doObjectsDeletion(); //Some automatisms may have request objects to be deleted.
 }
 
 /**
@@ -242,6 +252,14 @@ gdjs.RuntimeScene.prototype._updateObjects = function() {
  */
 gdjs.RuntimeScene.prototype.setBackgroundColor = function(r,g,b) {
 	this._pixiStage.setBackgroundColor(parseInt(gdjs.rgbToHex(r,g,b),16));
+}
+
+/**
+ * Get the name of the scene.
+ * @method getName
+ */
+gdjs.RuntimeScene.prototype.getName = function() {
+	return this._name;
 }
 
 /**
@@ -344,6 +362,12 @@ gdjs.RuntimeScene.prototype._removeObject = function(obj) {
 	var allInstances = this._instances.get(obj.getName());
 	for(var i = 0, len = allInstances.length;i<len;++i) {
 		if (allInstances[i].id == objId) {
+
+			allInstances[i].onDeletedFromScene(this);
+			for(var j = 0, lenj = allInstances[j]._automatisms.length;j<lenj;++j) {
+			    allInstances[i]._automatisms[j].ownerRemovedFromScene();
+			}
+
 			allInstances.remove(i);
 			return;
 		}
@@ -415,11 +439,16 @@ gdjs.RuntimeScene.prototype.getVariables = function() {
 }
 
 /**
- * Get the data representing all the initial objects of the scene.
- * @method getInitialObjectsData
+ * Get the data representing the initial shared data of the scene for the specified automatism.
+ * @method getInitialSharedDataForAutomatism
+ * @param name {String} The name of the automatism
  */
-gdjs.RuntimeScene.prototype.getInitialObjectsData = function() {
-	return this._initialObjectsData;
+gdjs.RuntimeScene.prototype.getInitialSharedDataForAutomatism = function(name) {
+	if ( this._initialAutomatismSharedData.containsKey(name) ) {
+		return this._initialAutomatismSharedData.get(name);
+	}
+
+	return null;
 }
 
 gdjs.RuntimeScene.prototype.getLayer = function(name) {

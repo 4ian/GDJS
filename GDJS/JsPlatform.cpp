@@ -134,6 +134,7 @@ JsPlatform::JsPlatform() :
     gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/TextObject."+extension, *this);
     gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/DraggableAutomatism."+extension, *this);
     gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/DestroyOutsideAutomatism."+extension, *this);
+    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/PhysicsAutomatism."+extension, *this);
 };
 
 JsPlatform & JsPlatform::Get()
