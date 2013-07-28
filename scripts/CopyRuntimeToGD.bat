@@ -2,13 +2,13 @@
 ::folder and in the Extensions folder ) to the Game Develop folder ( See below )
 
 @echo off
-set destDir="..\..\IDE\bin\dev\JsPlatform"
+set destDir="..\..\Binaries\Output\dev\JsPlatform"
 xcopy ..\Runtime\* %destDir%\Runtime\* /S /E  /D /Y
 xcopy ..\..\Extensions\*.js %destDir%\Runtime\Extensions\*.js /S /E  /D /Y /EXCLUDE:FilesExcludedFromCopy
-set destDir="..\..\IDE\bin\release\JsPlatform"
+set destDir="..\..\Binaries\Output\Release\JsPlatform"
 xcopy ..\Runtime\* %destDir%\Runtime\* /S /E  /D /Y
 xcopy ..\..\Extensions\*.js %destDir%\Runtime\Extensions\*.js /S /E  /D /Y /EXCLUDE:FilesExcludedFromCopy
-set destDir="..\..\IDE\bin\debug\JsPlatform"
+set destDir="..\..\Binaries\Output\debug\JsPlatform"
 xcopy ..\Runtime\* %destDir%\Runtime\* /S /E  /D /Y
 xcopy ..\..\Extensions\*.js %destDir%\Runtime\Extensions\*.js /S /E  /D /Y /EXCLUDE:FilesExcludedFromCopy
 
