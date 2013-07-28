@@ -96,6 +96,8 @@ add_library(
 )
 IF(WIN32)
 	set_target_properties(GDJS PROPERTIES PREFIX "")
+ELSE()
+	set_target_properties(GDJS PROPERTIES PREFIX "lib")
 ENDIF(WIN32)
 set(LIBRARY_OUTPUT_PATH ${GD_base_dir}/Binaries/Output/${CMAKE_BUILD_TYPE}/JsPlatform)
 set(ARCHIVE_OUTPUT_PATH ${GD_base_dir}/Binaries/Output/${CMAKE_BUILD_TYPE}/JsPlatform)
