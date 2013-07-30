@@ -5,7 +5,9 @@
  */
 
 /**
- * variable is an object storing a number or a string
+ * A Variable is an object storing a number or a string.
+ *
+ * @constructor
  * @namespace gdjs
  * @class Variable
  */

@@ -10,11 +10,11 @@
  * but then it is objects responsibility to connect themselves to the layer's container
  * ( See addChildToPIXIContainer method ).<br>
  * Layers do not provide direct access to their pixi container as they do some extra work
- * to ensure this.z orders remains correct.
+ * to ensure that z orders remains correct.
  *
- * TODO : Viewports and support for multiple cameras
+ * <b>TODO:</b> Viewports and support for multiple cameras
  *
- * @class layer
+ * @class Layer
  * @namespace gdjs
  * @constructor
  */
@@ -51,15 +51,6 @@ gdjs.Layer.prototype._updatePixiContainerPosition = function() {
 	this._pixiContainer.position.y = -centerY;
 	this._pixiContainer.position.x += this._pixiRenderer.width/2;
 	this._pixiContainer.position.y += this._pixiRenderer.height/2;
-
-	/*var centerX = this._pixiRenderer.width/2*Math.cos(angle)-this._pixiRenderer.height/2*Math.sin(angle);
-	var centerY = this._pixiRenderer.width/2*Math.sin(angle)+this._pixiRenderer.height/2*Math.cos(angle);
-
-	this._pixiContainer.position.x = -this._cameraX+this._pixiRenderer.width/2-centerX;
-	this._pixiContainer.position.y = -this._cameraY+this._pixiRenderer.height/2-centerY;
-
-	this._pixiContainer.position.x += this._pixiRenderer.width/2;
-	this._pixiContainer.position.y += this._pixiRenderer.height/2;*/
 }
 
 /**
@@ -197,7 +188,7 @@ gdjs.Layer.prototype.setCameraZoom = function(newZoom, cameraId) {
 }
 
 /**
- * Get the zoom of a camera,.<br>
+ * Get the zoom of a camera.<br>
  *
  * @method getZoom
  * @param cameraId The camera number. Currently ignored.

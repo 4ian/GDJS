@@ -6,6 +6,8 @@
 
 /**
  * A wrapper around an Audio object.
+ * @namespace gdjs
+ * @class Sound
  * @private
  */
 gdjs.Sound = function(soundFile) {
@@ -31,10 +33,10 @@ gdjs.Sound.prototype.hasEnded = function() {
 }
 
 /**
- * A soundManager manages the sound channels of a scene.
+ * SoundManager is used to manage the sounds and musics of a RuntimeScene.
  *
  * @namespace gdjs
- * @class soundManager
+ * @class SoundManager
  * @constructor
  */
 gdjs.SoundManager = function()

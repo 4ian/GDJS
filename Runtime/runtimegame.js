@@ -5,10 +5,12 @@
  */
 
 /**
- * The runtimeGame object represents a game being played.
+ * Represents a game being played.
  *
+ * @constructor
  * @namespace gdjs
  * @class RuntimeGame
+ * @param The object ( usually stored in data.json ) containing the full project data
  */
 gdjs.RuntimeGame = function(data)
 {
@@ -41,7 +43,7 @@ gdjs.RuntimeGame.prototype.getImageManager = function() {
 /**
  * Get the object containing the game data
  * @method getGameData
- * @return The object associated to the game, which can be parsed with jQuery.
+ * @return The object associated to the game.
  */
 gdjs.RuntimeGame.prototype.getGameData = function() {
 	return this._data;
@@ -142,7 +144,7 @@ gdjs.RuntimeGame.prototype.anyKeyPressed = function(keyCode) {
 
 /**
  * Should be called when the mouse is moved.<br>
- * Please note this.the coordinates must be expressed relative to the view position.
+ * Please note that the coordinates must be expressed relative to the view position.
  *
  * @method onMouseMove
  * @param x {Number} The mouse new X position
@@ -218,7 +220,7 @@ gdjs.RuntimeGame.prototype.getMouseWheelDelta = function() {
 }
 
 /**
- * Return the minimal fps this.must be guaranteed by the game.
+ * Return the minimal fps that must be guaranteed by the game.
  * ( Otherwise, game is slowed down ).
  * @method getMinimalFramerate
  */

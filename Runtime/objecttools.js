@@ -9,6 +9,7 @@
  * @namespace gdjs.evtTools
  * @class object
  * @static
+ * @private
  */
 gdjs.evtTools.object = gdjs.evtTools.object || {};
 

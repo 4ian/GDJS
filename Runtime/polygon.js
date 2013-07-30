@@ -5,7 +5,7 @@
  */
 
 /**
- * The polygon represents a polygon this.can be used to create collisions masks for runtimeObject.
+ * The polygon represents a polygon which can be used to create collisions masks for runtimeObject.
  *
  * @namespace gdjs
  * @class Polygon

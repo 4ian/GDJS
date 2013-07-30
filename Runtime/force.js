@@ -5,10 +5,10 @@
  */
 
 /**
- * A force is used to move objects.
+ * A Force is used to move objects.
  *
  * @namespace gdjs
- * @class force
+ * @class Force
  * @constructor
  * @param x The initial x component
  * @param y The initial y component

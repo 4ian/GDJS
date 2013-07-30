@@ -180,7 +180,7 @@ gdjs.RuntimeScene.prototype.render = function(){
 
 /**
  * Called when rendering to do all times related tasks.
- * @method updateTime
+ * @method _updateTime
  * @private
  */
 gdjs.RuntimeScene.prototype._updateTime = function() {
@@ -198,6 +198,11 @@ gdjs.RuntimeScene.prototype._updateTime = function() {
 	this._timeFromStart += this._elapsedTime;
 }
 
+/**
+ * Update the objects before launching the events.
+ * @method _doObjectsDeletion
+ * @private
+ */
 gdjs.RuntimeScene.prototype._doObjectsDeletion = function() {
 	for(var k =0, lenk=this._objectsToDestroy.length;k<lenk;++k)
 		this._removeObject(this._objectsToDestroy[k]);
@@ -207,7 +212,7 @@ gdjs.RuntimeScene.prototype._doObjectsDeletion = function() {
 
 /**
  * Update the objects before launching the events.
- * @method updateObjectsPreEvents
+ * @method _updateObjectsPreEvents
  * @private
  */
 gdjs.RuntimeScene.prototype._updateObjectsPreEvents = function() {
@@ -346,7 +351,7 @@ gdjs.RuntimeScene.prototype.createObject = function(objectName){
  * Most of the time, do not call this method directly: Use markObjectForDeletion method
  * which will remove the objects either directly or when it can be done safely.
  *
- * @method getObjects
+ * @method _removeObject
  * @param obj The object to be removed from the scene.
  * @private
  */

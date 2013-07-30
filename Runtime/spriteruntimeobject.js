@@ -102,7 +102,7 @@ gdjs.SpriteAnimation = function(imageManager, animData)
 }
 
 /**
- * The SpriteRuntimeObject represents an object this.can display images.
+ * The SpriteRuntimeObject represents an object that can display images.
  *
  * <b>TODO:</b> custom collisions masks.
  *
@@ -592,7 +592,7 @@ gdjs.SpriteRuntimeObject.prototype.setZOrder = function(z) {
 }
 
 /**
- * Change the object angle so this.it is facing the specified position.
+ * Change the object angle so that it is facing the specified position.
 
  * @method turnTowardPosition
  * @param x {Number} The target x position
@@ -606,7 +606,7 @@ gdjs.SpriteRuntimeObject.prototype.turnTowardPosition = function(x,y) {
 }
 
 /**
- * Change the object angle so this.it is facing another object
+ * Change the object angle so that it is facing another object
 
  * @method turnTowardObject
  * @param obj The target object
