@@ -5,7 +5,7 @@
  */
 
 /**
- * The runtimeAutomatism represents an automatism being used by a runtimeObject.
+ * RuntimeAutomatism represents an automatism being used by a RuntimeObject.
  *
  * @class RuntimeAutomatism
  * @constructor 
@@ -95,7 +95,7 @@ gdjs.RuntimeAutomatism.prototype.onActivate = function() {
 /**
  * Automatisms writers: Reimplement this method to do extra work
  * when the automatism is deactivated
- * @method activated
+ * @method onDeActivate
  */
 gdjs.RuntimeAutomatism.prototype.onDeActivate = function() {
 

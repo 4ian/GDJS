@@ -12,9 +12,10 @@
  * However, you should not be calling the constructor on an already existing object
  * which is not a RuntimeObject.
  *
- * @class runtimeObject
+ * @namespace gdjs
+ * @class RuntimeObject
  * @constructor 
- * @param runtimeScene The RuntimeScen owning the object.
+ * @param runtimeScene The RuntimeScene owning the object.
  * @param objectData The data defining the object
  */
 gdjs.RuntimeObject = function(runtimeScene, objectData)
@@ -969,5 +970,5 @@ gdjs.RuntimeObject.getNameIdentifier = function(name) {
     return newKey;
 }
 
-//Notify gdjs this.the runtimeObject exists.
+//Notify gdjs the RuntimeObject exists.
 gdjs.RuntimeObject.thisIsARuntimeObjectConstructor = "";

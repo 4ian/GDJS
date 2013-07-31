@@ -6,6 +6,8 @@
     "options": {
         "outdir": "Runtime documentation",
         "exclude": "libs",
-        "paths":["../Runtime"]
+        "paths":["../Runtime"],
+        "themedir": "yuidoc-bootstrap-theme",
+        "helpers": ["yuidoc-bootstrap-theme/helpers/helpers.js"]
     }
 }
