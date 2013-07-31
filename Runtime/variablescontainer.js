@@ -132,7 +132,7 @@ gdjs.VariablesContainer.prototype.get = function(name) {
  * Get a variable using its index.<br>
  * The index of a variable is its index in the data passed to initFrom.<br>
  *
- * This method is generally used by events generated code to increase lookup for variables.<br>
+ * This method is generally used by events generated code to increase lookup speed for variables.<br>
  * If you're unsure about how to use this method, prefer to use get.
  *
  * @method getFromIndex

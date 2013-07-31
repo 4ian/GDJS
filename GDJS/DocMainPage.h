@@ -7,16 +7,19 @@
  * Writing extensions requires to know Javascript and you need to write a bit of C++ code: Do not worry, everything is explained
  * here.
  *
- * Note that this documentation does not contains the documentation of the Javascript game engine of this platform: This documentation
- * is available in <i>GDJS/docs/Runtime documentation</i> folder.
- * \section aboutdoc About this documentation
+ * ### Game engine documentation
+ * Note that the documentation of the Javascript game engine of this platform is available [here](../Runtime documentation/index.html).
+ *
+ * ### Game Develop Core documentation
+ * Some classes and features are provided by the *Game Develop Core Library* : Read [this page](\ref AboutGDCore) to get a quick introduction
+ * to this library, or read the [full documentation here](..\..\..\Core\doc\Documentation\index.html).
+ *
+ * \section gettingstarted Getting started
  * First, please refer to these pages to install the required tools and to get help about setting up a basic extension:<br>
  *
  * -# \subpage setupDevEnv
  * -# \subpage GetFamiliarizedWithGDSDK
  * -# \subpage WritingANewExtension
- *
- * You can also read \subpage AboutGDCore .
  */
 
 /**

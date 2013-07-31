@@ -8,6 +8,7 @@
  * @namespace gdjs.evtTools
  * @class common
  * @static
+ * @private
  */
 gdjs.evtTools.common = gdjs.evtTools.common || {eventsObjectsMap: new Hashtable()}
 
