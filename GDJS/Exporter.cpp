@@ -463,7 +463,7 @@ gd::Project Exporter::StripProject(const gd::Project & project, std::string layo
 
 void Exporter::ExportResources(gd::Project & project, std::string exportDir)
 {
-    gd::ProjectResourcesCopier::CopyAllResourcesTo(project, exportDir, true, NULL, false);
+    gd::ProjectResourcesCopier::CopyAllResourcesTo(project, exportDir, true, NULL, false, false);
 }
 
 void Exporter::ShowProjectExportDialog(gd::Project & project)
