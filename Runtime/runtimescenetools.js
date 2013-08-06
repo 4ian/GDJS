@@ -122,3 +122,9 @@ gdjs.evtTools.runtimeScene.changeScene = function(currentScene, newSceneName) {
 gdjs.evtTools.runtimeScene.stopGame = function(currentScene) {
     currentScene.requestGameStop();
 }
+gdjs.evtTools.runtimeScene.createObjectsFromExternalLayout = function(scene, externalLayout, xPos, yPos) {
+    var externalLayoutData = scene.getGame().getExternalLayoutData(externalLayout);
+    if ( externalLayoutData === null ) return;
+
+    scene.createObjectsFrom(externalLayoutData.Instances, xPos, yPos);
+}

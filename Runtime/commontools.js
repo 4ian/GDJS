@@ -10,7 +10,7 @@
  * @static
  * @private
  */
-gdjs.evtTools.common = gdjs.evtTools.common || {eventsObjectsMap: new Hashtable()}
+gdjs.evtTools.common = gdjs.evtTools.common || {eventsObjectsMap: new Hashtable()};
 
 /**
  * Clear the map containing objects lists.
@@ -20,7 +20,7 @@ gdjs.evtTools.common.clearEventsObjectsMap = function() {
     gdjs.evtTools.common.eventsObjectsMap.clear();
 
     return gdjs.evtTools.common;
-}
+};
 
 /**
  * Add an objects list to the objects lists map.
@@ -29,7 +29,7 @@ gdjs.evtTools.common.clearEventsObjectsMap = function() {
 gdjs.evtTools.common.addObjectsToEventsMap = function(name, objectList) {
     gdjs.evtTools.common.eventsObjectsMap.put(name, objectList);
     return gdjs.evtTools.common;
-}
+};
 
 /**
  * Return the objects lists map.
@@ -37,7 +37,7 @@ gdjs.evtTools.common.addObjectsToEventsMap = function(name, objectList) {
  */
 gdjs.evtTools.common.getEventsObjectsMap = function() {
     return gdjs.evtTools.common.eventsObjectsMap.clone();
-}
+};
 
 /**
  * Convert a string to a float.
@@ -47,7 +47,7 @@ gdjs.evtTools.common.getEventsObjectsMap = function() {
  */
 gdjs.evtTools.common.toNumber = function(str) {
     return parseFloat(str);
-}
+};
 
 /**
  * Convert a number to a string.
@@ -57,7 +57,7 @@ gdjs.evtTools.common.toNumber = function(str) {
  */
 gdjs.evtTools.common.toString = function(num) {
     return num.toString();
-}
+};
 
 /**
  * Always return false.
@@ -67,4 +67,4 @@ gdjs.evtTools.common.toString = function(num) {
  */
 gdjs.evtTools.common.returnFalse = function() {
     return false;
-}
+};

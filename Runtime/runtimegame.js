@@ -14,6 +14,17 @@
  */
 gdjs.RuntimeGame = function(data)
 {
+    //Safety check: Do gdjs initialization if not already done
+    if ( gdjs.objectsTypes.keys.length === 0)
+        gdjs.registerObjects();
+    if ( gdjs.automatismsTypes.keys.length === 0)
+        gdjs.registerAutomatisms();
+    if ( gdjs.callbacksRuntimeSceneLoaded.length === 0 &&
+         gdjs.callbacksRuntimeSceneUnloaded.length === 0 &&
+         gdjs.callbacksObjectDeletedFromScene.length === 0)
+        gdjs.registerGlobalCallbacks();
+
+
     this._variables = new gdjs.VariablesContainer(data.Variables);
     this._data = data;
     this._imageManager = new gdjs.ImageManager(this);
@@ -47,7 +58,7 @@ gdjs.RuntimeGame.prototype.getImageManager = function() {
  */
 gdjs.RuntimeGame.prototype.getGameData = function() {
 	return this._data;
-}
+};
 
 /**
  * Get the data associated to a scene.
@@ -69,7 +80,7 @@ gdjs.RuntimeGame.prototype.getSceneData = function(sceneName) {
 		console.warn("The game has no scene called \""+sceneName+"\"");
 
 	return scene;
-}
+};
 
 /**
  * Check if a scene exists
@@ -88,7 +99,26 @@ gdjs.RuntimeGame.prototype.hasScene = function(sceneName) {
 	});
 
 	return isTrue;
-}
+};
+
+/**
+ * Get the data associated to an external layout.
+ *
+ * @method getExternalLayoutData
+ * @param name The name of the external layout.
+ * @return The data associated to the external layout or null if not found.
+ */
+gdjs.RuntimeGame.prototype.getExternalLayoutData = function(name) {
+    var externalLayout = null;
+    gdjs.iterateOver(this._data.ExternalLayouts, "ExternalLayout", function(layoutData) {
+        if ( layoutData.attr.Name === name ) {
+            externalLayout = layoutData;
+            return false;
+        }
+    });
+
+    return externalLayout;
+};
 
 /**
  * Get the data representing all the initial objects of the game.

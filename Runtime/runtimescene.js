@@ -58,13 +58,13 @@ gdjs.RuntimeScene.prototype.loadFromScene = function(sceneData) {
 	document.title = sceneData.attr.titre;
 	this._name = sceneData.attr.nom;
 	this._firstFrame = true;
-	this.setBackgroundColor(parseInt(sceneData.attr.r), 
+	this.setBackgroundColor(parseInt(sceneData.attr.r),
 			parseInt(sceneData.attr.v),
 			parseInt(sceneData.attr.b));
 
 	//Load layers
     var that = this;
-	gdjs.iterateOver(sceneData.Layers, "Layer", function(layerData) { 
+	gdjs.iterateOver(sceneData.Layers, "Layer", function(layerData) {
 		var name = layerData.attr.Name;
 
 		that._layers.put(name, new gdjs.Layer(name, that));
@@ -89,7 +89,7 @@ gdjs.RuntimeScene.prototype.loadFromScene = function(sceneData) {
         that._instances.put(objectName, []); //Also reserve an array for the instances
         that._instancesCache.put(objectName, []); //and for cached instances
 		//And cache the constructor for the performance sake:
-		that._objectsCtor.put(objectName, gdjs.getObjectConstructor(objectType)); 
+		that._objectsCtor.put(objectName, gdjs.getObjectConstructor(objectType));
 
         console.log("Loaded "+objectName+" in memory ( Global object )");
 	});
@@ -103,18 +103,51 @@ gdjs.RuntimeScene.prototype.loadFromScene = function(sceneData) {
         that._instances.put(objectName, []); //Also reserve an array for the instances
         that._instancesCache.put(objectName, []); //and for cached instances
 		//And cache the constructor for the performance sake:
-		that._objectsCtor.put(objectName, gdjs.getObjectConstructor(objectType)); 
+		that._objectsCtor.put(objectName, gdjs.getObjectConstructor(objectType));
 
         console.log("Loaded "+objectName+" in memory");
     });
 
     //Create initial instances of objects
-    gdjs.iterateOver(sceneData.Positions, "Objet", function(instanceData) {
+    this.createObjectsFrom(sceneData.Positions, 0, 0);
+
+    //Set up the function to be executed at each tick
+    var module = gdjs[sceneData.attr.mangledName+"Code"];
+    if ( module && module.func ) this._eventsFunction = module.func;
+
+    //Call global callback
+	for(var i = 0;i<gdjs.callbacksRuntimeSceneLoaded.length;++i) {
+		gdjs.callbacksRuntimeSceneLoaded[i](this);
+	}
+
+    isLoaded = true;
+};
+
+gdjs.RuntimeScene.prototype.unloadScene = function() {
+	if ( !this._isLoaded ) return;
+
+	for(var i = 0;i<gdjs.callbacksRuntimeSceneUnloaded.length;++i) {
+		gdjs.callbacksRuntimeSceneUnloaded[i](this);
+	}
+};
+
+/**
+ * Create objects from initial instances data ( for example, the initial instances 
+ * of the scene or from an external layout ).
+ *
+ * @method createObjectsFrom
+ * @param data The instances data
+ * @param xPos The offset on X axis
+ * @param yPos The offset on Y axis
+ */
+gdjs.RuntimeScene.prototype.createObjectsFrom = function(data, xPos, yPos) {
+	var that = this;
+    gdjs.iterateOver(data, "Objet", function(instanceData) {
         var objectName = instanceData.attr.nom;
 		var newObject = that.createObject(objectName);
 
-		if ( newObject != null ) {
-            newObject.setPosition(parseFloat(instanceData.attr.x), parseFloat(instanceData.attr.y));
+		if ( newObject !== null ) {
+            newObject.setPosition(parseFloat(instanceData.attr.x)+xPos, parseFloat(instanceData.attr.y)+yPos);
             newObject.setZOrder(parseFloat(instanceData.attr.plan));
             newObject.setAngle(parseFloat(instanceData.attr.angle));
             newObject.setLayer(instanceData.attr.layer);
@@ -122,17 +155,6 @@ gdjs.RuntimeScene.prototype.loadFromScene = function(sceneData) {
             newObject.extraInitializationFromInitialInstance(instanceData);
 		}
     });
-
-    //Set up the function to be executed at each tick
-    var module = gdjs[sceneData.attr.mangledName+"Code"];
-    if ( module && module.func ) this._eventsFunction = module.func;
-
-    isLoaded = true;
-}
-
-gdjs.RuntimeScene.prototype.unloadScene = function() {
-	if ( !this._isLoaded ) return;
-
 }
 
 /**
@@ -147,7 +169,7 @@ gdjs.RuntimeScene.prototype.unloadScene = function() {
  */
 gdjs.RuntimeScene.prototype.setEventsFunction = function(func) {
 	this._eventsFunction = func;
-}
+};
 
 /**
  * Step and render the scene.<br>
@@ -167,7 +189,7 @@ gdjs.RuntimeScene.prototype.renderAndStep = function() {
 	this._firstFrame = false;
 
 	return this._requestedScene == "" && !this._gameStopRequested;
-}
+};
 
 /** 
  * Render the PIXI stage associated to the runtimeScene.
@@ -176,7 +198,7 @@ gdjs.RuntimeScene.prototype.renderAndStep = function() {
 gdjs.RuntimeScene.prototype.render = function(){    
 	// render the PIXI stage   
 	this._pixiRenderer.render(this._pixiStage);
-}
+};
 
 /**
  * Called when rendering to do all times related tasks.
@@ -196,7 +218,7 @@ gdjs.RuntimeScene.prototype._updateTime = function() {
 		timers[i].updateTime(this._elapsedTime);
 	}
 	this._timeFromStart += this._elapsedTime;
-}
+};
 
 /**
  * Update the objects before launching the events.
@@ -208,7 +230,7 @@ gdjs.RuntimeScene.prototype._doObjectsDeletion = function() {
 		this._removeObject(this._objectsToDestroy[k]);
 
 	this._objectsToDestroy.length = 0;
-}
+};
 
 /**
  * Update the objects before launching the events.
@@ -218,15 +240,13 @@ gdjs.RuntimeScene.prototype._doObjectsDeletion = function() {
 gdjs.RuntimeScene.prototype._updateObjectsPreEvents = function() {
 	var allObjectsLists = this._instances.entries();
 
-	this._postPoneObjectsDeletion = true;
 	for( var i = 0, len = allObjectsLists.length;i<len;++i) {
 		for( var j = 0, listLen = allObjectsLists[i][1].length;j<listLen;++j) {
 			allObjectsLists[i][1][j].stepAutomatismsPreEvents(this);
 		}
 	}
-	this._postPoneObjectsDeletion = false;
-	this._doObjectsDeletion();
-}
+	this._doObjectsDeletion(); //Some automatisms may have request objects to be deleted.
+};
 
 /**
  * Update the objects (update positions, time management...)
@@ -239,7 +259,6 @@ gdjs.RuntimeScene.prototype._updateObjects = function() {
 	var allObjectsLists = this._instances.entries();
 	this.updateObjectsForces(allObjectsLists);
 
-	this._postPoneObjectsDeletion = true;
 	for( var i = 0, len = allObjectsLists.length;i<len;++i) {
 		for( var j = 0, listLen = allObjectsLists[i][1].length;j<listLen;++j) {
 			var obj = allObjectsLists[i][1][j];
@@ -247,7 +266,6 @@ gdjs.RuntimeScene.prototype._updateObjects = function() {
 			obj.stepAutomatismsPostEvents(this);
 		}
 	}
-	this._postPoneObjectsDeletion = false;
 	this._doObjectsDeletion(); //Some automatisms may have request objects to be deleted.
 }
 
@@ -257,7 +275,7 @@ gdjs.RuntimeScene.prototype._updateObjects = function() {
  */
 gdjs.RuntimeScene.prototype.setBackgroundColor = function(r,g,b) {
 	this._pixiStage.setBackgroundColor(parseInt(gdjs.rgbToHex(r,g,b),16));
-}
+};
 
 /**
  * Get the name of the scene.
@@ -265,7 +283,7 @@ gdjs.RuntimeScene.prototype.setBackgroundColor = function(r,g,b) {
  */
 gdjs.RuntimeScene.prototype.getName = function() {
 	return this._name;
-}
+};
 
 /**
  * Update the objects positions according to their forces
@@ -286,7 +304,7 @@ gdjs.RuntimeScene.prototype.updateObjectsForces = function(objects) {
 			}
 		}
 	}
-}
+};
 
 /**
  * Add an object to the instances living on the scene.
@@ -300,7 +318,7 @@ gdjs.RuntimeScene.prototype.addObject = function(obj) {
 	}
 
 	this._instances.get(obj.name).push(obj);
-}
+};
 
 /**
  * Get all the instances of the object called name.
@@ -314,7 +332,7 @@ gdjs.RuntimeScene.prototype.getObjects = function(name){
 	}
 
 	return this._instances.get(name);
-}
+};
 
 /**
  * Create a new object from its name. The object is also added to the instances
@@ -344,7 +362,7 @@ gdjs.RuntimeScene.prototype.createObject = function(objectName){
 
 	this.addObject(obj);
 	return obj;
-}
+};
 
 /**
  * Remove an object from the scene, deleting it from the list of instances.<br>
@@ -370,14 +388,19 @@ gdjs.RuntimeScene.prototype._removeObject = function(obj) {
 
 			allInstances[i].onDeletedFromScene(this);
 			for(var j = 0, lenj = allInstances[j]._automatisms.length;j<lenj;++j) {
-			    allInstances[i]._automatisms[j].ownerRemovedFromScene();
+				allInstances[i]._automatisms[j].ownerRemovedFromScene();
+			}
+
+			//Call global callback
+			for(var j = 0;j<gdjs.callbacksObjectDeletedFromScene.length;++j) {
+				gdjs.callbacksObjectDeletedFromScene[j](this, allInstances[i]);
 			}
 
 			allInstances.remove(i);
 			return;
 		}
 	}
-}
+};
 
 /**
  * Must be called whenever an object must be removed from the scene.
@@ -385,13 +408,9 @@ gdjs.RuntimeScene.prototype._removeObject = function(obj) {
  * @param object The object to be removed.
  */
 gdjs.RuntimeScene.prototype.markObjectForDeletion = function(obj) {
-	if ( true ) {
-		if ( this._objectsToDestroy.indexOf(obj) === -1 ) this._objectsToDestroy.push(obj);
-		return;
-	}
-
-	this._removeObject(obj);
-}
+	if ( this._objectsToDestroy.indexOf(obj) === -1 ) this._objectsToDestroy.push(obj);
+	return;
+};
 
 /**
  * Return the time elapsed since the last frame, in milliseconds.
@@ -399,7 +418,7 @@ gdjs.RuntimeScene.prototype.markObjectForDeletion = function(obj) {
  */
 gdjs.RuntimeScene.prototype.getElapsedTime = function() {
 	return this._elapsedTime;
-}
+};
 
 /**
  * Create an identifier for a new object.
@@ -408,7 +427,7 @@ gdjs.RuntimeScene.prototype.getElapsedTime = function() {
 gdjs.RuntimeScene.prototype.createNewUniqueId = function() {
 	this._lastId++;
 	return this._lastId;
-}
+};
 
 /**
  * Get the PIXI.Stage associated to the RuntimeScene.
@@ -416,7 +435,7 @@ gdjs.RuntimeScene.prototype.createNewUniqueId = function() {
  */
 gdjs.RuntimeScene.prototype.getPIXIStage = function() {
 	return this._pixiStage;
-}
+};
 
 /**
  * Get the PIXI renderer associated to the RuntimeScene.
@@ -424,7 +443,7 @@ gdjs.RuntimeScene.prototype.getPIXIStage = function() {
  */
 gdjs.RuntimeScene.prototype.getPIXIRenderer = function() {
 	return this._pixiRenderer;
-}
+};
 
 /**
  * Get the runtimeGame associated to the RuntimeScene.

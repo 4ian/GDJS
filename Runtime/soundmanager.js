@@ -72,7 +72,7 @@ gdjs.SoundManager.prototype.playSound = function(soundFile, loop, volume, pitch)
 
 gdjs.SoundManager.prototype.playSoundOnChannel = function(soundFile, channel, loop, volume, pitch) {
 	if ( this._sounds[channel] == null ) {
-		this._sounds[channel] = sound();
+		this._sounds[channel] = new gdjs.Sound();;
 	}
 
 	var theSound = this._sounds[channel];
@@ -109,7 +109,7 @@ gdjs.SoundManager.prototype.playMusic = function(soundFile, loop, volume, pitch)
 
 gdjs.SoundManager.prototype.playMusicOnChannel = function(soundFile, channel, loop, volume, pitch) {
 	if ( this._musics[channel] == null ) {
-		this._musics[channel] = sound();
+		this._musics[channel] = new gdjs.Sound();;
 	}
 
 	var theMusic = this._musics[channel];

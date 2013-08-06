@@ -61,6 +61,8 @@ SpriteExtension::SpriteExtension()
         SetFunctionName("setScaleX").SetAssociatedGetter("getScaleX");
     spriteActions["ChangeScaleHeight"].codeExtraInformation.
         SetFunctionName("setScaleY").SetAssociatedGetter("getScaleY");
+    spriteActions["ChangeScale"].codeExtraInformation.
+        SetFunctionName("setScale").SetManipulatedType("number").SetAssociatedGetter("getScale");
     spriteConditions["ScaleWidth"].codeExtraInformation
         .SetFunctionName("getScaleX");
     spriteConditions["ScaleHeight"].codeExtraInformation
@@ -113,21 +115,6 @@ SpriteExtension::SpriteExtension()
 /*
     //Objects instructions:
     {
-
-
-        obj.AddAction("ChangeScale",
-                       _("Modify the scale of an object"),
-                       _("Modify the scale of the specified object."),
-                       _("Do _PARAM1__PARAM2_ to the scale of _PARAM0_"),
-                       _("Size"),
-                       "res/actions/scale24.png",
-                       "res/actions/scale.png")
-
-            .AddParameter("object", _("Object"), "Sprite", false)
-            .AddParameter("operator", _("Modification's sign"), "",false)
-            .AddParameter("expression", _("Value"), "",false)
-            .codeExtraInformation.SetFunctionName("ChangeScale").SetIncludeFile("GDCpp/SpriteObject.h");
-
         obj.AddCondition("BlendMode",
                        _("Blend mode"),
                        _("Compare the number of the blend mode currently used by an object"),

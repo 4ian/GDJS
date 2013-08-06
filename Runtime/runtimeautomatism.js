@@ -64,12 +64,12 @@ gdjs.RuntimeAutomatism.prototype.stepPostEvents = function(runtimeScene) {
  * @method activate
  */
 gdjs.RuntimeAutomatism.prototype.activate = function(enable) { 
-	if ( enable == undefined ) enable = true;
-	if ( !this._activated && enable ) { 
-		this._activated = true; 
-		this.onActivate(); 
-	} 
-	else if ( this.activated && !enable ) { 
+	if ( enable === undefined ) enable = true;
+	if ( !this._activated && enable ) {
+		this._activated = true;
+		this.onActivate();
+	}
+	else if ( this.activated && !enable ) {
 		this._activated = false; 
 		this.onDeActivate(); 
 	} 

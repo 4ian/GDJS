@@ -131,19 +131,20 @@ bool Exporter::ExportLayoutForPreview(gd::Layout & layout, std::string exportDir
     std::vector<std::string> includesFiles;
 
     //Generate events code
-    if ( !ExportEventsCode(*project, gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/"), includesFiles) )
+    gd::Project exportedProject = *project;
+    if ( !ExportEventsCode(exportedProject, gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/"), includesFiles) )
         return false;
 
     //Strip the project
-    gd::Project strippedProject = StripProject(*project, "");
-    strippedProject.SetFirstLayout(layout.GetName());
+    StripProject(exportedProject);
+    exportedProject.SetFirstLayout(layout.GetName());
 
     //Export resources and finalize stripping
-    ExportResources(strippedProject, exportDir);
-    strippedProject.GetLayout(layout.GetName()).GetEvents().clear();
+    ExportResources(exportedProject, exportDir);
+    exportedProject.GetLayout(layout.GetName()).GetEvents().clear();
 
     //Export the project
-    std::string result = ExportToJSON(strippedProject, gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js"),
+    std::string result = ExportToJSON(exportedProject, gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js"),
                                       "gdjs.projectData", false);
     includesFiles.push_back(gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js"));
 
@@ -151,7 +152,7 @@ bool Exporter::ExportLayoutForPreview(gd::Layout & layout, std::string exportDir
     ExportIncludesAndLibs(includesFiles, exportDir, false);
 
     //Create the index file
-    if ( !ExportIndexFile(*project, exportDir, includesFiles) ) return false;
+    if ( !ExportIndexFile(exportedProject, exportDir, includesFiles) ) return false;
 
     return true;
 }
@@ -441,9 +442,8 @@ bool Exporter::ExportIncludesAndLibs(std::vector<std::string> & includesFiles, s
     return true;
 }
 
-gd::Project Exporter::StripProject(const gd::Project & project, std::string layout)
+void Exporter::StripProject(gd::Project & strippedProject, std::string layout)
 {
-    gd::Project strippedProject = project;
     strippedProject.GetObjectGroups().clear();
     while ( strippedProject.GetExternalEventsCount() > 0 ) strippedProject.RemoveExternalEvents(strippedProject.GetExternalEvents(0).GetName());
 
@@ -457,8 +457,6 @@ gd::Project Exporter::StripProject(const gd::Project & project, std::string layo
             ++i;
         }
     }
-
-    return strippedProject;
 }
 
 void Exporter::ExportResources(gd::Project & project, std::string exportDir)
@@ -480,21 +478,22 @@ void Exporter::ShowProjectExportDialog(gd::Project & project)
     std::vector<std::string> includesFiles;
 
     //TODO: Handle errors
-    if ( !ExportEventsCode(project, gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/"), includesFiles) )
+    gd::Project exportedProject = project;
+    if ( !ExportEventsCode(exportedProject, gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/"), includesFiles) )
     {
         wxLogError(_("Error during exporting: Unable to export events ( "+lastError+")."));
         return;
     }
 
     //Export the project
-    gd::Project strippedProject = StripProject(project);
-    ExportResources(strippedProject, exportDir);
-    std::string result = ExportToJSON(strippedProject, gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js"),
+    StripProject(exportedProject);
+    ExportResources(exportedProject, exportDir);
+    std::string result = ExportToJSON(exportedProject, gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js"),
                                       "gdjs.projectData", false);
     includesFiles.push_back(gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js"));
 
     ExportIncludesAndLibs(includesFiles, exportDir, minify);
-    if ( !ExportIndexFile(project, exportDir, includesFiles) )
+    if ( !ExportIndexFile(exportedProject, exportDir, includesFiles) )
     {
         wxLogError(_("Error during exporting:\n"+lastError));
         return;

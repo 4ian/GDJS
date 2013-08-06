@@ -7,7 +7,14 @@
  /**
  * @namespace gdjs
  */
-var gdjs = gdjs || {objectsTypes:new Hashtable(), automatismsTypes:new Hashtable(), evtTools:{}};
+var gdjs = gdjs || {
+    objectsTypes:new Hashtable(),
+    automatismsTypes:new Hashtable(),
+    evtTools:{},
+    callbacksRuntimeSceneLoaded: [],
+    callbacksRuntimeSceneUnloaded: [],
+    callbacksObjectDeletedFromScene: []
+};
 
 /**
  * Convert a rgb color value to a hex value.
@@ -118,7 +125,7 @@ gdjs.registerObjects = function() {
 }
 
 /**
- * Register the runtime automatisms this.can be used bt runtimeObject.<br>
+ * Register the runtime automatisms that can be used bt runtimeObject.<br>
  * Automatisms must be part of gdjs and have their property "thisIsARuntimeAutomatismConstructor"
  * defined and set to the name of the type of the automatism so as to be recognized.
  * The name of the type of the automatism must be complete, with the namespace if any. For
@@ -137,6 +144,46 @@ gdjs.registerAutomatisms = function() {
         }
     }
 }
+
+/**
+ * Register the callbacks that will be called when a runtimeScene is loaded/unloaded or
+ * when an object is deleted from a scene.<br>
+ * Callbacks must be called respectively gdjsCallbackRuntimeSceneLoaded, gdjsCallbackRuntimeSceneUnloaded
+ * or gdjsCallbackObjectDeletedFromScene and be part of a (nested) child object of gdjs.<br>
+ * Arguments passed to the function are the runtimeScene and the object if applicable.
+ *
+ * @method registerGlobalCallbacks
+ * @static
+ */
+gdjs.registerGlobalCallbacks = function() {
+
+    var totalprop = 0;
+
+    innerRegisterGlobalCallbacks = function (obj, nestLevel) {
+
+        for (var p in obj) {
+            if (obj.hasOwnProperty(p) && obj[p] !== null && 
+                Object.prototype.toString.call( obj[p] ) !== '[object Array]' && typeof obj === "object") {
+                totalprop++;
+                if ( obj[p].gdjsCallbackRuntimeSceneLoaded !== undefined) {
+                    gdjs.callbacksRuntimeSceneLoaded.push(obj[p].gdjsCallbackRuntimeSceneLoaded);
+                }
+                if ( obj[p].gdjsCallbackRuntimeSceneUnloaded !== undefined) {
+                    gdjs.callbacksRuntimeSceneUnloaded.push(obj[p].gdjsCallbackRuntimeSceneUnloaded);
+                }
+                if ( obj[p].gdjsCallbackObjectDeletedFromScene !== undefined) {
+                    gdjs.callbacksObjectDeletedFromScene.push(obj[p].gdjsCallbackObjectDeletedFromScene);
+                }
+
+                if ( nestLevel <= 1 )
+                    innerRegisterGlobalCallbacks(obj[p], nestLevel+1);
+            }
+        }
+    };
+
+    innerRegisterGlobalCallbacks(this, 0);
+    console.log("totalprop:" + totalprop);
+};
 
 /**
  * Get the constructor of an object.

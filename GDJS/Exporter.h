@@ -65,7 +65,7 @@ private:
      * \param project The project to be stripped.
      * \param layout Optional layout name. If not empty, all layouts will be removed except this layout.
      */
-    static gd::Project StripProject(const gd::Project & project, std::string layout = "");
+    static void StripProject(gd::Project & project, std::string layout = "");
 
     /**
      * \brief Export a project to JSON
