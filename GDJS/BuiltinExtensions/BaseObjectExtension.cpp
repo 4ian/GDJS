@@ -136,6 +136,8 @@ BaseObjectExtension::BaseObjectExtension()
         .SetFunctionName("gdjs.evtTools.object.distanceTest");
     GetAllConditions()["SeDirige"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.object.movesTowardTest");
+    GetAllConditions()["EstTourne"].codeExtraInformation
+        .SetFunctionName("gdjs.evtTools.object.turnedTowardTest");
 
     GetAllActions()["AjoutObjConcern"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.object.pickAllObjects");

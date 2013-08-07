@@ -84,9 +84,6 @@ SpriteExtension::SpriteExtension()
         .codeExtraInformation //No pixel perfect collision for now on the JS platform.
         .SetFunctionName("gdjs.evtTools.object.hitBoxesCollisionTest");
 
-    GetAllConditions()["EstTourne"].codeExtraInformation
-        .SetFunctionName("gdjs.evtTools.object.turnedTowardTest");
-
     spriteExpressions["X"].codeExtraInformation.
         SetFunctionName("getPointX");
     spriteExpressions["Y"].codeExtraInformation.

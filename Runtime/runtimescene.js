@@ -37,8 +37,8 @@ gdjs.RuntimeScene = function(runtimeGame, pixiRenderer)
     this._requestedScene = "";
     this._isLoaded = false; // True if loadFromScene was called and the scene is being played.
     this.layers = this._layers;
-    this._postPoneObjectsDeletion = false; //If set to true, objects will only be removed when doObjectsDeletion will be called ( And not at markObjectForDeletion call ).
-    this._objectsToDestroy = []; //The objects to be destroyed when doObjectsDeletion is called.
+    this._allInstancesList = []; //An array used to create a list of all instance when necessary ( see _constructListOfAllInstances )
+    this._instancesRemoved = []; //The instances removed from the scene and waiting to be sent to the cache.
 };
 
 /**
@@ -221,16 +221,51 @@ gdjs.RuntimeScene.prototype._updateTime = function() {
 };
 
 /**
- * Update the objects before launching the events.
- * @method _doObjectsDeletion
+ * Empty the list of the removed objects:<br>
+ * When an object is removed from the scene, it is still kept in the _instancesRemoved member
+ * of the RuntimeScene.<br>
+ * This method should be called regularly ( after events or automatisms steps ) so as to clear this list
+ * and allows the removed objects to be cached ( or destroyed if the cache is full ).<br>
+ * The removed objects could not be sent directly to the cache, as events may still be using them after
+ * removing them from the scene for example.
+ *
+ * @method _cacheOrClearRemovedInstances
  * @private
  */
-gdjs.RuntimeScene.prototype._doObjectsDeletion = function() {
-	for(var k =0, lenk=this._objectsToDestroy.length;k<lenk;++k)
-		this._removeObject(this._objectsToDestroy[k]);
+gdjs.RuntimeScene.prototype._cacheOrClearRemovedInstances = function() {
+	for(var k =0, lenk=this._instancesRemoved.length;k<lenk;++k) {
+		//Cache the instance to recycle it into a new instance later.
+		var cache = this._instancesCache.get(this._instancesRemoved[k].getName());
+		if ( cache.length < 128 ) cache.push(this._instancesRemoved[k]);
+	}
 
-	this._objectsToDestroy.length = 0;
+	this._instancesRemoved.length = 0;
 };
+
+/**
+ * Tool function filling _allObjectsList member with all the instances.
+ * @method _constructListOfAllObjects
+ * @private
+ */
+gdjs.RuntimeScene.prototype._constructListOfAllInstances= function() {
+	var allObjectsLists = this._instances.values();
+
+	var currentListSize = 0;
+	for( var i = 0, len = allObjectsLists.length;i<len;++i) {
+		var oldSize = currentListSize;
+		currentListSize += allObjectsLists[i].length;
+
+		if ( this._allInstancesList.length < currentListSize )
+			this._allInstancesList.length = currentListSize;
+
+		for(var j = 0, lenj = allObjectsLists[i].length;j<lenj;++j) {
+			this._allInstancesList[oldSize+j] = allObjectsLists[i][j];
+		}
+	}
+
+	if ( this._allInstancesList.length !== currentListSize )
+		this._allInstancesList.length = currentListSize;
+}
 
 /**
  * Update the objects before launching the events.
@@ -238,35 +273,37 @@ gdjs.RuntimeScene.prototype._doObjectsDeletion = function() {
  * @private
  */
 gdjs.RuntimeScene.prototype._updateObjectsPreEvents = function() {
-	var allObjectsLists = this._instances.entries();
 
-	for( var i = 0, len = allObjectsLists.length;i<len;++i) {
-		for( var j = 0, listLen = allObjectsLists[i][1].length;j<listLen;++j) {
-			allObjectsLists[i][1][j].stepAutomatismsPreEvents(this);
-		}
+	//It is *mandatory* to create and iterate on a external list of all objects, as the automatisms
+	//may delete the objects.
+	this._constructListOfAllInstances();
+	for( var i = 0, len = this._allInstancesList.length;i<len;++i) {
+		this._allInstancesList[i].stepAutomatismsPreEvents(this);
 	}
-	this._doObjectsDeletion(); //Some automatisms may have request objects to be deleted.
+
+	this._cacheOrClearRemovedInstances(); //Some automatisms may have request objects to be deleted.
 };
 
 /**
  * Update the objects (update positions, time management...)
- * @method updateObjects
+ * @method _updateObjects
  * @private
  */
 gdjs.RuntimeScene.prototype._updateObjects = function() {
-	this._doObjectsDeletion(); 
+	this._cacheOrClearRemovedInstances(); 
 
 	var allObjectsLists = this._instances.entries();
 	this.updateObjectsForces(allObjectsLists);
 
-	for( var i = 0, len = allObjectsLists.length;i<len;++i) {
-		for( var j = 0, listLen = allObjectsLists[i][1].length;j<listLen;++j) {
-			var obj = allObjectsLists[i][1][j];
-			obj.updateTime(this._elapsedTime/1000);
-			obj.stepAutomatismsPostEvents(this);
-		}
+	//It is *mandatory* to create and iterate on a external list of all objects, as the automatisms
+	//may delete the objects.
+	this._constructListOfAllInstances();
+	for( var i = 0, len = this._allInstancesList.length;i<len;++i) {
+		this._allInstancesList[i].updateTime(this._elapsedTime/1000);
+		this._allInstancesList[i].stepAutomatismsPostEvents(this);
 	}
-	this._doObjectsDeletion(); //Some automatisms may have request objects to be deleted.
+
+	this._cacheOrClearRemovedInstances(); //Some automatisms may have request objects to be deleted.
 }
 
 /**
@@ -365,50 +402,38 @@ gdjs.RuntimeScene.prototype.createObject = function(objectName){
 };
 
 /**
- * Remove an object from the scene, deleting it from the list of instances.<br>
- * Most of the time, do not call this method directly: Use markObjectForDeletion method
- * which will remove the objects either directly or when it can be done safely.
- *
- * @method _removeObject
- * @param obj The object to be removed from the scene.
- * @private
- */
-gdjs.RuntimeScene.prototype._removeObject = function(obj) {
-	if ( !this._instances.containsKey(obj.getName()) ) return;
-
-	//Cache the instance to recycle it into a new instance later.
-	var cache = this._instancesCache.get(obj.getName());
-	if ( cache.length < 128 ) cache.push(obj);
-    
-    //Delete from the living instances.
-	var objId = obj.id;
-	var allInstances = this._instances.get(obj.getName());
-	for(var i = 0, len = allInstances.length;i<len;++i) {
-		if (allInstances[i].id == objId) {
-
-			allInstances[i].onDeletedFromScene(this);
-			for(var j = 0, lenj = allInstances[j]._automatisms.length;j<lenj;++j) {
-				allInstances[i]._automatisms[j].ownerRemovedFromScene();
-			}
-
-			//Call global callback
-			for(var j = 0;j<gdjs.callbacksObjectDeletedFromScene.length;++j) {
-				gdjs.callbacksObjectDeletedFromScene[j](this, allInstances[i]);
-			}
-
-			allInstances.remove(i);
-			return;
-		}
-	}
-};
-
-/**
  * Must be called whenever an object must be removed from the scene.
  * @method markObjectForDeletion
  * @param object The object to be removed.
  */
 gdjs.RuntimeScene.prototype.markObjectForDeletion = function(obj) {
-	if ( this._objectsToDestroy.indexOf(obj) === -1 ) this._objectsToDestroy.push(obj);
+	//Add to the objects removed list.
+	//The objects will be sent to the instances cache or really deleted from memory later.
+	if ( this._instancesRemoved.indexOf(obj) === -1 ) this._instancesRemoved.push(obj);
+
+    //Delete from the living instances.
+	if ( this._instances.containsKey(obj.getName()) ) {
+		var objId = obj.id;
+		var allInstances = this._instances.get(obj.getName());
+		for(var i = 0, len = allInstances.length;i<len;++i) {
+			if (allInstances[i].id == objId) {
+				allInstances.remove(i);
+				break;
+			}
+		}
+	}
+
+	//Notify the object it was removed from the scene
+	obj.onDeletedFromScene(this);
+	for(var j = 0, lenj = obj._automatisms.length;j<lenj;++j) {
+		obj._automatisms[j].ownerRemovedFromScene();
+	}
+
+	//Call global callback
+	for(var j = 0;j<gdjs.callbacksObjectDeletedFromScene.length;++j) {
+		gdjs.callbacksObjectDeletedFromScene[j](this, obj);
+	}
+
 	return;
 };
 
@@ -421,7 +446,7 @@ gdjs.RuntimeScene.prototype.getElapsedTime = function() {
 };
 
 /**
- * Create an identifier for a new object.
+ * Create an identifier for a new object of the scene.
  * @method createNewUniqueId
  */
 gdjs.RuntimeScene.prototype.createNewUniqueId = function() {
