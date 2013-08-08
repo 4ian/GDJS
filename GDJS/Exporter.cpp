@@ -379,7 +379,7 @@ bool Exporter::ExportIncludesAndLibs(std::vector<std::string> & includesFiles, s
             }
 
             cmd += allJsFiles;
-            cmd += "--js_output_file "+exportDir+"/code.js";
+            cmd += "--js_output_file \""+exportDir+"/code.js\"";
 
             wxArrayString output;
             wxArrayString errors;
