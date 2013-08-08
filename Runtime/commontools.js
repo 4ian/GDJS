@@ -134,11 +134,11 @@ gdjs.evtTools.common.nthroot = function(x, n) {
 };
 
 gdjs.evtTools.common.mod = function(x, y) {
-    return x % y;
+    return x - y * Math.floor(x / y);
 };
 
 gdjs.evtTools.common.angleDifference = function(angle1, angle2) {
-    return ((((angle1 - angle2) % 360) + 180) % 360) - 180;
+    return gdjs.evtTools.common.mod(gdjs.evtTools.common.mod(angle1 - angle2, 360.0) + 180.0, 360.0) - 180.0;
 };
 
 gdjs.evtTools.common.trunc = function(x) {

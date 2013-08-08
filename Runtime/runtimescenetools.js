@@ -11,11 +11,11 @@
  * @static
  * @private
  */
-gdjs.evtTools.runtimeScene = gdjs.evtTools.runtimeScene || {}
+gdjs.evtTools.runtimeScene = gdjs.evtTools.runtimeScene || {};
 
 gdjs.evtTools.runtimeScene.sceneJustBegins = function(runtimeScene) {
     return runtimeScene.isFirstFrame();
-}
+};
 
 gdjs.evtTools.runtimeScene.setBackgroundColor = function(runtimeScene, color) {
 
@@ -25,19 +25,19 @@ gdjs.evtTools.runtimeScene.setBackgroundColor = function(runtimeScene, color) {
     runtimeScene.setBackgroundColor(parseInt(colors[0]),
                                     parseInt(colors[1]),
                                     parseInt(colors[2]));
-}
+};
 
 gdjs.evtTools.runtimeScene.getElapsedTimeInSeconds = function(runtimeScene) {
     return runtimeScene.getElapsedTime()/1000;
-}
+};
 
 gdjs.evtTools.runtimeScene.setTimeScale = function(runtimeScene, timeScale) {
     return runtimeScene.setTimeScale(timeScale);
-}
+};
 
 gdjs.evtTools.runtimeScene.getTimeScale = function(runtimeScene) {
     return runtimeScene.getTimeScale();
-}
+};
 
 gdjs.evtTools.runtimeScene.timerElapsedTime = function(runtimeScene, timeInSeconds, timerName) {
     if ( !runtimeScene.hasTimer(timerName) ) {
@@ -46,46 +46,46 @@ gdjs.evtTools.runtimeScene.timerElapsedTime = function(runtimeScene, timeInSecon
     }
 
     return runtimeScene.getTimer(timerName).getTime()/1000 >= timeInSeconds;
-}
+};
 
 gdjs.evtTools.runtimeScene.timerPaused = function(runtimeScene, timerName) {
     if ( !runtimeScene.hasTimer(timerName) ) return false;
 
     return runtimeScene.getTimer(timerName).isPaused();
-}
+};
 
 gdjs.evtTools.runtimeScene.resetTimer = function(runtimeScene, timerName) {
     if ( !runtimeScene.hasTimer(timerName) )
         runtimeScene.addTimer(timerName);
     else
         runtimeScene.getTimer(timerName).reset();
-}
+};
 
 gdjs.evtTools.runtimeScene.pauseTimer = function(runtimeScene, timerName) {
     if ( !runtimeScene.hasTimer(timerName) ) runtimeScene.addTimer(timerName);
 
     runtimeScene.getTimer(timerName).setPaused(true);
-}
+};
 
 gdjs.evtTools.runtimeScene.unpauseTimer = function(runtimeScene, timerName) {
     if ( !runtimeScene.hasTimer(timerName) ) runtimeScene.addTimer(timerName);
 
     return runtimeScene.getTimer(timerName).setPaused(false);
-}
+};
 
 gdjs.evtTools.runtimeScene.removeTimer = function(runtimeScene, timerName) {
     if ( runtimeScene.hasTimer(timerName) ) runtimeScene.removeTimer(timerName);
-}
+};
 
 gdjs.evtTools.runtimeScene.getTimerElapsedTimeInSeconds = function(runtimeScene, timerName) {
     if ( !runtimeScene.hasTimer(timerName) ) return 0;
 
     return runtimeScene.getTimer(timerName).getTime()/1000;
-}
+};
 
 gdjs.evtTools.runtimeScene.getTimeFromStartInSeconds = function(runtimeScene) {
     return runtimeScene.getTimeFromStart()/1000;
-}
+};
 
 gdjs.evtTools.runtimeScene.getTime = function(what) {
     var now = new Date();
@@ -112,19 +112,19 @@ gdjs.evtTools.runtimeScene.getTime = function(what) {
     }
 
     return 0;
-}
+};
 
 gdjs.evtTools.runtimeScene.changeScene = function(currentScene, newSceneName) {
-    if ( currentScene.getGame().getSceneData(newSceneName) != undefined )
+    if ( currentScene.getGame().getSceneData(newSceneName) !== undefined )
         currentScene.requestSceneChange(newSceneName);
-}
+};
 
 gdjs.evtTools.runtimeScene.stopGame = function(currentScene) {
     currentScene.requestGameStop();
-}
+};
 gdjs.evtTools.runtimeScene.createObjectsFromExternalLayout = function(scene, externalLayout, xPos, yPos) {
     var externalLayoutData = scene.getGame().getExternalLayoutData(externalLayout);
     if ( externalLayoutData === null ) return;
 
     scene.createObjectsFrom(externalLayoutData.Instances, xPos, yPos);
-}
+};

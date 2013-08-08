@@ -216,7 +216,7 @@ gdjs.evtTools.object.movesTowardTest = function( objectsLists1, objectsLists2, t
                                   obj2.getX()+obj2.getCenterX() - (obj1.getX()+obj1.getCenterX()));
         objAngle *= 180/3.14159;
 
-        return Math.abs(((((obj1.getAverageForce().getAngle() - objAngle) % 360) + 180) % 360) - 180) <= tolerance/2;
+        return Math.abs(gdjs.evtTools.common.angleDifference(obj1.getAverageForce().getAngle(), objAngle)) <= tolerance/2;
     }
 
     return gdjs.evtTools.object.TwoListsTest(movesTowardTestInner, objectsLists1, objectsLists2, inverted);
@@ -230,7 +230,7 @@ gdjs.evtTools.object.turnedTowardTest = function( objectsLists1, objectsLists2, 
                                   obj2.getX()+obj2.getCenterX() - (obj1.getX()+obj1.getCenterX()));
         objAngle *= 180/3.14159;
 
-        return Math.abs(((((obj1.getAngle() - objAngle) % 360) + 180) % 360) - 180)  <= tolerance/2;
+        return Math.abs(gdjs.evtTools.common.angleDifference(obj1.getAngle(), objAngle)) <= tolerance/2;
     };
 
     return gdjs.evtTools.object.TwoListsTest(turnedTowardTestInner, objectsLists1, objectsLists2, inverted);
