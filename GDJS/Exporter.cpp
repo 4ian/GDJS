@@ -130,17 +130,18 @@ bool Exporter::ExportLayoutForPreview(gd::Layout & layout, std::string exportDir
     gd::RecursiveMkDir::MkDir(exportDir+"/Extensions");
     std::vector<std::string> includesFiles;
 
-    //Generate events code
     gd::Project exportedProject = *project;
+
+    //Export resources ( *before* generating events as some resources filenames may be updated )
+    ExportResources(exportedProject, exportDir);
+
+    //Generate events code
     if ( !ExportEventsCode(exportedProject, gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/"), includesFiles) )
         return false;
 
-    //Strip the project
+    //Strip the project ( *after* generating events as the events may use strioped things ( objects groups... ) ) 
     StripProject(exportedProject);
     exportedProject.SetFirstLayout(layout.GetName());
-
-    //Export resources and finalize stripping
-    ExportResources(exportedProject, exportDir);
     exportedProject.GetLayout(layout.GetName()).GetEvents().clear();
 
     //Export the project
@@ -148,7 +149,7 @@ bool Exporter::ExportLayoutForPreview(gd::Layout & layout, std::string exportDir
                                       "gdjs.projectData", false);
     includesFiles.push_back(gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js"));
 
-    //Copy additional dependencies
+    //Copy all the dependencies
     ExportIncludesAndLibs(includesFiles, exportDir, false);
 
     //Create the index file
@@ -469,6 +470,7 @@ void Exporter::ShowProjectExportDialog(gd::Project & project)
     ProjectExportDialog dialog(NULL, project);
     if ( dialog.ShowModal() != 1 ) return;
 
+    //Prepare the export directory
     bool minify = dialog.RequestMinify();
     std::string exportDir = dialog.GetExportDir();
     gd::RecursiveMkDir::MkDir(exportDir);
@@ -477,21 +479,27 @@ void Exporter::ShowProjectExportDialog(gd::Project & project)
     gd::RecursiveMkDir::MkDir(exportDir+"/Extensions");
     std::vector<std::string> includesFiles;
 
-    //TODO: Handle errors
     gd::Project exportedProject = project;
+
+    //Export the resources ( before generating events as some resources filenames may be updated )
+    ExportResources(exportedProject, exportDir);
+
+    //Export events 
     if ( !ExportEventsCode(exportedProject, gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/"), includesFiles) )
     {
         wxLogError(_("Error during exporting: Unable to export events ( "+lastError+")."));
         return;
     }
 
-    //Export the project
+    //Strip the project ( *after* generating events as the events may use strioped things ( objects groups... ) )...
     StripProject(exportedProject);
-    ExportResources(exportedProject, exportDir);
+
+    //...and export it
     std::string result = ExportToJSON(exportedProject, gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js"),
                                       "gdjs.projectData", false);
     includesFiles.push_back(gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js"));
 
+    //Copy all dependencies and the index file.
     ExportIncludesAndLibs(includesFiles, exportDir, minify);
     if ( !ExportIndexFile(exportedProject, exportDir, includesFiles) )
     {
@@ -499,6 +507,7 @@ void Exporter::ShowProjectExportDialog(gd::Project & project)
         return;
     }
 
+    //Finished!
     if ( wxMessageBox(_("Compilation achieved. Do you want to open the folder where the project has been compiled\?"),
                       _("Compilation finished"), wxYES_NO) == wxYES )
     {
