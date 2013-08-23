@@ -50,8 +50,8 @@ VariablesExtension::VariablesExtension()
                 std::string varGetter = "runtimeScene.getVariables().get(\""+var+"\")";
                 //Optimize the lookup when the variable position is known:
                 {
-                    unsigned int index = codeGenerator.GetLayout().GetVariables().GetVariablePosition(instruction.GetParameters()[1].GetPlainString());
-                    if ( index < codeGenerator.GetLayout().GetVariables().GetVariableCount() )
+                    unsigned int index = codeGenerator.GetLayout().GetVariables().GetPosition(instruction.GetParameters()[1].GetPlainString());
+                    if ( index < codeGenerator.GetLayout().GetVariables().Count() )
                         varGetter = "runtimeScene.getVariables().getFromIndex("+ToString(index)+")";
                 }
 
@@ -84,8 +84,8 @@ VariablesExtension::VariablesExtension()
                 std::string varGetter = "runtimeScene.getVariables().get(\""+var+"\")";
                 //Optimize the lookup when the variable position is known:
                 {
-                    unsigned int index = codeGenerator.GetLayout().GetVariables().GetVariablePosition(instruction.GetParameters()[1].GetPlainString());
-                    if ( index < codeGenerator.GetLayout().GetVariables().GetVariableCount() )
+                    unsigned int index = codeGenerator.GetLayout().GetVariables().GetPosition(instruction.GetParameters()[1].GetPlainString());
+                    if ( index < codeGenerator.GetLayout().GetVariables().Count() )
                         varGetter = "runtimeScene.getVariables().getFromIndex("+ToString(index)+")";
                 }
 
@@ -131,8 +131,8 @@ VariablesExtension::VariablesExtension()
                 std::string varGetter = "runtimeScene.getVariables().get(\""+var+"\")";
                 //Optimize the lookup when the variable position is known:
                 {
-                    unsigned int index = codeGenerator.GetLayout().GetVariables().GetVariablePosition(instruction.GetParameters()[1].GetPlainString());
-                    if ( index < codeGenerator.GetLayout().GetVariables().GetVariableCount() )
+                    unsigned int index = codeGenerator.GetLayout().GetVariables().GetPosition(instruction.GetParameters()[1].GetPlainString());
+                    if ( index < codeGenerator.GetLayout().GetVariables().Count() )
                         varGetter = "runtimeScene.getVariables().getFromIndex("+ToString(index)+")";
                 }
 
@@ -170,8 +170,8 @@ VariablesExtension::VariablesExtension()
                 std::string varGetter = "runtimeScene.getVariables().get(\""+var+"\")";
                 //Optimize the lookup when the variable position is known:
                 {
-                    unsigned int index = codeGenerator.GetLayout().GetVariables().GetVariablePosition(instruction.GetParameters()[1].GetPlainString());
-                    if ( index < codeGenerator.GetLayout().GetVariables().GetVariableCount() )
+                    unsigned int index = codeGenerator.GetLayout().GetVariables().GetPosition(instruction.GetParameters()[1].GetPlainString());
+                    if ( index < codeGenerator.GetLayout().GetVariables().Count() )
                         varGetter = "runtimeScene.getVariables().getFromIndex("+ToString(index)+")";
                 }
 
@@ -204,8 +204,8 @@ VariablesExtension::VariablesExtension()
                 std::string varGetter = "runtimeScene.getGame().getVariables().get(\""+var+"\")";
                 //Optimize the lookup when the variable position is known:
                 {
-                    unsigned int index = codeGenerator.GetProject().GetVariables().GetVariablePosition(instruction.GetParameters()[1].GetPlainString());
-                    if ( index < codeGenerator.GetProject().GetVariables().GetVariableCount() )
+                    unsigned int index = codeGenerator.GetProject().GetVariables().GetPosition(instruction.GetParameters()[1].GetPlainString());
+                    if ( index < codeGenerator.GetProject().GetVariables().Count() )
                         varGetter = "runtimeScene.getGame().getVariables().getFromIndex("+ToString(index)+")";
                 }
 
@@ -238,8 +238,8 @@ VariablesExtension::VariablesExtension()
                 std::string varGetter = "runtimeScene.getGame().getVariables().get(\""+var+"\")";
                 //Optimize the lookup when the variable position is known:
                 {
-                    unsigned int index = codeGenerator.GetProject().GetVariables().GetVariablePosition(instruction.GetParameters()[1].GetPlainString());
-                    if ( index < codeGenerator.GetProject().GetVariables().GetVariableCount() )
+                    unsigned int index = codeGenerator.GetProject().GetVariables().GetPosition(instruction.GetParameters()[1].GetPlainString());
+                    if ( index < codeGenerator.GetProject().GetVariables().Count() )
                         varGetter = "runtimeScene.getGame().getVariables().getFromIndex("+ToString(index)+")";
                 }
 
@@ -285,8 +285,8 @@ VariablesExtension::VariablesExtension()
                 std::string varGetter = "runtimeScene.getGame().getVariables().get(\""+var+"\")";
                 //Optimize the lookup when the variable position is known:
                 {
-                    unsigned int index = codeGenerator.GetProject().GetVariables().GetVariablePosition(instruction.GetParameters()[1].GetPlainString());
-                    if ( index < codeGenerator.GetProject().GetVariables().GetVariableCount() )
+                    unsigned int index = codeGenerator.GetProject().GetVariables().GetPosition(instruction.GetParameters()[1].GetPlainString());
+                    if ( index < codeGenerator.GetProject().GetVariables().Count() )
                         varGetter = "runtimeScene.getGame().getVariables().getFromIndex("+ToString(index)+")";
                 }
 
@@ -324,8 +324,8 @@ VariablesExtension::VariablesExtension()
                 std::string varGetter = "runtimeScene.getGame().getVariables().get(\""+var+"\")";
                 //Optimize the lookup when the variable position is known:
                 {
-                    unsigned int index = codeGenerator.GetProject().GetVariables().GetVariablePosition(instruction.GetParameters()[1].GetPlainString());
-                    if ( index < codeGenerator.GetProject().GetVariables().GetVariableCount() )
+                    unsigned int index = codeGenerator.GetProject().GetVariables().GetPosition(instruction.GetParameters()[1].GetPlainString());
+                    if ( index < codeGenerator.GetProject().GetVariables().Count() )
                         varGetter = "runtimeScene.getGame().getVariables().getFromIndex("+ToString(index)+")";
                 }
 
@@ -351,8 +351,8 @@ VariablesExtension::VariablesExtension()
                 std::string varGetter = "runtimeScene.getVariables().get(\""+var+"\")";
                 //Optimize the lookup when the variable position is known:
                 {
-                    unsigned int index = codeGenerator.GetLayout().GetVariables().GetVariablePosition(parameters[1].GetPlainString());
-                    if ( index < codeGenerator.GetLayout().GetVariables().GetVariableCount() )
+                    unsigned int index = codeGenerator.GetLayout().GetVariables().GetPosition(parameters[1].GetPlainString());
+                    if ( index < codeGenerator.GetLayout().GetVariables().Count() )
                         varGetter = "runtimeScene.getVariables().getFromIndex("+ToString(index)+")";
                 }
                 return varGetter+".getAsNumber()";
@@ -373,8 +373,8 @@ VariablesExtension::VariablesExtension()
                 std::string varGetter = "runtimeScene.getVariables().get(\""+var+"\")";
                 //Optimize the lookup when the variable position is known:
                 {
-                    unsigned int index = codeGenerator.GetLayout().GetVariables().GetVariablePosition(parameters[1].GetPlainString());
-                    if ( index < codeGenerator.GetLayout().GetVariables().GetVariableCount() )
+                    unsigned int index = codeGenerator.GetLayout().GetVariables().GetPosition(parameters[1].GetPlainString());
+                    if ( index < codeGenerator.GetLayout().GetVariables().Count() )
                         varGetter = "runtimeScene.getVariables().getFromIndex("+ToString(index)+")";
                 }
                 return varGetter+".getAsString()";
@@ -394,8 +394,8 @@ VariablesExtension::VariablesExtension()
                 std::string varGetter = "runtimeScene.getGame().getVariables().get(\""+var+"\")";
                 //Optimize the lookup when the variable position is known:
                 {
-                    unsigned int index = codeGenerator.GetProject().GetVariables().GetVariablePosition(parameters[1].GetPlainString());
-                    if ( index < codeGenerator.GetProject().GetVariables().GetVariableCount() )
+                    unsigned int index = codeGenerator.GetProject().GetVariables().GetPosition(parameters[1].GetPlainString());
+                    if ( index < codeGenerator.GetProject().GetVariables().Count() )
                         varGetter = "runtimeScene.getGame().getVariables().getFromIndex("+ToString(index)+")";
                 }
                 return varGetter+".getAsNumber()";
@@ -417,8 +417,8 @@ VariablesExtension::VariablesExtension()
                 std::string varGetter = "runtimeScene.getGame().getVariables().get(\""+var+"\")";
                 //Optimize the lookup when the variable position is known:
                 {
-                    unsigned int index = codeGenerator.GetProject().GetVariables().GetVariablePosition(parameters[1].GetPlainString());
-                    if ( index < codeGenerator.GetProject().GetVariables().GetVariableCount() )
+                    unsigned int index = codeGenerator.GetProject().GetVariables().GetPosition(parameters[1].GetPlainString());
+                    if ( index < codeGenerator.GetProject().GetVariables().Count() )
                         varGetter = "runtimeScene.getGame().getVariables().getFromIndex("+ToString(index)+")";
                 }
                 return varGetter+".getAsString()";
