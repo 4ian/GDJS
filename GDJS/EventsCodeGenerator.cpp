@@ -20,6 +20,7 @@
 #include "GDCore/CommonTools.h"
 #include "GDJS/JsPlatform.h"
 #include "GDJS/EventsCodeGenerator.h"
+#include "GDJS/VariableParserCallbacks.h"
 
 using namespace std;
 
@@ -135,44 +136,35 @@ std::string EventsCodeGenerator::GenerateSceneEventsCompleteCode(gd::Project & p
     return output;
 }
 
-std::string EventsCodeGenerator::GenerateCurrentObjectFunctionCall(std::string objectListName,
+std::string EventsCodeGenerator::GenerateObjectFunctionCall(std::string objectListName,
                                                       const gd::ObjectMetadata & objMetadata,
-                                                      std::string functionCallName,
+                                                      const gd::ExpressionCodeGenerationInformation & codeInfo,
                                                       std::string parametersStr,
+                                                      std::string defaultOutput,
                                                       gd::EventsCodeGenerationContext & context)
 {
-    return "("+GetObjectListName(objectListName, context)+"[i]."+functionCallName+"("+parametersStr+"))";
+    if ( codeInfo.staticFunction )
+        return "("+codeInfo.functionCallName+"("+parametersStr+"))";
+    if ( context.GetCurrentObject() == objectListName && !context.GetCurrentObject().empty())
+        return "("+GetObjectListName(objectListName, context)+"[i]."+codeInfo.functionCallName+"("+parametersStr+"))";
+    else
+        return "(( "+GetObjectListName(objectListName, context)+".length === 0 ) ? "+defaultOutput+" :"+ GetObjectListName(objectListName, context)+"[0]."+codeInfo.functionCallName+"("+parametersStr+"))";
 }
 
-std::string EventsCodeGenerator::GenerateNotPickedObjectFunctionCall(std::string objectListName,
-                                                        const gd::ObjectMetadata & objMetadata,
-                                                        std::string functionCallName,
-                                                        std::string parametersStr,
-                                                        std::string defaultOutput,
-                                                      gd::EventsCodeGenerationContext & context)
-{
-    return "(( "+GetObjectListName(objectListName, context)+".length === 0 ) ? "+defaultOutput+" :"+ GetObjectListName(objectListName, context)+"[0]."+functionCallName+"("+parametersStr+"))";
-}
-
-std::string EventsCodeGenerator::GenerateCurrentObjectAutomatismFunctionCall(std::string objectListName,
-                                                                                       std::string automatismName,
+std::string EventsCodeGenerator::GenerateObjectAutomatismFunctionCall(std::string objectListName,
+                                                      std::string automatismName,
                                                       const gd::AutomatismMetadata & autoInfo,
-                                                      std::string functionCallName,
+                                                      const gd::ExpressionCodeGenerationInformation & codeInfo,
                                                       std::string parametersStr,
+                                                      std::string defaultOutput,
                                                       gd::EventsCodeGenerationContext & context)
 {
-    return "("+GetObjectListName(objectListName, context)+"[i].getAutomatism(\""+automatismName+"\")."+functionCallName+"("+parametersStr+"))";
-}
-
-std::string EventsCodeGenerator::GenerateNotPickedObjectAutomatismFunctionCall(std::string objectListName,
-                                                                                       std::string automatismName,
-                                                        const gd::AutomatismMetadata & autoInfo,
-                                                        std::string functionCallName,
-                                                        std::string parametersStr,
-                                                        std::string defaultOutput,
-                                                      gd::EventsCodeGenerationContext & context)
-{
-    return "(( "+GetObjectListName(objectListName, context)+".length === 0 ) ? "+defaultOutput+" :"+GetObjectListName(objectListName, context)+"[0].getAutomatism(\""+automatismName+"\")."+functionCallName+"("+parametersStr+"))";
+    if ( codeInfo.staticFunction )
+        return "("+codeInfo.functionCallName+"("+parametersStr+"))";
+    if ( context.GetCurrentObject() == objectListName && !context.GetCurrentObject().empty())
+        return "("+GetObjectListName(objectListName, context)+"[i].getAutomatism(\""+automatismName+"\")."+codeInfo.functionCallName+"("+parametersStr+"))";
+    else
+        return "(( "+GetObjectListName(objectListName, context)+".length === 0 ) ? "+defaultOutput+" :"+GetObjectListName(objectListName, context)+"[0].getAutomatism(\""+automatismName+"\")."+codeInfo.functionCallName+"("+parametersStr+"))";
 }
 
 std::string EventsCodeGenerator::GenerateFreeCondition(const std::vector<std::string> & arguments,
@@ -482,7 +474,7 @@ string EventsCodeGenerator::GenerateConditionsListCode(vector < gd::Instruction 
 
 std::string EventsCodeGenerator::GenerateParameterCodes(const std::string & parameter, const gd::ParameterMetadata & metadata,
                                                         gd::EventsCodeGenerationContext & context,
-                                                        const std::vector < gd::Expression > & othersParameters,
+                                                        const std::string & previousParameter,
                                                         std::vector < std::pair<std::string, std::string> > * supplementaryParametersTypes)
 {
     std::string argOutput;
@@ -540,8 +532,46 @@ std::string EventsCodeGenerator::GenerateParameterCodes(const std::string & para
                 argOutput += ")";
         }
     }
+    else if (metadata.type == "scenevar")
+    {
+        VariableCodeGenerationCallbacks callbacks(argOutput, *this, context, VariableCodeGenerationCallbacks::LAYOUT_VARIABLE);
+
+        gd::VariableParser parser(parameter);
+        if ( !parser.Parse(callbacks) )
+        {
+            cout << "Error :" << parser.firstErrorStr << " in: "<< parameter << endl;
+            argOutput = "gdjs.VariablesContainer.badVariable";
+        }
+    }
+    else if (metadata.type == "globalvar")
+    {
+        VariableCodeGenerationCallbacks callbacks(argOutput, *this, context, VariableCodeGenerationCallbacks::PROJECT_VARIABLE);
+
+        gd::VariableParser parser(parameter);
+        if ( !parser.Parse(callbacks) )
+        {
+            cout << "Error :" << parser.firstErrorStr << " in: "<< parameter << endl;
+            argOutput = "gdjs.VariablesContainer.badVariable";
+        }
+    }
+    else if (metadata.type == "objectvar")
+    {
+        //Object is either the object of the previous parameter or, if it is empty,
+        //the object being picked by the instruction.
+        std::string object = previousParameter;
+        if ( object.empty() ) object = context.GetCurrentObject();
+
+        VariableCodeGenerationCallbacks callbacks(argOutput, *this, context, object);
+
+        gd::VariableParser parser(parameter);
+        if ( !parser.Parse(callbacks) )
+        {
+            cout << "Error :" << parser.firstErrorStr << " in: "<< parameter << endl;
+            argOutput = "gdjs.VariablesContainer.badVariable";
+        }
+    }
     else
-        return gd::EventsCodeGenerator::GenerateParameterCodes(parameter, metadata, context, othersParameters, supplementaryParametersTypes);
+        return gd::EventsCodeGenerator::GenerateParameterCodes(parameter, metadata, context, previousParameter, supplementaryParametersTypes);
 
     return argOutput;
 }

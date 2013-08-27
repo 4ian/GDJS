@@ -329,25 +329,31 @@ gdjs.RuntimeObject.prototype.isOnLayer = function(layer) {
  */
 gdjs.RuntimeObject.prototype.getVariables = function() {
     return this._variables;
-}
+};
 
 /**
- * Shortcut to get the value of a variable considered as a number
- * @method getVariableAsNumber
+ * Get the value of a variable considered as a number. Equivalent of variable.getAsNumber()
+ * @method getVariableNumber
+ * @param variable The variable to be accessed
  * @return The value of the specified variable
+ * @static
  */
-gdjs.RuntimeObject.prototype.getVariableAsNumber = function(name) {
-    return this._variables.get(name).getAsNumber();
-}
+gdjs.RuntimeObject.getVariableNumber = function(variable) {
+    return variable.getAsNumber();
+};
+gdjs.RuntimeObject.prototype.getVariableNumber = gdjs.RuntimeObject.getVariableNumber;
 
 /**
- * Shortcut to get the value of a variable considered as a string
- * @method getVariableAsString
- * @return The value of the specified variable
+ * Get the value of a variable considered as a string. Equivalent of variable.getAsString()
+ * @method getVariableString
+ * @param variable The variable to be accessed
+ * @return The string of the specified variable
+ * @static
  */
-gdjs.RuntimeObject.prototype.getVariableAsString = function(name) {
-    return this._variables.get(name).getAsString();
-}
+gdjs.RuntimeObject.getVariableString = function(variable) {
+    return variable.getAsString();
+};
+gdjs.RuntimeObject.prototype.getVariableString = gdjs.RuntimeObject.getVariableString;
 
 /**
  * Shortcut to set the value of a variable considered as a number
@@ -355,9 +361,10 @@ gdjs.RuntimeObject.prototype.getVariableAsString = function(name) {
  * @param name {String} The variable to be changed
  * @param newValue {Any} The value to be set
  */
-gdjs.RuntimeObject.prototype.setVariableNumber = function(name, newValue) {
-    return this._variables.get(name).setNumber(newValue);
-}
+gdjs.RuntimeObject.setVariableNumber = function(variable, newValue) {
+    variable.setNumber(newValue);
+};
+gdjs.RuntimeObject.prototype.setVariableNumber = gdjs.RuntimeObject.setVariableNumber;
 
 /**
  * Shortcut to set the value of a variable considered as a string
@@ -365,9 +372,10 @@ gdjs.RuntimeObject.prototype.setVariableNumber = function(name, newValue) {
  * @param name {String} The variable to be changed
  * @param newValue {Any} The value to be set
  */
-gdjs.RuntimeObject.prototype.setVariableString = function(name, newValue) {
-    return this._variables.get(name).setString(newValue);
-}
+gdjs.RuntimeObject.setVariableString = function(variable, newValue) {
+    variable.setString(newValue);
+};
+gdjs.RuntimeObject.prototype.setVariableString = gdjs.RuntimeObject.setVariableString;
 
 /**
  * Shortcut to test if a variable exists for the object.
@@ -376,7 +384,7 @@ gdjs.RuntimeObject.prototype.setVariableString = function(name, newValue) {
  */
 gdjs.RuntimeObject.prototype.hasVariable = function(name) {
     return this._variables.has(name);
-}
+};
 
 /**
  * Hide or show the object
@@ -385,7 +393,7 @@ gdjs.RuntimeObject.prototype.hasVariable = function(name) {
  */
 gdjs.RuntimeObject.prototype.hide = function(enable) {
     this.hidden = enable;
-}
+};
 
 /**
  * Return true if the object is not hidden.
@@ -394,7 +402,7 @@ gdjs.RuntimeObject.prototype.hide = function(enable) {
  */
 gdjs.RuntimeObject.prototype.isVisible = function(enable) {
     return !this.hidden;
-}
+};
 
 /**
  * Return true if the object is hidden.
@@ -403,7 +411,7 @@ gdjs.RuntimeObject.prototype.isVisible = function(enable) {
  */
 gdjs.RuntimeObject.prototype.isHidden = function(enable) {
     return this.hidden;
-}
+};
 
 /**
  * Return the width of the object
@@ -412,7 +420,7 @@ gdjs.RuntimeObject.prototype.isHidden = function(enable) {
  */
 gdjs.RuntimeObject.prototype.getWidth = function() {
     return 0;
-}
+};
 
 /**
  * Return the width of the object
@@ -421,7 +429,7 @@ gdjs.RuntimeObject.prototype.getWidth = function() {
  */
 gdjs.RuntimeObject.prototype.getHeight = function() {
     return 0;
-}
+};
 
 /**
  * Return the X position of the object center, relative to the object position.
@@ -429,7 +437,7 @@ gdjs.RuntimeObject.prototype.getHeight = function() {
  */
 gdjs.RuntimeObject.prototype.getCenterX = function() {
     return this.getWidth()/2;
-}
+};
 
 /**
  * Return the Y position of the object center, relative to the object position.
@@ -437,7 +445,7 @@ gdjs.RuntimeObject.prototype.getCenterX = function() {
  */
 gdjs.RuntimeObject.prototype.getCenterY = function() {
     return this.getHeight()/2;
-}
+};
 
 //Forces : 
 
@@ -461,7 +469,7 @@ gdjs.RuntimeObject.prototype._getRecycledForce = function(x, y, isTemporary) {
         recycledForce.setTemporary(isTemporary);
         return recycledForce;
     }
-}
+};
 
 /** 
  * Add a force to the object to make it moving.
@@ -472,7 +480,7 @@ gdjs.RuntimeObject.prototype._getRecycledForce = function(x, y, isTemporary) {
  */
 gdjs.RuntimeObject.prototype.addForce = function(x,y, isPermanent) {
     this._forces.push(this._getRecycledForce(x, y, !isPermanent));
-}
+};
 
 /** 
  * Add a force using polar coordinates.
@@ -486,7 +494,7 @@ gdjs.RuntimeObject.prototype.addPolarForce = function(angle, len, isPermanent) {
     var forceY = Math.sin(angle/180*3.14159)*len;
 
     this._forces.push(this._getRecycledForce(forceX, forceY, !isPermanent));
-}
+};
 
 /** 
  * Add a force oriented toward a position
@@ -504,7 +512,7 @@ gdjs.RuntimeObject.prototype.addForceTowardPosition = function(x,y, len, isPerma
     var forceX = Math.cos(angle)*len;
     var forceY = Math.sin(angle)*len;
     this._forces.push(this._getRecycledForce(forceX, forceY, !isPermanent));
-}
+};
 
 /** 
  * Add a force oriented toward another object.<br>
@@ -520,7 +528,7 @@ gdjs.RuntimeObject.prototype.addForceTowardObject = function(obj, len, isPermane
     this.addForceTowardPosition(obj.getDrawableX()+obj.getCenterX(), 
                                 obj.getDrawableY()+obj.getCenterY(),
                                 len, isPermanent);
-}
+};
 
 /** 
  * Deletes all forces applied on the object
@@ -529,7 +537,7 @@ gdjs.RuntimeObject.prototype.addForceTowardObject = function(obj, len, isPermane
 gdjs.RuntimeObject.prototype.clearForces = function() {
     gdjs.RuntimeObject.forcesGarbage.push.apply(gdjs.RuntimeObject.forcesGarbage, this._forces);
     this._forces.length = 0;
-}
+};
 
 /** 
  * Return true if no forces are applied on the object.
@@ -538,7 +546,7 @@ gdjs.RuntimeObject.prototype.clearForces = function() {
  */
 gdjs.RuntimeObject.prototype.hasNoForces = function() {
     return this._forces.length == 0;
-}
+};
 
 /**
  * Called once a step by runtimeScene to remove temporary forces.
@@ -556,7 +564,7 @@ gdjs.RuntimeObject.prototype.updateForces = function() {
             ++i;
         }
     }
-}
+};
 
 /**
  * Return a force which is the sum of all forces applied on the object.
@@ -575,7 +583,7 @@ gdjs.RuntimeObject.prototype.getAverageForce = function() {
     this._averageForce.setX(averageX);
     this._averageForce.setY(averageY);
     return this._averageForce;
-}
+};
 
 /** 
  * Return true if the average angle of the forces applied on the object
@@ -593,7 +601,7 @@ gdjs.RuntimeObject.prototype.averageForceAngleIs = function(angle, toleranceInDe
     if ( averageAngle < 0 ) averageAngle += 360;
     
     return Math.abs(angle-averageAngle) < toleranceInDegrees/2;
-}
+};
 
 //Hit boxes and collision :
 
@@ -616,7 +624,7 @@ gdjs.RuntimeObject.prototype.getHitBoxes = function() {
         this.hitBoxesDirty = false;
     }
     return this.hitBoxes;
-}
+};
 /**
  * Update the hit boxes for the object.<br>
  * The default implementation set a basic bouding box based on the result of getWidth and
@@ -636,7 +644,7 @@ gdjs.RuntimeObject.prototype.updateHitBoxes = function() {
     
     this.hitBoxes[0].rotate(this.getAngle()/180*3.14159);
     this.hitBoxes[0].move(this.getX()+this.getCenterX(), this.getY()+this.getCenterY());
-}
+};
 
 //Experimental
 gdjs.RuntimeObject.prototype.getAABB = function() {
@@ -647,14 +655,14 @@ gdjs.RuntimeObject.prototype.getAABB = function() {
     }
     
     return this.aabb;
-}
+};
 
 gdjs.RuntimeObject.prototype.updateAABB = function() {
     this.aabb.min[0] = this.getDrawableX();
     this.aabb.min[1] = this.getDrawableY();
     this.aabb.max[0] = this.getDrawableX()+this.getWidth();
     this.aabb.max[1] = this.getDrawableY()+this.getHeight();
-}
+};
 
 //Automatisms:
 
@@ -666,7 +674,7 @@ gdjs.RuntimeObject.prototype.stepAutomatismsPreEvents = function(runtimeScene) {
     for(var i = 0, len = this._automatisms.length;i<len;++i) {
         this._automatisms[i].stepPreEvents(runtimeScene);
     }
-}
+};
 
 /**
  * Call each automatism stepPostEvents method.
@@ -676,7 +684,7 @@ gdjs.RuntimeObject.prototype.stepAutomatismsPostEvents = function(runtimeScene) 
     for(var i = 0, len = this._automatisms.length;i<len;++i) {
         this._automatisms[i].stepPostEvents(runtimeScene);
     }
-}
+};
 
 /** 
  * Get an automatism from its name.<br>
@@ -686,7 +694,7 @@ gdjs.RuntimeObject.prototype.stepAutomatismsPostEvents = function(runtimeScene) 
  */
 gdjs.RuntimeObject.prototype.getAutomatism = function(name) {
     return this._automatismsTable.get(name);
-}
+};
 
 /** 
  * Check if an automatism is used by the object.
@@ -696,7 +704,7 @@ gdjs.RuntimeObject.prototype.getAutomatism = function(name) {
  */
 gdjs.RuntimeObject.prototype.hasAutomatism = function(name) {
     return this._automatismsTable.containsKey(name);
-}
+};
 
 /** 
  * De/activate an automatism of the object.<br>
@@ -709,7 +717,7 @@ gdjs.RuntimeObject.prototype.activateAutomatism = function(name, enable) {
     if ( this._automatismsTable.containsKey(name) ) {
         this._automatismsTable.get(name).activate(enable);
     }
-}
+};
 
 /** 
  * De/activate an automatism of the object.<br>
@@ -724,7 +732,7 @@ gdjs.RuntimeObject.prototype.automatismActivated = function(name, enable) {
     }
     
     return false;
-}
+};
 
 //Other :
 
@@ -764,11 +772,11 @@ gdjs.RuntimeObject.prototype.separateFromObjects = function(objectsLists) {
     
     //Move according to the results returned by the collision algorithm.
     this.setPosition(this.getX()+xMove, this.getY()+yMove);
-}
+};
 
 gdjs.RuntimeObject.prototype.getDistanceFrom = function(otherObject) {
     return Math.sqrt(this.getSqDistanceFrom(otherObject));
-}
+};
 
 gdjs.RuntimeObject.prototype.getSqDistanceFrom = function(otherObject) {
     if ( otherObject == null ) return 0;

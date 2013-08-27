@@ -7,9 +7,9 @@ Binaries\
 \doc\
 .depend
 wxsmith\
-Common Dialogs\dlib-17.49\docs
-Common Dialogs\dlib-17.49\examples
-Common Dialogs\dlib-17.49\documentation.htm
+CommonDialogs\dlib-17.49\docs
+CommonDialogs\dlib-17.49\examples
+CommonDialogs\dlib-17.49\documentation.htm
 dlib-17.12
 Skeleton-Object\
 Widgets-Extension\

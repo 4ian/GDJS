@@ -40,6 +40,46 @@ gdjs.evtTools.common.getEventsObjectsMap = function() {
 };
 
 /**
+ * Get the value of a variable. Equivalent of variable.getAsNumber().
+ * @method getVariableValue
+ * @private
+ * @static
+ */
+gdjs.evtTools.common.getVariableNumber = function(variable) {
+    return variable.getAsNumber();
+};
+
+/**
+ * Get the string of a variable. Equivalent of variable.getAsString().
+ * @method getVariableValue
+ * @private
+ * @static
+ */
+gdjs.evtTools.common.getVariableString = function(variable) {
+    return variable.getAsString();
+};
+
+/**
+ * @method sceneVariableExists
+ * @private
+ * @static
+ */
+gdjs.evtTools.common.sceneVariableExists = function(runtimeScene, variableName) {
+    return runtimeScene.getVariables().has(variableName);
+};
+
+/**
+ * @method globalVariableExists
+ * @private
+ * @static
+ */
+gdjs.evtTools.common.globalVariableExists = function(runtimeScene, variableName) {
+    return runtimeScene.getGame().getVariables().has(variableName);
+};
+
+
+
+/**
  * Convert a string to a float.
  * @method toNumber
  * @private

@@ -33,7 +33,7 @@ gdjs.evtTools.storage.loadJSONFileFromStorage = function(filename) {
 		gdjs.evtTools.storage.loadedFiles.put(filename, JSON.parse(rawStr));
 	else
 		gdjs.evtTools.storage.loadedFiles.put(filename, {});
-}
+};
 
 /**
  * Unload from memory a JSON object, which is then stored in the local storage 
@@ -58,7 +58,7 @@ gdjs.evtTools.storage.unloadJSONFile = function(filename) {
 	}
 
 	 gdjs.evtTools.storage.loadedFiles.remove(filename);
-}
+};
 
 gdjs.evtTools.storage.clearJSONFile = function(filename) {
 	var notPermanentlyLoaded = false;
@@ -75,7 +75,7 @@ gdjs.evtTools.storage.clearJSONFile = function(filename) {
     
 	if ( notPermanentlyLoaded ) gdjs.evtTools.storage.unloadJSONFile(filename);
 	return true;
-}
+};
 
 gdjs.evtTools.storage.elementExistsInJSONFile = function(filename, element) {
 	var notPermanentlyLoaded = false;
@@ -98,7 +98,7 @@ gdjs.evtTools.storage.elementExistsInJSONFile = function(filename, element) {
 
 	if ( notPermanentlyLoaded ) gdjs.evtTools.storage.unloadJSONFile(filename);
 	return true;
-}
+};
 
 gdjs.evtTools.storage.deleteElementFromJSONFile = function(filename, element) {
 	var notPermanentlyLoaded = false;
@@ -124,7 +124,7 @@ gdjs.evtTools.storage.deleteElementFromJSONFile = function(filename, element) {
 
 	if ( notPermanentlyLoaded ) gdjs.evtTools.storage.unloadJSONFile(filename);
 	return true;
-}
+};
 
 gdjs.evtTools.storage.writeNumberInJSONFile = function(filename, element, val) {
 	var notPermanentlyLoaded = false;
@@ -147,7 +147,7 @@ gdjs.evtTools.storage.writeNumberInJSONFile = function(filename, element, val) {
 
 	if ( notPermanentlyLoaded ) gdjs.evtTools.storage.unloadJSONFile(filename);
 	return true;
-}
+};
 
 gdjs.evtTools.storage.writeStringInJSONFile = function(filename, element, str) {
 	var notPermanentlyLoaded = false;
@@ -170,7 +170,7 @@ gdjs.evtTools.storage.writeStringInJSONFile = function(filename, element, str) {
 
 	if ( notPermanentlyLoaded ) gdjs.evtTools.storage.unloadJSONFile(filename);
 	return true;
-}
+};
 
 gdjs.evtTools.storage.readNumberFromJSONFile = function(filename, element, runtimeScene, variable) {
 	var notPermanentlyLoaded = false;
@@ -189,15 +189,14 @@ gdjs.evtTools.storage.readNumberFromJSONFile = function(filename, element, runti
 		}
 		
 		if ( i == elemArray.length-1 && currentElem[elemArray[i]].value)
-			runtimeScene.getVariables().get(variable).setNumber(
-				currentElem[elemArray[i]].value);
+			variable.setNumber(currentElem[elemArray[i]].value);
 		else
 			currentElem = currentElem[elemArray[i]];
 	}
 
 	if ( notPermanentlyLoaded ) gdjs.evtTools.storage.unloadJSONFile(filename);
 	return true;
-}
+};
 
 gdjs.evtTools.storage.readStringFromJSONFile = function(filename, element, runtimeScene, variable) {
 	var notPermanentlyLoaded = false;
@@ -216,12 +215,11 @@ gdjs.evtTools.storage.readStringFromJSONFile = function(filename, element, runti
 		}
 		
 		if ( i == elemArray.length-1 && currentElem[elemArray[i]].str)
-			runtimeScene.getVariables().get(variable).setString(
-				currentElem[elemArray[i]].str);
+			variable.setString(currentElem[elemArray[i]].str);
 		else
 			currentElem = currentElem[elemArray[i]];
 	}
 
 	if ( notPermanentlyLoaded ) gdjs.evtTools.storage.unloadJSONFile(filename);
 	return true;
-}
+};

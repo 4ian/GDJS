@@ -4,6 +4,7 @@
  * This project is released under the GNU Lesser General Public License.
  */
 #include "GDJS/BuiltinExtensions/VariablesExtension.h"
+#include "GDJS/VariableParserCallbacks.h"
 #include "GDCore/Events/EventsCodeGenerator.h"
 #include "GDCore/Events/EventsCodeGenerationContext.h"
 #include "GDCore/Events/ExpressionsCodeGeneration.h"
@@ -33,109 +34,39 @@ VariablesExtension::VariablesExtension()
 
     CloneExtension("Game Develop C++ platform", "BuiltinVariables");
 
+    GetAllConditions()["VarScene"].codeExtraInformation.SetFunctionName("gdjs.evtTools.common.getVariableNumber");
+    GetAllConditions()["VarSceneTxt"].codeExtraInformation.SetFunctionName("gdjs.evtTools.common.getVariableString");
+    GetAllConditions()["VarGlobal"].codeExtraInformation.SetFunctionName("gdjs.evtTools.common.getVariableNumber");
+    GetAllConditions()["VarGlobalTxt"].codeExtraInformation.SetFunctionName("gdjs.evtTools.common.getVariableString");
+    GetAllExpressions()["Variable"].codeExtraInformation.SetFunctionName("gdjs.evtTools.common.getVariableNumber");
+    GetAllStrExpressions()["VariableString"].codeExtraInformation.SetFunctionName("gdjs.evtTools.common.getVariableString");
+    GetAllExpressions()["GlobalVariable"].codeExtraInformation.SetFunctionName("gdjs.evtTools.common.getVariableNumber");
+    GetAllStrExpressions()["GlobalVariableString"].codeExtraInformation.SetFunctionName("gdjs.evtTools.common.getVariableString");
+
+    GetAllConditions()["VarSceneDef"].codeExtraInformation.SetFunctionName("gdjs.evtTools.common.sceneVariableExists");
+    GetAllConditions()["VarGlobalDef"].codeExtraInformation.SetFunctionName("gdjs.evtTools.common.globalVariableExists");
+
     {
         class CodeGenerator : public gd::InstructionMetadata::ExtraInformation::CustomCodeGenerator
         {
             virtual std::string GenerateCode(gd::Instruction & instruction, gd::EventsCodeGenerator & codeGenerator, gd::EventsCodeGenerationContext & context)
             {
                 std::string expressionCode;
-                gd::CallbacksForGeneratingExpressionCode callbacks(expressionCode, codeGenerator, context);
-                gd::ExpressionParser parser(instruction.GetParameters()[3].GetPlainString());
-                if (!parser.ParseMathExpression(codeGenerator.GetPlatform(), codeGenerator.GetProject(), codeGenerator.GetLayout(), callbacks) || expressionCode.empty())
-                    expressionCode = "0";
-
-                std::string op = instruction.GetParameters()[2].GetPlainString();
-                std::string var = codeGenerator.ConvertToString(instruction.GetParameters()[1].GetPlainString());
-                std::string boolean = codeGenerator.GenerateBooleanFullName("conditionTrue", context)+".val";
-                std::string varGetter = "runtimeScene.getVariables().get(\""+var+"\")";
-                //Optimize the lookup when the variable position is known:
                 {
-                    unsigned int index = codeGenerator.GetLayout().GetVariables().GetPosition(instruction.GetParameters()[1].GetPlainString());
-                    if ( index < codeGenerator.GetLayout().GetVariables().Count() )
-                        varGetter = "runtimeScene.getVariables().getFromIndex("+ToString(index)+")";
+                    gd::CallbacksForGeneratingExpressionCode callbacks(expressionCode, codeGenerator, context);
+                    gd::ExpressionParser parser(instruction.GetParameters()[2].GetPlainString());
+                    if (!parser.ParseMathExpression(codeGenerator.GetPlatform(), codeGenerator.GetProject(), codeGenerator.GetLayout(), callbacks) || expressionCode.empty())
+                        expressionCode = "0";   
+                }
+                std::string varGetter;
+                {
+                    VariableCodeGenerationCallbacks callbacks(varGetter, codeGenerator, context, VariableCodeGenerationCallbacks::LAYOUT_VARIABLE);
+                    gd::VariableParser parser(instruction.GetParameters()[0].GetPlainString());
+                    if ( !parser.Parse(callbacks) )
+                        varGetter = "runtimeScene.getVariables().get(\"\")";
                 }
 
-                if ( op == "=" || op.empty() )
-                    return boolean+" = "+varGetter+".getAsNumber() === "+expressionCode+";";
-                else if ( op == ">" || op == "<" || op == ">=" || op == "<=" || op == "!=" )
-                    return boolean+" = "+varGetter+".getAsNumber() "+op+" "+expressionCode+";";
-
-                return "";
-            };
-        };
-
-        gd::InstructionMetadata::ExtraInformation::CustomCodeGenerator * codeGen = new CodeGenerator;
-        GetAllConditions()["VarScene"].codeExtraInformation.SetCustomCodeGenerator(boost::shared_ptr<gd::InstructionMetadata::ExtraInformation::CustomCodeGenerator>(codeGen));
-    }
-    {
-        class CodeGenerator : public gd::InstructionMetadata::ExtraInformation::CustomCodeGenerator
-        {
-            virtual std::string GenerateCode(gd::Instruction & instruction, gd::EventsCodeGenerator & codeGenerator, gd::EventsCodeGenerationContext & context)
-            {
-                std::string expressionCode;
-                gd::CallbacksForGeneratingExpressionCode callbacks(expressionCode, codeGenerator, context);
-                gd::ExpressionParser parser(instruction.GetParameters()[3].GetPlainString());
-                if (!parser.ParseStringExpression(codeGenerator.GetPlatform(), codeGenerator.GetProject(), codeGenerator.GetLayout(), callbacks) || expressionCode.empty())
-                    expressionCode = "\"\"";
-
-                std::string op = instruction.GetParameters()[2].GetPlainString();
-                std::string var = codeGenerator.ConvertToString(instruction.GetParameters()[1].GetPlainString());
-                std::string boolean = codeGenerator.GenerateBooleanFullName("conditionTrue", context)+".val";
-                std::string varGetter = "runtimeScene.getVariables().get(\""+var+"\")";
-                //Optimize the lookup when the variable position is known:
-                {
-                    unsigned int index = codeGenerator.GetLayout().GetVariables().GetPosition(instruction.GetParameters()[1].GetPlainString());
-                    if ( index < codeGenerator.GetLayout().GetVariables().Count() )
-                        varGetter = "runtimeScene.getVariables().getFromIndex("+ToString(index)+")";
-                }
-
-                if ( op == "=" || op.empty() )
-                    return boolean+" = runtimeScene.getVariables().get(\""+var+"\").getAsString() === "+expressionCode+";";
-                else if ( op == "!=" )
-                    return boolean+" = runtimeScene.getVariables().get(\""+var+"\").getAsString() !== "+expressionCode+";";
-
-                return "";
-            };
-        };
-
-        gd::InstructionMetadata::ExtraInformation::CustomCodeGenerator * codeGen = new CodeGenerator;
-        GetAllConditions()["VarSceneTxt"].codeExtraInformation.SetCustomCodeGenerator(boost::shared_ptr<gd::InstructionMetadata::ExtraInformation::CustomCodeGenerator>(codeGen));
-    }
-    {
-        class CodeGenerator : public gd::InstructionMetadata::ExtraInformation::CustomCodeGenerator
-        {
-            virtual std::string GenerateCode(gd::Instruction & instruction, gd::EventsCodeGenerator & codeGenerator, gd::EventsCodeGenerationContext & context)
-            {
-                std::string var = codeGenerator.ConvertToString(instruction.GetParameters()[1].GetPlainString());
-                std::string boolean = codeGenerator.GenerateBooleanFullName("conditionTrue", context)+".val";
-                return boolean+" = runtimeScene.getVariables().hasVariable(\""+var+"\");";
-            };
-        };
-
-        gd::InstructionMetadata::ExtraInformation::CustomCodeGenerator * codeGen = new CodeGenerator;
-        GetAllConditions()["VarSceneDef"].codeExtraInformation.SetCustomCodeGenerator(boost::shared_ptr<gd::InstructionMetadata::ExtraInformation::CustomCodeGenerator>(codeGen));
-    }
-    {
-        class CodeGenerator : public gd::InstructionMetadata::ExtraInformation::CustomCodeGenerator
-        {
-            virtual std::string GenerateCode(gd::Instruction & instruction, gd::EventsCodeGenerator & codeGenerator, gd::EventsCodeGenerationContext & context)
-            {
-                std::string expressionCode;
-                gd::CallbacksForGeneratingExpressionCode callbacks(expressionCode, codeGenerator, context);
-                gd::ExpressionParser parser(instruction.GetParameters()[3].GetPlainString());
-                if (!parser.ParseMathExpression(codeGenerator.GetPlatform(), codeGenerator.GetProject(), codeGenerator.GetLayout(), callbacks) || expressionCode.empty())
-                    expressionCode = "0";
-
-                std::string op = instruction.GetParameters()[2].GetPlainString();
-                std::string var = codeGenerator.ConvertToString(instruction.GetParameters()[1].GetPlainString());
-                std::string varGetter = "runtimeScene.getVariables().get(\""+var+"\")";
-                //Optimize the lookup when the variable position is known:
-                {
-                    unsigned int index = codeGenerator.GetLayout().GetVariables().GetPosition(instruction.GetParameters()[1].GetPlainString());
-                    if ( index < codeGenerator.GetLayout().GetVariables().Count() )
-                        varGetter = "runtimeScene.getVariables().getFromIndex("+ToString(index)+")";
-                }
-
+                std::string op = instruction.GetParameters()[1].GetPlainString();
                 if ( op == "=" )
                     return varGetter+".setNumber("+expressionCode+");\n";
                 else if ( op == "+" )
@@ -160,21 +91,22 @@ VariablesExtension::VariablesExtension()
             virtual std::string GenerateCode(gd::Instruction & instruction, gd::EventsCodeGenerator & codeGenerator, gd::EventsCodeGenerationContext & context)
             {
                 std::string expressionCode;
-                gd::CallbacksForGeneratingExpressionCode callbacks(expressionCode, codeGenerator, context);
-                gd::ExpressionParser parser(instruction.GetParameters()[3].GetPlainString());
-                if (!parser.ParseStringExpression(codeGenerator.GetPlatform(), codeGenerator.GetProject(), codeGenerator.GetLayout(), callbacks) || expressionCode.empty())
-                    expressionCode = "\"\"";
-
-                std::string op = instruction.GetParameters()[2].GetPlainString();
-                std::string var = codeGenerator.ConvertToString(instruction.GetParameters()[1].GetPlainString());
-                std::string varGetter = "runtimeScene.getVariables().get(\""+var+"\")";
-                //Optimize the lookup when the variable position is known:
                 {
-                    unsigned int index = codeGenerator.GetLayout().GetVariables().GetPosition(instruction.GetParameters()[1].GetPlainString());
-                    if ( index < codeGenerator.GetLayout().GetVariables().Count() )
-                        varGetter = "runtimeScene.getVariables().getFromIndex("+ToString(index)+")";
+                    gd::CallbacksForGeneratingExpressionCode callbacks(expressionCode, codeGenerator, context);
+                    gd::ExpressionParser parser(instruction.GetParameters()[2].GetPlainString());
+                    if (!parser.ParseStringExpression(codeGenerator.GetPlatform(), codeGenerator.GetProject(), codeGenerator.GetLayout(), callbacks) || expressionCode.empty())
+                        expressionCode = "\"\"";
                 }
 
+                std::string varGetter;
+                {
+                    VariableCodeGenerationCallbacks callbacks(varGetter, codeGenerator, context, VariableCodeGenerationCallbacks::LAYOUT_VARIABLE);
+                    gd::VariableParser parser(instruction.GetParameters()[0].GetPlainString());
+                    if ( !parser.Parse(callbacks) )
+                        varGetter = "runtimeScene.getVariables().get(\"\")";
+                }
+
+                std::string op = instruction.GetParameters()[1].GetPlainString();
                 if ( op == "=" )
                     return varGetter+".setString("+expressionCode+");\n";
                 else if ( op == "+" )
@@ -193,103 +125,21 @@ VariablesExtension::VariablesExtension()
             virtual std::string GenerateCode(gd::Instruction & instruction, gd::EventsCodeGenerator & codeGenerator, gd::EventsCodeGenerationContext & context)
             {
                 std::string expressionCode;
-                gd::CallbacksForGeneratingExpressionCode callbacks(expressionCode, codeGenerator, context);
-                gd::ExpressionParser parser(instruction.GetParameters()[3].GetPlainString());
-                if (!parser.ParseMathExpression(codeGenerator.GetPlatform(), codeGenerator.GetProject(), codeGenerator.GetLayout(), callbacks) || expressionCode.empty())
-                    expressionCode = "0";
-
-                std::string op = instruction.GetParameters()[2].GetPlainString();
-                std::string var = codeGenerator.ConvertToString(instruction.GetParameters()[1].GetPlainString());
-                std::string boolean = codeGenerator.GenerateBooleanFullName("conditionTrue", context)+".val";
-                std::string varGetter = "runtimeScene.getGame().getVariables().get(\""+var+"\")";
-                //Optimize the lookup when the variable position is known:
                 {
-                    unsigned int index = codeGenerator.GetProject().GetVariables().GetPosition(instruction.GetParameters()[1].GetPlainString());
-                    if ( index < codeGenerator.GetProject().GetVariables().Count() )
-                        varGetter = "runtimeScene.getGame().getVariables().getFromIndex("+ToString(index)+")";
+                    gd::CallbacksForGeneratingExpressionCode callbacks(expressionCode, codeGenerator, context);
+                    gd::ExpressionParser parser(instruction.GetParameters()[2].GetPlainString());
+                    if (!parser.ParseMathExpression(codeGenerator.GetPlatform(), codeGenerator.GetProject(), codeGenerator.GetLayout(), callbacks) || expressionCode.empty())
+                        expressionCode = "0";   
+                }
+                std::string varGetter;
+                {
+                    VariableCodeGenerationCallbacks callbacks(varGetter, codeGenerator, context, VariableCodeGenerationCallbacks::PROJECT_VARIABLE);
+                    gd::VariableParser parser(instruction.GetParameters()[0].GetPlainString());
+                    if ( !parser.Parse(callbacks) )
+                        varGetter = "runtimeScene.getVariables().get(\"\")";
                 }
 
-                if ( op == "=" || op.empty() )
-                    return boolean+" = "+varGetter+".getAsNumber() === "+expressionCode+";";
-                else if ( op == ">" || op == "<" || op == ">=" || op == "<=" || op == "!=" )
-                    return boolean+" = "+varGetter+".getAsNumber() "+op+" "+expressionCode+";";
-
-                return "";
-            };
-        };
-
-        gd::InstructionMetadata::ExtraInformation::CustomCodeGenerator * codeGen = new CodeGenerator;
-        GetAllConditions()["VarGlobal"].codeExtraInformation.SetCustomCodeGenerator(boost::shared_ptr<gd::InstructionMetadata::ExtraInformation::CustomCodeGenerator>(codeGen));
-    }
-    {
-        class CodeGenerator : public gd::InstructionMetadata::ExtraInformation::CustomCodeGenerator
-        {
-            virtual std::string GenerateCode(gd::Instruction & instruction, gd::EventsCodeGenerator & codeGenerator, gd::EventsCodeGenerationContext & context)
-            {
-                std::string expressionCode;
-                gd::CallbacksForGeneratingExpressionCode callbacks(expressionCode, codeGenerator, context);
-                gd::ExpressionParser parser(instruction.GetParameters()[3].GetPlainString());
-                if (!parser.ParseStringExpression(codeGenerator.GetPlatform(), codeGenerator.GetProject(), codeGenerator.GetLayout(), callbacks) || expressionCode.empty())
-                    expressionCode = "\"\"";
-
-                std::string op = instruction.GetParameters()[2].GetPlainString();
-                std::string var = codeGenerator.ConvertToString(instruction.GetParameters()[1].GetPlainString());
-                std::string boolean = codeGenerator.GenerateBooleanFullName("conditionTrue", context)+".val";
-                std::string varGetter = "runtimeScene.getGame().getVariables().get(\""+var+"\")";
-                //Optimize the lookup when the variable position is known:
-                {
-                    unsigned int index = codeGenerator.GetProject().GetVariables().GetPosition(instruction.GetParameters()[1].GetPlainString());
-                    if ( index < codeGenerator.GetProject().GetVariables().Count() )
-                        varGetter = "runtimeScene.getGame().getVariables().getFromIndex("+ToString(index)+")";
-                }
-
-                if ( op == "=" || op.empty() )
-                    return boolean+" = "+varGetter+".getAsString() === "+expressionCode+";";
-                else if ( op == "!=" )
-                    return boolean+" = "+varGetter+".getAsString() !== "+expressionCode+";";
-
-                return "";
-            };
-        };
-
-        gd::InstructionMetadata::ExtraInformation::CustomCodeGenerator * codeGen = new CodeGenerator;
-        GetAllConditions()["VarGlobalTxt"].codeExtraInformation.SetCustomCodeGenerator(boost::shared_ptr<gd::InstructionMetadata::ExtraInformation::CustomCodeGenerator>(codeGen));
-    }
-    {
-        class CodeGenerator : public gd::InstructionMetadata::ExtraInformation::CustomCodeGenerator
-        {
-            virtual std::string GenerateCode(gd::Instruction & instruction, gd::EventsCodeGenerator & codeGenerator, gd::EventsCodeGenerationContext & context)
-            {
-                std::string var = codeGenerator.ConvertToString(instruction.GetParameters()[1].GetPlainString());
-                std::string boolean = codeGenerator.GenerateBooleanFullName("conditionTrue", context)+".val";
-                return boolean+" = runtimeScene.getGame().getVariables().hasVariable(\""+var+"\");";
-            };
-        };
-
-        gd::InstructionMetadata::ExtraInformation::CustomCodeGenerator * codeGen = new CodeGenerator;
-        GetAllConditions()["VarGlobalDef"].codeExtraInformation.SetCustomCodeGenerator(boost::shared_ptr<gd::InstructionMetadata::ExtraInformation::CustomCodeGenerator>(codeGen));
-    }
-    {
-        class CodeGenerator : public gd::InstructionMetadata::ExtraInformation::CustomCodeGenerator
-        {
-            virtual std::string GenerateCode(gd::Instruction & instruction, gd::EventsCodeGenerator & codeGenerator, gd::EventsCodeGenerationContext & context)
-            {
-                std::string expressionCode;
-                gd::CallbacksForGeneratingExpressionCode callbacks(expressionCode, codeGenerator, context);
-                gd::ExpressionParser parser(instruction.GetParameters()[3].GetPlainString());
-                if (!parser.ParseMathExpression(codeGenerator.GetPlatform(), codeGenerator.GetProject(), codeGenerator.GetLayout(), callbacks) || expressionCode.empty())
-                    expressionCode = "0";
-
-                std::string op = instruction.GetParameters()[2].GetPlainString();
-                std::string var = codeGenerator.ConvertToString(instruction.GetParameters()[1].GetPlainString());
-                std::string varGetter = "runtimeScene.getGame().getVariables().get(\""+var+"\")";
-                //Optimize the lookup when the variable position is known:
-                {
-                    unsigned int index = codeGenerator.GetProject().GetVariables().GetPosition(instruction.GetParameters()[1].GetPlainString());
-                    if ( index < codeGenerator.GetProject().GetVariables().Count() )
-                        varGetter = "runtimeScene.getGame().getVariables().getFromIndex("+ToString(index)+")";
-                }
-
+                std::string op = instruction.GetParameters()[1].GetPlainString();
                 if ( op == "=" )
                     return varGetter+".setNumber("+expressionCode+");\n";
                 else if ( op == "+" )
@@ -314,21 +164,22 @@ VariablesExtension::VariablesExtension()
             virtual std::string GenerateCode(gd::Instruction & instruction, gd::EventsCodeGenerator & codeGenerator, gd::EventsCodeGenerationContext & context)
             {
                 std::string expressionCode;
-                gd::CallbacksForGeneratingExpressionCode callbacks(expressionCode, codeGenerator, context);
-                gd::ExpressionParser parser(instruction.GetParameters()[3].GetPlainString());
-                if (!parser.ParseStringExpression(codeGenerator.GetPlatform(), codeGenerator.GetProject(), codeGenerator.GetLayout(), callbacks) || expressionCode.empty())
-                    expressionCode = "\"\"";
-
-                std::string op = instruction.GetParameters()[2].GetPlainString();
-                std::string var = codeGenerator.ConvertToString(instruction.GetParameters()[1].GetPlainString());
-                std::string varGetter = "runtimeScene.getGame().getVariables().get(\""+var+"\")";
-                //Optimize the lookup when the variable position is known:
                 {
-                    unsigned int index = codeGenerator.GetProject().GetVariables().GetPosition(instruction.GetParameters()[1].GetPlainString());
-                    if ( index < codeGenerator.GetProject().GetVariables().Count() )
-                        varGetter = "runtimeScene.getGame().getVariables().getFromIndex("+ToString(index)+")";
+                    gd::CallbacksForGeneratingExpressionCode callbacks(expressionCode, codeGenerator, context);
+                    gd::ExpressionParser parser(instruction.GetParameters()[2].GetPlainString());
+                    if (!parser.ParseStringExpression(codeGenerator.GetPlatform(), codeGenerator.GetProject(), codeGenerator.GetLayout(), callbacks) || expressionCode.empty())
+                        expressionCode = "\"\"";
                 }
 
+                std::string varGetter;
+                {
+                    VariableCodeGenerationCallbacks callbacks(varGetter, codeGenerator, context, VariableCodeGenerationCallbacks::PROJECT_VARIABLE);
+                    gd::VariableParser parser(instruction.GetParameters()[0].GetPlainString());
+                    if ( !parser.Parse(callbacks) )
+                        varGetter = "runtimeScene.getVariables().get(\"\")";
+                }
+
+                std::string op = instruction.GetParameters()[1].GetPlainString();
                 if ( op == "=" )
                     return varGetter+".setString("+expressionCode+");\n";
                 else if ( op == "+" )
@@ -340,94 +191,6 @@ VariablesExtension::VariablesExtension()
 
         gd::InstructionMetadata::ExtraInformation::CustomCodeGenerator * codeGen = new CodeGenerator;
         GetAllActions()["ModVarGlobalTxt"].codeExtraInformation.SetCustomCodeGenerator(boost::shared_ptr<gd::InstructionMetadata::ExtraInformation::CustomCodeGenerator>(codeGen));
-    }
-
-    {
-        class CodeGenerator : public gd::ExpressionMetadata::ExtraInformation::CustomCodeGenerator
-        {
-            virtual std::string GenerateCode(const std::vector<gd::Expression> & parameters, gd::EventsCodeGenerator & codeGenerator, gd::EventsCodeGenerationContext & context)
-            {
-                std::string var = codeGenerator.ConvertToString(parameters[1].GetPlainString());
-                std::string varGetter = "runtimeScene.getVariables().get(\""+var+"\")";
-                //Optimize the lookup when the variable position is known:
-                {
-                    unsigned int index = codeGenerator.GetLayout().GetVariables().GetPosition(parameters[1].GetPlainString());
-                    if ( index < codeGenerator.GetLayout().GetVariables().Count() )
-                        varGetter = "runtimeScene.getVariables().getFromIndex("+ToString(index)+")";
-                }
-                return varGetter+".getAsNumber()";
-            };
-        };
-        gd::ExpressionMetadata::ExtraInformation::CustomCodeGenerator * codeGenerator = new CodeGenerator;
-
-        GetAllExpressions()["Variable"]
-        .codeExtraInformation.SetCustomCodeGenerator(boost::shared_ptr<gd::ExpressionMetadata::ExtraInformation::CustomCodeGenerator>(codeGenerator));
-    }
-
-    {
-        class CodeGenerator : public gd::StrExpressionMetadata::ExtraInformation::CustomCodeGenerator
-        {
-            virtual std::string GenerateCode(const std::vector<gd::Expression> & parameters, gd::EventsCodeGenerator & codeGenerator, gd::EventsCodeGenerationContext & context)
-            {
-                std::string var = codeGenerator.ConvertToString(parameters[1].GetPlainString());
-                std::string varGetter = "runtimeScene.getVariables().get(\""+var+"\")";
-                //Optimize the lookup when the variable position is known:
-                {
-                    unsigned int index = codeGenerator.GetLayout().GetVariables().GetPosition(parameters[1].GetPlainString());
-                    if ( index < codeGenerator.GetLayout().GetVariables().Count() )
-                        varGetter = "runtimeScene.getVariables().getFromIndex("+ToString(index)+")";
-                }
-                return varGetter+".getAsString()";
-            };
-        };
-        gd::StrExpressionMetadata::ExtraInformation::CustomCodeGenerator * codeGenerator = new CodeGenerator; //Need for code to compile
-
-        GetAllStrExpressions()["VariableString"]
-        .codeExtraInformation.SetCustomCodeGenerator(boost::shared_ptr<gd::StrExpressionMetadata::ExtraInformation::CustomCodeGenerator>(codeGenerator));
-    }
-    {
-        class CodeGenerator : public gd::ExpressionMetadata::ExtraInformation::CustomCodeGenerator
-        {
-            virtual std::string GenerateCode(const std::vector<gd::Expression> & parameters, gd::EventsCodeGenerator & codeGenerator, gd::EventsCodeGenerationContext & context)
-            {
-                std::string var = codeGenerator.ConvertToString(parameters[1].GetPlainString());
-                std::string varGetter = "runtimeScene.getGame().getVariables().get(\""+var+"\")";
-                //Optimize the lookup when the variable position is known:
-                {
-                    unsigned int index = codeGenerator.GetProject().GetVariables().GetPosition(parameters[1].GetPlainString());
-                    if ( index < codeGenerator.GetProject().GetVariables().Count() )
-                        varGetter = "runtimeScene.getGame().getVariables().getFromIndex("+ToString(index)+")";
-                }
-                return varGetter+".getAsNumber()";
-            };
-        };
-        gd::ExpressionMetadata::ExtraInformation::CustomCodeGenerator * codeGenerator = new CodeGenerator;
-
-        GetAllExpressions()["GlobalVariable"]
-        .codeExtraInformation.SetCustomCodeGenerator(boost::shared_ptr<gd::ExpressionMetadata::ExtraInformation::CustomCodeGenerator>(codeGenerator));
-    }
-
-    {
-        //Implementation optimized for declared scene variables:
-        class CodeGenerator : public gd::StrExpressionMetadata::ExtraInformation::CustomCodeGenerator
-        {
-            virtual std::string GenerateCode(const std::vector<gd::Expression> & parameters, gd::EventsCodeGenerator & codeGenerator, gd::EventsCodeGenerationContext & context)
-            {
-                std::string var = codeGenerator.ConvertToString(parameters[1].GetPlainString());
-                std::string varGetter = "runtimeScene.getGame().getVariables().get(\""+var+"\")";
-                //Optimize the lookup when the variable position is known:
-                {
-                    unsigned int index = codeGenerator.GetProject().GetVariables().GetPosition(parameters[1].GetPlainString());
-                    if ( index < codeGenerator.GetProject().GetVariables().Count() )
-                        varGetter = "runtimeScene.getGame().getVariables().getFromIndex("+ToString(index)+")";
-                }
-                return varGetter+".getAsString()";
-            };
-        };
-        gd::StrExpressionMetadata::ExtraInformation::CustomCodeGenerator * codeGenerator = new CodeGenerator; //Need for code to compile
-
-        GetAllStrExpressions()["GlobalVariableString"]
-        .codeExtraInformation.SetCustomCodeGenerator(boost::shared_ptr<gd::StrExpressionMetadata::ExtraInformation::CustomCodeGenerator>(codeGenerator));
     }
 }
 

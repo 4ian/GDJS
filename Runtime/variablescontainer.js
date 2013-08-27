@@ -82,7 +82,7 @@ gdjs.VariablesContainer.prototype.initFrom = function(data, keepOldVariables) {
                 this._variables.get(deletedVars[i]).setUndefinedInContainer();
         }
     }
-}
+};
 
 /**
  * Add a new variable.
@@ -92,7 +92,7 @@ gdjs.VariablesContainer.prototype.initFrom = function(data, keepOldVariables) {
  */
 gdjs.VariablesContainer.prototype.add = function(name, variable) {
 	this._variables.put(name, variable);
-}
+};
 
 /**
  * Remove a variable.<br>
@@ -104,7 +104,7 @@ gdjs.VariablesContainer.prototype.remove = function(name) {
 	if ( this._variables.containsKey(name) ) {
         this._variables.get(name).setUndefinedInContainer();
     }
-}
+};
 
 /**
  * Get a variable.
@@ -126,7 +126,7 @@ gdjs.VariablesContainer.prototype.get = function(name) {
     }
 
 	return variable;
-}
+};
 
 /**
  * Get a variable using its index.<br>
@@ -152,7 +152,7 @@ gdjs.VariablesContainer.prototype.getFromIndex = function(id) {
         }
         return variable;
     }
-}
+};
 
 /**
  * Check if a variable exists in the container
@@ -162,5 +162,16 @@ gdjs.VariablesContainer.prototype.getFromIndex = function(id) {
  */
 gdjs.VariablesContainer.prototype.has = function(name) {
 	return this._variables.containsKey(name) && !this._variables.get(name).isUndefinedInContainer();
-}
+};
 
+/**
+ * "Bad" variable container, used by events when no other valid container can be found.
+ * @static
+ */
+gdjs.VariablesContainer.badVariablesContainer = gdjs.VariablesContainer();
+
+/**
+ * "Bad" variable, used by events when no other valid variable can be found.
+ * @static
+ */
+gdjs.VariablesContainer.badVariable = gdjs.Variable();
