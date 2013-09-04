@@ -88,7 +88,7 @@ gdjs.getDocWidth = function() {
  * - If it exists and is an array, call func on each member of the array.<br>
  * - If it exists and is not array, call func directly on the property.<br>
  * <br>
- * Note this.func must be remove elements from the array in the second case. If func
+ * Note that func must not remove elements from the array in the second case. If func
  * return false, the iteration will stop.
  * @method iterateOver
  * @static

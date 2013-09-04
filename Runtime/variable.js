@@ -10,8 +10,9 @@
  * @constructor
  * @namespace gdjs
  * @class Variable
+ * @param varData optional object used to initialize the variable.
  */
-gdjs.Variable = function()
+gdjs.Variable = function(varData)
 {
     this._value = 0;
     this._str = "";
@@ -20,7 +21,38 @@ gdjs.Variable = function()
     this._isStructure = false;
     this._children = {};
     this._undefinedInContainer = false;
+
+	if ( varData !== undefined ) {
+		if ( varData.attr.Value !== undefined ) { //Variable is a string or a number
+			var initialValue = varData.attr.Value;
+
+			//Try to guess the type of the value, as GD has no way ( for now ) to specify
+			//the type of a variable.
+			if(!isNaN(initialValue)) {  //Number
+				this._value = parseFloat(initialValue);
+			}
+			else { //We have a string ( Maybe empty. ).
+				if ( initialValue.length !== 0 )
+					this._value = 0;
+				else {
+					this._str = initialValue;
+				    this._numberDirty = true;
+				    this._stringDirty = false;
+				}
+			}
+		}
+		else { //Variable is a structure
+    		this._isStructure = true;
+
+			var that = this;
+			gdjs.iterateOver(varData.Children, "Variable", function(childData) {
+				that._children[childData.attr.Name] = new gdjs.Variable(childData);
+			});
+
+		}
+	}
 };
+
 
 /** 
  * Used ( usually by VariablesContainer ) to set that the variable must be

@@ -42,19 +42,7 @@ gdjs.VariablesContainer.prototype.initFrom = function(data, keepOldVariables) {
 		
         //Get the variable:
         var variable = that.get(varData.attr.Name); 
-
-		var initialValue = varData.attr.Value;
-		//Try to guess the type of the value, as GD has no way ( for now ) to specify
-		//the type of a variable.
-		if(!isNaN(initialValue)) {  //Number
-			variable.setNumber(parseFloat(initialValue));
-		}
-		else { //We have a string ( Maybe empty ).
-			if ( initialValue.length === 0 )
-				variable.setNumber(0);
-			else
-				variable.setString(initialValue);
-		}
+        gdjs.Variable.call(variable, varData);
         
         if ( !keepOldVariables ) {
             //Register the variable in the extra array to ensure a fast lookup using getFromIndex.
