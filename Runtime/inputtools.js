@@ -129,6 +129,7 @@ gdjs.evtTools.input.anyKeyPressed = function(runtimeScene) {
 gdjs.evtTools.input.isMouseButtonPressed = function(runtimeScene, button) {
     if ( button == "Left" ) return runtimeScene.getGame().isMouseButtonPressed(0);
     if ( button == "Right" ) return runtimeScene.getGame().isMouseButtonPressed(1);
+    return false;
 }
 
 gdjs.evtTools.input.hideCursor = function(runtimeScene) {
