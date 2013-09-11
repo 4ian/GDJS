@@ -99,6 +99,10 @@ BaseObjectExtension::BaseObjectExtension()
         .SetFunctionName("automatismActivated").SetIncludeFile("runtimeobject.js");
     objectActions["ActivateAutomatism"].codeExtraInformation
         .SetFunctionName("activateAutomatism").SetIncludeFile("runtimeobject.js");
+    objectConditions["ObjectVariableChildExists"].codeExtraInformation
+        .SetFunctionName("variableChildExists").SetIncludeFile("runtimeobject.js");
+    objectActions["ObjectVariableRemoveChild"].codeExtraInformation
+        .SetFunctionName("variableRemoveChild").SetIncludeFile("runtimeobject.js");
 
     objectExpressions["X"].codeExtraInformation.SetFunctionName("getX");
     objectExpressions["Y"].codeExtraInformation.SetFunctionName("getY");

@@ -358,8 +358,8 @@ gdjs.RuntimeObject.prototype.getVariableString = gdjs.RuntimeObject.getVariableS
 /**
  * Shortcut to set the value of a variable considered as a number
  * @method setVariableNumber
- * @param name {String} The variable to be changed
- * @param newValue {Any} The value to be set
+ * @param variable The variable to be changed
+ * @param newValue {Number} The value to be set
  */
 gdjs.RuntimeObject.setVariableNumber = function(variable, newValue) {
     variable.setNumber(newValue);
@@ -369,13 +369,37 @@ gdjs.RuntimeObject.prototype.setVariableNumber = gdjs.RuntimeObject.setVariableN
 /**
  * Shortcut to set the value of a variable considered as a string
  * @method setVariableNumber
- * @param name {String} The variable to be changed
- * @param newValue {Any} The value to be set
+ * @param variable The variable to be changed
+ * @param newValue {String} The value to be set
  */
 gdjs.RuntimeObject.setVariableString = function(variable, newValue) {
     variable.setString(newValue);
 };
 gdjs.RuntimeObject.prototype.setVariableString = gdjs.RuntimeObject.setVariableString;
+
+/**
+ * @method variableChildExists
+ * @static
+ * @private
+ * @param variable The variable to be tested
+ * @param childName {String} The name of the child
+ */
+gdjs.RuntimeObject.variableChildExists = function(variable, childName) {
+    return variable.hasChild(childName);
+};
+gdjs.RuntimeObject.prototype.variableChildExists = gdjs.RuntimeObject.variableChildExists;
+
+/**
+ * @method variableRemoveChild
+ * @static
+ * @private
+ * @param variable The variable to be changed
+ * @param childName {String} The name of the child
+ */
+gdjs.RuntimeObject.variableRemoveChild = function(variable, childName) {
+    return variable.removeChild(childName);
+};
+gdjs.RuntimeObject.prototype.variableRemoveChild = gdjs.RuntimeObject.variableRemoveChild;
 
 /**
  * Shortcut to test if a variable exists for the object.

@@ -46,6 +46,11 @@ VariablesExtension::VariablesExtension()
     GetAllConditions()["VarSceneDef"].codeExtraInformation.SetFunctionName("gdjs.evtTools.common.sceneVariableExists");
     GetAllConditions()["VarGlobalDef"].codeExtraInformation.SetFunctionName("gdjs.evtTools.common.globalVariableExists");
 
+    GetAllConditions()["VariableChildExists"].codeExtraInformation.SetFunctionName("gdjs.evtTools.common.variableChildExists");
+    GetAllConditions()["GlobalVariableChildExists"].codeExtraInformation.SetFunctionName("gdjs.evtTools.common.variableChildExists");
+    GetAllActions()["VariableRemoveChild"].codeExtraInformation.SetFunctionName("gdjs.evtTools.common.variableRemoveChild");
+    GetAllActions()["GlobalVariableRemoveChild"].codeExtraInformation.SetFunctionName("gdjs.evtTools.common.variableRemoveChild");
+
     {
         class CodeGenerator : public gd::InstructionMetadata::ExtraInformation::CustomCodeGenerator
         {

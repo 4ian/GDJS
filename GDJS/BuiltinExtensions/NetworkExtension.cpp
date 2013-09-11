@@ -27,6 +27,9 @@ NetworkExtension::NetworkExtension()
 
     CloneExtension("Game Develop C++ platform", "BuiltinNetwork");
 
+    GetAllActions()["SendRequest"].codeExtraInformation
+        .SetFunctionName("gdjs.evtTools.network.sendHttpRequest").SetIncludeFile("networktools.js");
+
     StripUnimplementedInstructionsAndExpressions(); //Unimplemented things are listed here:
     /*
     AddAction("EnvoiDataNet",

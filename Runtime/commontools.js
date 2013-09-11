@@ -77,7 +77,23 @@ gdjs.evtTools.common.globalVariableExists = function(runtimeScene, variableName)
     return runtimeScene.getGame().getVariables().has(variableName);
 };
 
+/**
+ * @method variableChildExists
+ * @private
+ * @static
+ */
+gdjs.evtTools.common.variableChildExists = function(variable, childName) {
+    return variable.hasChild(childName);
+};
 
+/**
+ * @method variableRemoveChild
+ * @private
+ * @static
+ */
+gdjs.evtTools.common.variableRemoveChild = function(variable, childName) {
+    return variable.removeChild(childName);
+};
 
 /**
  * Convert a string to a float.

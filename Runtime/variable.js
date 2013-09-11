@@ -82,11 +82,11 @@ gdjs.Variable.prototype.isUndefinedInContainer = function() {
  */
 gdjs.Variable.prototype.getChild = function(childName) {
 
-	if ( this._children.hasOwnProperty(childName) )
+	if ( this._children.hasOwnProperty(childName) && this._children[childName] !== undefined )
 		return this._children[childName];
 
 	this._isStructure = true;
-	this._children[childName] = gdjs.Variable();
+	this._children[childName] = new gdjs.Variable();
 	return this._children[childName];
 };
 
@@ -102,9 +102,21 @@ gdjs.Variable.prototype.hasChild = function(childName) {
 };
 
 /**
+ * Remove the child with the specified name. 
+ * 
+ * If the variable has not the specified child, nothing is done.
+ * @method removeChild
+ * @param childName The name of the child to be removed
+ */
+gdjs.Variable.prototype.removeChild = function(childName) {
+	if ( !this._isStructure ) return;
+	delete this._children[childName];
+}
+
+/**
  * Get the value of the variable, considered as a number
  * @method getAsNumber
- * @return {Any} The number stored
+ * @return {Number} The number stored
  */
 gdjs.Variable.prototype.getAsNumber = function() {
 	if ( this._numberDirty ) {
@@ -118,7 +130,7 @@ gdjs.Variable.prototype.getAsNumber = function() {
 /**
  * Change the value of the variable, considered as a number
  * @method setNumber
- * @param newValue {Any} The new value to be set
+ * @param newValue {Number} The new value to be set
  */
 gdjs.Variable.prototype.setNumber = function(newValue) {
 	this._value = newValue;
@@ -129,7 +141,7 @@ gdjs.Variable.prototype.setNumber = function(newValue) {
 /**
  * Get the value of the variable, considered as a string
  * @method getAsString
- * @return {Any} The number stored
+ * @return {String} The number stored
  */
 gdjs.Variable.prototype.getAsString = function() {
 	if ( this._stringDirty ) {
@@ -143,7 +155,7 @@ gdjs.Variable.prototype.getAsString = function() {
 /**
  * Change the value of the variable, considered as a string
  * @method setString
- * @param newValue {Any} The new string to be set
+ * @param newValue {String} The new string to be set
  */
 gdjs.Variable.prototype.setString = function(newValue) {
 	this._str = newValue;
