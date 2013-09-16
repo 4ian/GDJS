@@ -29,7 +29,7 @@ gdjs.evtTools.storage.loadJSONFileFromStorage = function(filename) {
 		return; //Already loaded.
 
 	var rawStr = localStorage.getItem("GDJS_"+filename);
-	if ( rawStr != null )
+	if ( rawStr !== null )
 		gdjs.evtTools.storage.loadedFiles.put(filename, JSON.parse(rawStr));
 	else
 		gdjs.evtTools.storage.loadedFiles.put(filename, {});

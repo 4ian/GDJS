@@ -254,6 +254,7 @@ gdjs.SpriteRuntimeObject.prototype.onDeletedFromScene = function(runtimeScene) {
 //Animations :
 
 gdjs.SpriteRuntimeObject.prototype.setAnimation = function(newAnimation) {
+    newAnimation = newAnimation | 0;
     if ( newAnimation < this._animations.length &&
         this._currentAnimation !== newAnimation &&
         newAnimation >= 0) {
@@ -282,6 +283,8 @@ gdjs.SpriteRuntimeObject.prototype.setDirectionOrAngle = function(newValue) {
         this.hitBoxesDirty = true;
     }
     else {
+        newValue = newValue | 0;
+
         if (newValue === this._currentDirection
             || newValue >= anim.directions.length
             || anim.directions[newValue].frames.length === 0
@@ -641,15 +644,17 @@ gdjs.SpriteRuntimeObject.prototype.turnTowardObject = function(obj) {
  * @method cursorOnObject
  * @return true if the cursor is on the object.
  */
-gdjs.SpriteRuntimeObject.prototype.cursorOnObject = function() {
-    //TODO: Pass the runtimeScene as parameter ?
-    var layer = this._runtimeScene.getLayer(this.layer);
+gdjs.SpriteRuntimeObject.prototype.cursorOnObject = function(runtimeScene) {
+    var mousePos = runtimeScene.getLayer(this.layer).convertCoords(
+        runtimeScene.getGame().getMouseX(), 
+        runtimeScene.getGame().getMouseY());
 
-    if ( this._runtimeScene.getGame().getMouseX()+layer.getCameraX() >= this.getX()
-        && this._runtimeScene.getGame().getMouseX()+layer.getCameraX() <= this.getX()+this.getWidth()
-        && this._runtimeScene.getGame().getMouseY()+layer.getCameraY() >= this.getY()
-        && this._runtimeScene.getGame().getMouseY()+layer.getCameraY() <= this.getY()+this.getHeight())
+    if (this.getDrawableX() <= mousePos[0]
+        && this.getDrawableX() + this.getWidth() >= mousePos[0]
+        && this.getDrawableY() <= mousePos[1]
+        && this.getDrawableY() + this.getHeight() >= mousePos[1] ) {
         return true;
+    }
 
     return false;
 };
