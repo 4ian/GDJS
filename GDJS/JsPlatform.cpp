@@ -13,6 +13,7 @@
 #include <wx/filename.h>
 #include <wx/log.h>
 #include <wx/bitmap.h>
+#include <wx/time.h>
 
 //Built-in extensions
 #include "GDJS/BuiltinExtensions/SpriteExtension.h"
@@ -69,7 +70,9 @@ public:
                        +_("\n\nPlease report this error on the Game Develop website, or contact the extension developer if it seems related to a third party extension."));
         }
 
-        if ( !wxLaunchDefaultBrowser("http://localhost:2828") ) //Without "http://", the function fails ( on Windows at least ).
+        //Without "http://", the function fails ( on Windows at least ).
+        //The timestamp is here to prevent browsers caching contents.
+        if ( !wxLaunchDefaultBrowser("http://localhost:2828?"+gd::ToString(wxGetLocalTime())) ) 
         {
             wxLogError(_("Unable to launch your browser :(\nOpen manually your browser and type \"localhost:2828\" in\nthe address bar ( without the quotes ) to launch the preview!"));
         }

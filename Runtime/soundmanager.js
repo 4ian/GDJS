@@ -13,24 +13,37 @@
 gdjs.Sound = function(soundFile) {
 	this.audio = new Audio(soundFile || "");
 	this._volume = 100;
-}
+};
 
 gdjs.Sound.prototype.setVolume = function(volume, globalVolume) {
 	this._volume = volume;
 	this.updateVolume(globalVolume);
-}
+};
 
 gdjs.Sound.prototype.updateVolume = function(globalVolume) {
 	this.audio.volume = this._volume/100*globalVolume/100;
-}
+};
 
 gdjs.Sound.prototype.getVolume = function() {
 	return this._volume;
-}
+};
 
 gdjs.Sound.prototype.hasEnded = function() {
 	return !this.audio.loop && this.audio.currentTime == this.audio.duration;
-}
+};
+
+gdjs.Sound.prototype.play = function() {
+	this.audio.play();
+};
+
+gdjs.Sound.prototype.pause = function() {
+	this.audio.pause();
+};
+
+gdjs.Sound.prototype.stop = function() {
+	if ( this.audio.readyState == 4 ) this.audio.currentTime = 0;
+	this.audio.pause();
+};
 
 /**
  * SoundManager is used to manage the sounds and musics of a RuntimeScene.
@@ -46,12 +59,12 @@ gdjs.SoundManager = function()
     this._freeSounds = []; //Sounds without an assigned channel.
     this._freeMusics = []; //Musics without an assigned channel.
     this._globalVolume = 100;
-}
+};;
 
 gdjs.SoundManager.prototype._getRecyledResource = function(arr) {
 	//Try to recycle an old sound.
 	for(var i = 0, len = arr.length;i<len;++i) {
-		if (arr[i] != null && arr[i].hasEnded() ) {
+		if (arr[i] !== null && arr[i].hasEnded() ) {
 			return arr[i];
 		}
 	}
@@ -59,7 +72,7 @@ gdjs.SoundManager.prototype._getRecyledResource = function(arr) {
 	theSound = new gdjs.Sound();
 	arr.push(theSound);
 	return theSound;
-}
+};
 
 gdjs.SoundManager.prototype.playSound = function(soundFile, loop, volume, pitch) {
 	var theSound = this._getRecyledResource(this._freeSounds);
@@ -68,10 +81,10 @@ gdjs.SoundManager.prototype.playSound = function(soundFile, loop, volume, pitch)
 	theSound.audio.loop = loop;
 	theSound.setVolume(volume, this._globalVolume);
 	theSound.audio.play();
-}
+};
 
 gdjs.SoundManager.prototype.playSoundOnChannel = function(soundFile, channel, loop, volume, pitch) {
-	if ( this._sounds[channel] == null ) {
+	if ( this._sounds[channel] === null ) {
 		this._sounds[channel] = new gdjs.Sound();;
 	}
 
@@ -81,22 +94,22 @@ gdjs.SoundManager.prototype.playSoundOnChannel = function(soundFile, channel, lo
 	theSound.audio.loop = loop;
 	theSound.setVolume(volume, this._globalVolume);
 	theSound.audio.play();
-}
+};
 
 gdjs.SoundManager.prototype.stopSoundOnChannel = function(channel) {
 	var theSound = this._sounds[channel];
-	if ( theSound != null ) theSound.stop();
-}
+	if ( theSound !== null ) theSound.stop();
+};
 
 gdjs.SoundManager.prototype.pauseSoundOnChannel = function(channel) {
 	var theSound = this._sounds[channel];
-	if ( theSound != null ) theSound.pause();
-}
+	if ( theSound !== null ) theSound.pause();
+};
 
 gdjs.SoundManager.prototype.continueSoundOnChannel = function(channel) {
 	var theSound = this._sounds[channel];
-	if ( theSound != null ) theSound.play();
-}
+	if ( theSound !== null ) theSound.play();
+};
 
 gdjs.SoundManager.prototype.playMusic = function(soundFile, loop, volume, pitch) {
 	var theMusic = this._getRecyledResource(this._freeMusics);
@@ -122,17 +135,17 @@ gdjs.SoundManager.prototype.playMusicOnChannel = function(soundFile, channel, lo
 
 gdjs.SoundManager.prototype.stopMusicOnChannel = function(channel) {
 	var theMusic = this._musics[channel];
-	if ( theMusic != null ) theMusic.stop();
+	if ( theMusic !== null ) theMusic.stop();
 }
 
 gdjs.SoundManager.prototype.pauseMusicOnChannel = function(channel) {
 	var theMusic = this._musics[channel];
-	if ( theMusic != null ) theMusic.pause();
+	if ( theMusic !== null ) theMusic.pause();
 }
 
 gdjs.SoundManager.prototype.continueMusicOnChannel = function(channel) {
 	var theMusic = this._musics[channel];
-	if ( theMusic != null ) theMusic.play();
+	if ( theMusic !== null ) theMusic.play();
 }
 
 gdjs.SoundManager.prototype.setGlobalVolume = function(volume) {
@@ -140,22 +153,22 @@ gdjs.SoundManager.prototype.setGlobalVolume = function(volume) {
 
 	//Update the volumes of sounds.
 	for(var i = 0, len = this._freeSounds.length;i<len;++i) {
-		if ( this._freeSounds[i] != null ) {
+		if ( this._freeSounds[i] !== null ) {
 			this._freeSounds[i].updateVolume(this._globalVolume);
 		}
 	}
 	for(var i = 0, len = this._freeMusics.length;i<len;++i) {
-		if ( this._freeMusics[i] != null ) {
+		if ( this._freeMusics[i] !== null ) {
 			this._freeMusics[i].updateVolume(this._globalVolume);
 		}
 	}
 	for(var i = 0, len = this._sounds.length;i<len;++i) {
-		if ( this._sounds[i] != null ) {
+		if ( this._sounds[i] !== null ) {
 			this._sounds[i].updateVolume(this._globalVolume);
 		}
 	}
 	for(var i = 0, len = this._musics.length;i<len;++i) {
-		if ( this._musics[i] != null ) {
+		if ( this._musics[i] !== null ) {
 			this._musics[i].updateVolume(this._globalVolume);
 		}
 	}

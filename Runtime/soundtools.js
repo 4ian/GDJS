@@ -22,15 +22,15 @@ gdjs.evtTools.sound.playSoundOnChannel = function(runtimeScene, soundFile, chann
     runtimeScene.getSoundManager().playSoundOnChannel(soundFile, channel, loop, volume, pitch);
 }
 
-gdjs.evtTools.sound.stopSoundOnChannel = function(runtimeScene, soundFile, channel, loop, volume, pitch) {
+gdjs.evtTools.sound.stopSoundOnChannel = function(runtimeScene, channel) {
     runtimeScene.getSoundManager().stopSoundOnChannel(channel);
 }
 
-gdjs.evtTools.sound.pauseSoundOnChannel = function(runtimeScene, soundFile, channel, loop, volume, pitch) {
+gdjs.evtTools.sound.pauseSoundOnChannel = function(runtimeScene, channel) {
     runtimeScene.getSoundManager().pauseSoundOnChannel(channel);
 }
 
-gdjs.evtTools.sound.continueSoundOnChannel = function(runtimeScene, soundFile, channel, loop, volume, pitch) {
+gdjs.evtTools.sound.continueSoundOnChannel = function(runtimeScene, channel) {
     runtimeScene.getSoundManager().continueSoundOnChannel(channel);
 }
 
@@ -42,15 +42,15 @@ gdjs.evtTools.sound.playMusicOnChannel = function(runtimeScene, soundFile, chann
     runtimeScene.getSoundManager().playMusicOnChannel(soundFile, channel, loop, volume, pitch);
 }
 
-gdjs.evtTools.sound.stopMusicOnChannel = function(runtimeScene, soundFile, channel, loop, volume, pitch) {
+gdjs.evtTools.sound.stopMusicOnChannel = function(runtimeScene, channel) {
     runtimeScene.getSoundManager().stopMusicOnChannel(channel);
 }
 
-gdjs.evtTools.sound.pauseMusicOnChannel = function(runtimeScene, soundFile, channel, loop, volume, pitch) {
+gdjs.evtTools.sound.pauseMusicOnChannel = function(runtimeScene, channel) {
     runtimeScene.getSoundManager().pauseMusicOnChannel(channel);
 }
 
-gdjs.evtTools.sound.continueMusicOnChannel = function(runtimeScene, soundFile, channel, loop, volume, pitch) {
+gdjs.evtTools.sound.continueMusicOnChannel = function(runtimeScene, channel) {
     runtimeScene.getSoundManager().continueMusicOnChannel(channel);
 }
 

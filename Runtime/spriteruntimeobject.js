@@ -142,7 +142,7 @@ gdjs.SpriteRuntimeObject = function(runtimeScene, objectData)
     this._animations.length = i; //Make sure to delete already existing animations which are not used anymore.
 
     //PIXI sprite related members:
-    this._animationFrame = null;
+    this._animationFrame = null; //Reference to the current SpriteAnimationFrame that is displayd. Can be null, so ensure that this case is handled properly.
     this._spriteDirty = true;
     this._textureDirty = true;
     this._spriteInContainer = true;
@@ -181,20 +181,29 @@ gdjs.SpriteRuntimeObject.prototype.extraInitializationFromInitialInstance = func
  */
 gdjs.SpriteRuntimeObject.prototype._updatePIXISprite = function() {
 
-    this._sprite.anchor.x = this._animationFrame.center.x/this._sprite.texture.frame.width;
-    this._sprite.anchor.y = this._animationFrame.center.y/this._sprite.texture.frame.height;
-    this._sprite.position.x = this.x + (this._animationFrame.center.x - this._animationFrame.origin.x)*Math.abs(this._scaleX);
-    this._sprite.position.y = this.y + (this._animationFrame.center.y - this._animationFrame.origin.y)*Math.abs(this._scaleY);
-    if ( this._flippedX ) this._sprite.position.x += (this._sprite.texture.frame.width/2-this._animationFrame.center.x)*Math.abs(this._scaleX)*2;
-    if ( this._flippedY ) this._sprite.position.y += (this._sprite.texture.frame.height/2-this._animationFrame.center.y)*Math.abs(this._scaleY)*2;
-    this._sprite.rotation = gdjs.toRad(this.angle);
-    this._sprite.visible = !this.hidden;
-    this._sprite.blendMode = this._blendMode;
-    this._sprite.alpha = this._sprite.visible ? this.opacity/255 : 0; //TODO: Workaround not working property in PIXI.js
-    this._sprite.scale.x = this._scaleX;
-    this._sprite.scale.y = this._scaleY;
-    this._cachedWidth = Math.abs(this._sprite.width);
-    this._cachedHeight = Math.abs(this._sprite.height);
+    if (this._animationFrame !== null) {
+        this._sprite.anchor.x = this._animationFrame.center.x/this._sprite.texture.frame.width;
+        this._sprite.anchor.y = this._animationFrame.center.y/this._sprite.texture.frame.height;
+        this._sprite.position.x = this.x + (this._animationFrame.center.x - this._animationFrame.origin.x)*Math.abs(this._scaleX);
+        this._sprite.position.y = this.y + (this._animationFrame.center.y - this._animationFrame.origin.y)*Math.abs(this._scaleY);
+        if ( this._flippedX ) this._sprite.position.x += (this._sprite.texture.frame.width/2-this._animationFrame.center.x)*Math.abs(this._scaleX)*2;
+        if ( this._flippedY ) this._sprite.position.y += (this._sprite.texture.frame.height/2-this._animationFrame.center.y)*Math.abs(this._scaleY)*2;
+        this._sprite.rotation = gdjs.toRad(this.angle);
+        this._sprite.visible = !this.hidden;
+        this._sprite.blendMode = this._blendMode;
+        this._sprite.alpha = this._sprite.visible ? this.opacity/255 : 0; //TODO: Workaround not working property in PIXI.js
+        this._sprite.scale.x = this._scaleX;
+        this._sprite.scale.y = this._scaleY;
+        this._cachedWidth = Math.abs(this._sprite.width);
+        this._cachedHeight = Math.abs(this._sprite.height);
+    }
+    else {
+        this._sprite.visible = false;
+        this._sprite.alpha = 0;
+        this._cachedWidth = 0;
+        this._cachedHeight = 0;
+    }
+
 
     this._spriteDirty = false;
 };
@@ -203,16 +212,24 @@ gdjs.SpriteRuntimeObject.prototype._updatePIXISprite = function() {
  * Update the internal texture of the PIXI sprite.
  */
 gdjs.SpriteRuntimeObject.prototype._updatePIXITexture = function() {
-    if ( this._currentAnimation >= this._animations.length ||
-         this._currentDirection >= this._animations[this._currentAnimation].directions.length) {
-        return;
-    }
-    var direction = this._animations[this._currentAnimation].directions[this._currentDirection];
-
-    this._animationFrame = direction.frames[this._currentFrame];
-    this._sprite.setTexture(this._animationFrame.pixiTexture);
     this._textureDirty = false;
     this._spriteDirty = true;
+
+    if ( this._currentAnimation < this._animations.length &&
+         this._currentDirection < this._animations[this._currentAnimation].directions.length) {
+        var direction = this._animations[this._currentAnimation].directions[this._currentDirection];
+
+        if ( this._currentFrame < direction.frames.length ) {
+            this._animationFrame = direction.frames[this._currentFrame];
+            if ( this._animationFrame != null )
+                this._sprite.setTexture(this._animationFrame.pixiTexture);
+
+            return;
+        }
+    }
+
+    //Invalid animation/direction/frame:
+    this._animationFrame = null;
 };
 
 /**
@@ -242,6 +259,7 @@ gdjs.SpriteRuntimeObject.prototype.updateTime = function(elapsedTime) {
     if ( this._currentFrame >= direction.frames.length ) {
         this._currentFrame = direction.loop ? this._currentFrame % direction.frames.length : direction.frames.length-1;
     }
+    if ( this._currentFrame < 0 ) this._currentFrame = 0; //May happen if there is no frame.
 
     if ( oldFrame != this._currentFrame || this._textureDirty ) this._updatePIXITexture();
     if ( this._spriteDirty ) this._updatePIXISprite();
@@ -300,7 +318,7 @@ gdjs.SpriteRuntimeObject.prototype.setDirectionOrAngle = function(newValue) {
         this._textureDirty = true;
         this.hitBoxesDirty = true;
     }
-}
+};
 
 gdjs.SpriteRuntimeObject.prototype.getDirectionOrAngle = function() {
     if ( this._currentAnimation >= this._animations.length ) {
@@ -313,7 +331,7 @@ gdjs.SpriteRuntimeObject.prototype.getDirectionOrAngle = function() {
     else {
         return this._currentDirection;
     }
-}
+};
 
 gdjs.SpriteRuntimeObject.prototype.setAnimationFrame = function(newFrame) {
     if ( this._currentAnimation >= this._animations.length ||
@@ -322,11 +340,11 @@ gdjs.SpriteRuntimeObject.prototype.setAnimationFrame = function(newFrame) {
     }
     var direction = this._animations[this._currentAnimation].directions[this._currentDirection];
 
-    if ( newFrame < direction.frames.length && newFrame != this._currentFrame ) {
+    if ( newFrame > 0 && newFrame < direction.frames.length && newFrame != this._currentFrame ) {
         this._currentFrame = newFrame;
         this._textureDirty = true;
     }
-}
+};
 
 /**
  * Return true if animation has ended.
@@ -334,7 +352,7 @@ gdjs.SpriteRuntimeObject.prototype.setAnimationFrame = function(newFrame) {
 gdjs.SpriteRuntimeObject.prototype.hasAnimationEnded = function() {
     if ( this._currentAnimation >= this._animations.length ||
          this._currentDirection >= this._animations[this._currentAnimation].directions.length) {
-        return;
+        return true;
     }
     if ( this._animations[this._currentAnimation].loop ) return false;
     var direction = this._animations[this._currentAnimation].directions[this._currentDirection];
@@ -357,7 +375,7 @@ gdjs.SpriteRuntimeObject.prototype.playAnimation = function() {
 //Position :
 
 gdjs.SpriteRuntimeObject.prototype.getPointX = function(name) {
-    if ( name.length === 0 ) return this.getX();
+    if ( name.length === 0 || this._animationFrame === null ) return this.getX();
 
     var pt = this._animationFrame.getPoint(name);
     var cPt = this._animationFrame.center;
@@ -386,7 +404,7 @@ gdjs.SpriteRuntimeObject.prototype.getPointX = function(name) {
 }
 
 gdjs.SpriteRuntimeObject.prototype.getPointY = function(name) {
-    if ( name.length === 0 ) return this.getY();
+    if ( name.length === 0 || this._animationFrame === null ) return this.getY();
 
     var pt = this._animationFrame.getPoint(name);
     var cPt = this._animationFrame.center;
@@ -415,19 +433,27 @@ gdjs.SpriteRuntimeObject.prototype.getPointY = function(name) {
 }
 
 gdjs.SpriteRuntimeObject.prototype.getDrawableX = function() {
+    if ( this._animationFrame === null ) return this.x;
+
     return this.x - this._animationFrame.origin.x*Math.abs(this._scaleX);
 }
 
 gdjs.SpriteRuntimeObject.prototype.getDrawableY = function() {
+    if ( this._animationFrame === null ) return this.y;
+
     return this.y - this._animationFrame.origin.y*Math.abs(this._scaleY);
 }
 
 gdjs.SpriteRuntimeObject.prototype.getCenterX = function() {
+    if ( this._animationFrame === null ) return 0;
+
     //Just need to multiply by the scale as it is the center
     return this._animationFrame.center.x*Math.abs(this._scaleX);
 }
 
 gdjs.SpriteRuntimeObject.prototype.getCenterY = function() {
+    if ( this._animationFrame === null ) return 0;
+
     //Just need to multiply by the scale as it is the center
     return this._animationFrame.center.y*Math.abs(this._scaleY);
 }
@@ -435,17 +461,23 @@ gdjs.SpriteRuntimeObject.prototype.getCenterY = function() {
 gdjs.SpriteRuntimeObject.prototype.setX = function(x) {
     this.x = x;
     
-    this.hitBoxesDirty = true;
-    this._sprite.position.x = this.x + (this._animationFrame.center.x - this._animationFrame.origin.x)*Math.abs(this._scaleX);
-    if ( this._flippedX ) this._sprite.position.x += (this._sprite.texture.frame.width/2-this._animationFrame.center.x)*Math.abs(this._scaleX)*2;
+    if (this._animationFrame !== null) {
+        this.hitBoxesDirty = true;
+        this._sprite.position.x = this.x + (this._animationFrame.center.x - this._animationFrame.origin.x)*Math.abs(this._scaleX);
+        if ( this._flippedX )
+            this._sprite.position.x += (this._sprite.texture.frame.width/2-this._animationFrame.center.x)*Math.abs(this._scaleX)*2;
+    }
 };
 
 gdjs.SpriteRuntimeObject.prototype.setY = function(y) {
     this.y = y;
     
-    this.hitBoxesDirty = true;
-    this._sprite.position.y = this.y + (this._animationFrame.center.y - this._animationFrame.origin.y)*Math.abs(this._scaleY);
-    if ( this._flippedY ) this._sprite.position.y += (this._sprite.texture.frame.height/2-this._animationFrame.center.y)*Math.abs(this._scaleY)*2;
+    if ( this._animationFrame !== null) {
+        this.hitBoxesDirty = true;
+        this._sprite.position.y = this.y + (this._animationFrame.center.y - this._animationFrame.origin.y)*Math.abs(this._scaleY);
+        if ( this._flippedY )
+            this._sprite.position.y += (this._sprite.texture.frame.height/2-this._animationFrame.center.y)*Math.abs(this._scaleY)*2;
+    }
 };
 
 gdjs.SpriteRuntimeObject.prototype.setAngle = function(angle) {
@@ -630,7 +662,7 @@ gdjs.SpriteRuntimeObject.prototype.turnTowardPosition = function(x,y) {
  * @param obj The target object
  */
 gdjs.SpriteRuntimeObject.prototype.turnTowardObject = function(obj) {
-    if ( obj == null ) return;
+    if ( obj === null ) return;
 
     this.turnTowardPosition(obj.getDrawableX()+obj.getCenterX(),
                             obj.getDrawableY()+obj.getCenterY());
@@ -646,7 +678,7 @@ gdjs.SpriteRuntimeObject.prototype.turnTowardObject = function(obj) {
  */
 gdjs.SpriteRuntimeObject.prototype.cursorOnObject = function(runtimeScene) {
     var mousePos = runtimeScene.getLayer(this.layer).convertCoords(
-        runtimeScene.getGame().getMouseX(), 
+        runtimeScene.getGame().getMouseX(),
         runtimeScene.getGame().getMouseY());
 
     if (this.getDrawableX() <= mousePos[0]
