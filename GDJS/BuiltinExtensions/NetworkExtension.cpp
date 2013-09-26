@@ -29,6 +29,11 @@ NetworkExtension::NetworkExtension()
 
     GetAllActions()["SendRequest"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.network.sendHttpRequest").SetIncludeFile("networktools.js");
+    GetAllActions()["JSONToVariableStructure"].codeExtraInformation
+        .SetFunctionName("gdjs.evtTools.network.jsonToVariableStructure").SetIncludeFile("networktools.js");
+
+    GetAllStrExpressions()["ToJSON"].codeExtraInformation
+        .SetFunctionName("gdjs.evtTools.network.variableStructureToJSON").SetIncludeFile("networktools.js");
 
     StripUnimplementedInstructionsAndExpressions(); //Unimplemented things are listed here:
     /*

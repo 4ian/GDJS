@@ -43,3 +43,54 @@ gdjs.evtTools.network.sendHttpRequest = function(host, uri, body, method, conten
 	}
 	catch(e){}
 };
+
+gdjs.evtTools.network.variableStructureToJSON = function(variable)
+{
+    if ( !variable.isStructure() ) {
+        if ( variable.isNumber() )
+            return variable.getAsNumber().toString();
+        else
+            return "\""+variable.getAsString()+"\"";
+    }
+
+    var str = "{";
+    var firstChild = true;
+    var children = variable.getAllChildren();
+    for(var p in children) {
+        if (children.hasOwnProperty(p)) {
+	        if ( !firstChild ) str += ",";
+	        str += "\""+p+"\": "+gdjs.evtTools.network.variableStructureToJSON(children[p]);
+
+	        firstChild = false;
+	    }
+    }
+
+    str += "}";
+    return str;
+};
+
+gdjs.evtTools.network._objectToVariable = function(obj, variable)
+{
+	if(!isNaN(obj)) {  //Number
+		variable.setNumber(obj);
+	}
+	else if (typeof obj == 'string' || obj instanceof String) {
+		variable.setString(obj);
+	}
+	else {
+	    for(var p in obj) {
+	        if (obj.hasOwnProperty(p)) {
+	        	gdjs.evtTools.network._objectToVariable(obj[p], variable.getChild(p));
+	        }
+		}
+	}
+
+}
+
+gdjs.evtTools.network.jsonToVariableStructure = function(jsonStr, variable)
+{
+    if ( jsonStr.length === 0 ) return;
+	var obj = JSON.parse(jsonStr);
+
+	gdjs.evtTools.network._objectToVariable(obj, variable);
+}

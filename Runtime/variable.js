@@ -163,6 +163,30 @@ gdjs.Variable.prototype.setString = function(newValue) {
 	this._stringDirty = false;
 };
 
+/**
+ * Return true if the variable is a structure.
+ * @method isStructure
+ */ 
+gdjs.Variable.prototype.isStructure = function() {
+	return this._isStructure;
+};
+
+/**
+ * Return true if the variable is a number.
+ * @method isNumber
+ */
+gdjs.Variable.prototype.isNumber = function() {
+	return !this._isStructure && !this._numberDirty;
+};
+
+/**
+ * Return the object containing all the children of the variable
+ * @method getAllChildren
+ */
+gdjs.Variable.prototype.getAllChildren = function() {
+	return this._children;
+}
+
 gdjs.Variable.prototype.add = function(val) {
 	this.setNumber(this.getAsNumber()+val);
 };
