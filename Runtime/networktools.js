@@ -77,6 +77,11 @@ gdjs.evtTools.network._objectToVariable = function(obj, variable)
 	else if (typeof obj == 'string' || obj instanceof String) {
 		variable.setString(obj);
 	}
+    else if ( Array.isArray(obj) ) {
+	    for(var i = 0;i<obj.length;++i) {
+	        gdjs.evtTools.network._objectToVariable(obj[i], variable.getChild(i.toString()));
+		}
+	}
 	else {
 	    for(var p in obj) {
 	        if (obj.hasOwnProperty(p)) {

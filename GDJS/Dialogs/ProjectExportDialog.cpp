@@ -28,6 +28,7 @@ const long ProjectExportDialog::ID_CHECKBOX1 = wxNewId();
 const long ProjectExportDialog::ID_STATICTEXT2 = wxNewId();
 const long ProjectExportDialog::ID_STATICTEXT1 = wxNewId();
 const long ProjectExportDialog::ID_STATICTEXT3 = wxNewId();
+const long ProjectExportDialog::ID_HYPERLINKCTRL2 = wxNewId();
 const long ProjectExportDialog::ID_STATICLINE2 = wxNewId();
 const long ProjectExportDialog::ID_STATICBITMAP2 = wxNewId();
 const long ProjectExportDialog::ID_HYPERLINKCTRL1 = wxNewId();
@@ -43,6 +44,7 @@ END_EVENT_TABLE()
 ProjectExportDialog::ProjectExportDialog(wxWindow* parent, gd::Project & project)
 {
 	//(*Initialize(ProjectExportDialog)
+	wxFlexGridSizer* FlexGridSizer4;
 	wxFlexGridSizer* FlexGridSizer10;
 	wxFlexGridSizer* FlexGridSizer3;
 	wxFlexGridSizer* FlexGridSizer5;
@@ -84,8 +86,12 @@ ProjectExportDialog::ProjectExportDialog(wxWindow* parent, gd::Project & project
 	status2Txt = new wxStaticText(this, ID_STATICTEXT1, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
 	FlexGridSizer7->Add(status2Txt, 1, wxBOTTOM|wxLEFT|wxRIGHT|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	StaticBoxSizer1 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Note"));
-	StaticText1 = new wxStaticText(this, ID_STATICTEXT3, _("When the exportation is done, send the files to your website \n( you need a web hosting ) and just go to the website to start \nthe game.\nMore exportation options ( Facebook... ) are coming soon!"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
-	StaticBoxSizer1->Add(StaticText1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer4 = new wxFlexGridSizer(0, 1, 0, 0);
+	StaticText1 = new wxStaticText(this, ID_STATICTEXT3, _("When the exportation is done, send the files to your website \n( you need a web hosting ) and just go to the website to start \nthe game."), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
+	FlexGridSizer4->Add(StaticText1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	HyperlinkCtrl1 = new wxHyperlinkCtrl(this, ID_HYPERLINKCTRL2, _("Click here to learn more about how to export your project"), _("http://wiki.compilgames.net/doku.php/en/game_develop/tutorials/howtodistribute"), wxDefaultPosition, wxDefaultSize, wxHL_CONTEXTMENU|wxHL_ALIGN_CENTRE|wxNO_BORDER, _T("ID_HYPERLINKCTRL2"));
+	FlexGridSizer4->Add(HyperlinkCtrl1, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+	StaticBoxSizer1->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
 	FlexGridSizer7->Add(StaticBoxSizer1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	FlexGridSizer1->Add(FlexGridSizer7, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
 	StaticLine2 = new wxStaticLine(this, ID_STATICLINE2, wxDefaultPosition, wxSize(10,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE2"));

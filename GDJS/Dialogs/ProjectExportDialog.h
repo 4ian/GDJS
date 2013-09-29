@@ -52,6 +52,7 @@ protected:
     wxStaticText* statusTxt;
     wxStaticBitmap* StaticBitmap1;
     wxStaticText* StaticText1;
+    wxHyperlinkCtrl* HyperlinkCtrl1;
     wxStaticText* status2Txt;
     wxStaticLine* StaticLine2;
     wxButton* exportBt;
@@ -71,6 +72,7 @@ protected:
     static const long ID_STATICTEXT2;
     static const long ID_STATICTEXT1;
     static const long ID_STATICTEXT3;
+    static const long ID_HYPERLINKCTRL2;
     static const long ID_STATICLINE2;
     static const long ID_STATICBITMAP2;
     static const long ID_HYPERLINKCTRL1;
