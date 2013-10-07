@@ -269,7 +269,8 @@ gdjs.evtTools.object.pickRandomObject = function(runtimeScene, objectsLists) {
     }
 
     return true;
-}
+};
+
 /**
  * Do the work of creating a new object
  * @private
@@ -279,7 +280,7 @@ gdjs.evtTools.object.doCreateObjectOnScene = function(runtimeScene, objectName, 
     //Let's ask the RuntimeScene to create the object
     var obj = runtimeScene.createObject(objectName);
 
-    if ( obj != null ) {
+    if ( obj !== null ) {
         //Do some extra setup
         obj.setPosition(x,y);
         obj.setLayer(layer);
@@ -289,7 +290,7 @@ gdjs.evtTools.object.doCreateObjectOnScene = function(runtimeScene, objectName, 
             objectsLists.get(objectName).push(obj);
         }
     }
-}
+};
 
 /**
  * Allows events to create a new object on a scene.
@@ -297,7 +298,7 @@ gdjs.evtTools.object.doCreateObjectOnScene = function(runtimeScene, objectName, 
  */
 gdjs.evtTools.object.createObjectOnScene = function(runtimeScene, objectsLists, x, y, layer) {
     gdjs.evtTools.object.doCreateObjectOnScene(runtimeScene, objectsLists.keys()[0], objectsLists, x, y, layer);
-}
+};
 
 /**
  * Allows events to create a new object on a scene.
@@ -305,7 +306,7 @@ gdjs.evtTools.object.createObjectOnScene = function(runtimeScene, objectsLists, 
  */
 gdjs.evtTools.object.createObjectFromGroupOnScene = function(runtimeScene, objectsLists, objectName, x, y, layer) {
     gdjs.evtTools.object.doCreateObjectOnScene(runtimeScene, objectName, objectsLists, x, y, layer);
-}
+};
 
 /**
  * Allows events to get the number of objects picked.
@@ -320,4 +321,4 @@ gdjs.evtTools.object.pickedObjectsCount = function(objectsLists) {
     }
 
     return size;
-}
+};

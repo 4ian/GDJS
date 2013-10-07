@@ -19,7 +19,7 @@ gdjs.VariablesContainer = function(initialVariablesData)
     if ( this._variablesArray == undefined ) this._variablesArray = [];
     
     if ( initialVariablesData != undefined ) this.initFrom(initialVariablesData);
-}
+};
 
 /**
  * Initialize variables from a container data.<br>
@@ -152,14 +152,42 @@ gdjs.VariablesContainer.prototype.has = function(name) {
 	return this._variables.containsKey(name) && !this._variables.get(name).isUndefinedInContainer();
 };
 
+
 /**
  * "Bad" variable container, used by events when no other valid container can be found.
+ * This container has no state and always returns the bad variable ( see gdjs.VariablesContainer.badVariable ).
  * @static
  */
-gdjs.VariablesContainer.badVariablesContainer = gdjs.VariablesContainer();
+gdjs.VariablesContainer.badVariablesContainer = {
+    has: function() {return false;},
+    getFromIndex : function() { return gdjs.VariablesContainer.badVariable; },
+    get : function() { return gdjs.VariablesContainer.badVariable; },
+    remove : function() { return; },
+    add : function() { return; },
+    initFrom : function() { return; }
+};
 
 /**
  * "Bad" variable, used by events when no other valid variable can be found.
+ * This variable has no state and always return 0 or the empty string.
  * @static
  */
-gdjs.VariablesContainer.badVariable = gdjs.Variable();
+gdjs.VariablesContainer.badVariable = {
+    getChild : function() { return gdjs.VariablesContainer.badVariable; },
+    hasChild: function() {return false;},
+    isStructure: function() {return false;},
+    isNumber: function() {return true;},
+    removeChild : function() { return; },
+    setNumber : function() { return; },
+    setString : function() { return; },
+    getAsString : function() { return ""; },
+    getAsNumber : function() { return 0; },
+    getAllChildren : function() { return {}; },
+    add : function() { return; },
+    sub : function() { return; },
+    mul : function() { return; },
+    div : function() { return; },
+    concatenate : function() { return; },
+    setUndefinedInContainer : function() { return; },
+    isUndefinedInContainer : function() { return; }
+};
