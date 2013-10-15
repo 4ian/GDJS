@@ -316,15 +316,40 @@ gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document, rende
                 game.onMouseMove(e.touches[0].clientX + document.body.scrollLeft + document.documentElement.scrollLeft-canvasArea.offsetLeft, 
                                  e.touches[0].clientY + document.body.scrollTop + document.documentElement.scrollTop-canvasArea.offsetTop);
         }
-    }); 
+    });
     renderer.view.addEventListener('touchstart', function(e){
         e.preventDefault();
+        console.log("touchStart");
         if ( e.touches && e.touches.length > 0 ) {
-            if (e.touches[0].pageX)
+        console.log("a");
+            if (e.touches[0].pageX) {
+                console.log("pageX:"+e.touches[0].pageX);
+                if ( isNaN(canvasArea.offsetLeft) ) {
+                    canvasArea.offsetLeft = 0;
+                    canvasArea.offsetTop = 0;
+                }
                 game.onMouseMove(e.touches[0].pageX-canvasArea.offsetLeft, e.touches[0].pageY-canvasArea.offsetTop);
-            else
-                game.onMouseMove(e.touches[0].clientX + document.body.scrollLeft + document.documentElement.scrollLeft-canvasArea.offsetLeft, 
+            }
+            else {
+                console.log("clientX:"+e.touches[0].clientX);
+                if ( isNaN(document.body.scrollLeft) ) {
+                    document.body.scrollLeft = 0;
+                    document.body.scrollTop = 0;
+                }
+                if ( document.documentElement === undefined || document.documentElement === null ) {
+                    document.documentElement = {};
+                }
+                if ( isNaN(document.documentElement.scrollLeft) ) {
+                    document.documentElement.scrollLeft = 0;
+                    document.documentElement.scrollTop = 0;
+                }
+                if ( isNaN(canvasArea.offsetLeft) ) {
+                    canvasArea.offsetLeft = 0;
+                    canvasArea.offsetTop = 0;
+                }
+                game.onMouseMove(e.touches[0].clientX + document.body.scrollLeft + document.documentElement.scrollLeft-canvasArea.offsetLeft,
                                  e.touches[0].clientY + document.body.scrollTop + document.documentElement.scrollTop-canvasArea.offsetTop);
+            }
         }
         game.onMouseButtonPressed(0);
         return false;

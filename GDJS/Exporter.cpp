@@ -542,6 +542,9 @@ std::string Exporter::GetJavaExecutablePath()
         guessPaths.push_back("C:/Program Files/java/jre6/bin/java.exe");
         guessPaths.push_back("C:/Program Files (x86)/java/jre6/bin/java.exe");
 
+        #elif defined(LINUX)
+        guessPaths.push_back("/usr/bin/java");
+        guessPaths.push_back("/usr/local/bin/java");
         #else
             #warning Please complete this so as to return a path to the Java executable.
         #endif

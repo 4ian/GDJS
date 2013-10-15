@@ -160,7 +160,7 @@ gdjs.SpriteRuntimeObject.thisIsARuntimeObjectConstructor = "Sprite"; //Notify gd
 //Others intialisation and internal state management :
 
 /**
- *
+ * Initialize the extra parameters that could be set for an instance.
  */
 gdjs.SpriteRuntimeObject.prototype.extraInitializationFromInitialInstance = function(initialInstanceData) {
     if ( initialInstanceData.attr.personalizedSize === "true" ) {
