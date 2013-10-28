@@ -140,6 +140,7 @@ JsPlatform::JsPlatform() :
     gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/PhysicsAutomatism."+extension, *this);
     gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/LinkedObjects."+extension, *this);
     gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/TiledSpriteObject."+extension, *this);
+    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/PlatformAutomatism."+extension, *this);
 };
 
 JsPlatform & JsPlatform::Get()

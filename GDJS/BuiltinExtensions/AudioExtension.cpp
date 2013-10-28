@@ -55,34 +55,36 @@ AudioExtension::AudioExtension()
     GetAllExpressions()["GlobalVolume"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.sound.getGlobalVolume");
 
+    GetAllActions()["ModVolumeSoundCanal"].codeExtraInformation
+        .SetFunctionName("gdjs.evtTools.sound.setSoundOnChannelVolume").SetAssociatedGetter("gdjs.evtTools.sound.getSoundOnChannelVolume");
+    GetAllActions()["ModVolumeMusicCanal"].codeExtraInformation
+        .SetFunctionName("gdjs.evtTools.sound.setMusicOnChannelVolume").SetAssociatedGetter("gdjs.evtTools.sound.getMusicOnChannelVolume");
+    GetAllConditions()["SoundCanalVolume"].codeExtraInformation
+        .SetFunctionName("gdjs.evtTools.sound.getSoundOnChannelVolume");
+    GetAllConditions()["MusicCanalVolume"].codeExtraInformation
+        .SetFunctionName("gdjs.evtTools.sound.getMusicOnChannelVolume");
+
+    GetAllActions()["ModPlayingOffsetSoundChannel"].codeExtraInformation
+        .SetFunctionName("gdjs.evtTools.sound.setSoundOnChannelPlayingOffset").SetAssociatedGetter("gdjs.evtTools.sound.getSoundOnChannelPlayingOffset");
+    GetAllActions()["ModPlayingOffsetMusicChannel"].codeExtraInformation
+        .SetFunctionName("gdjs.evtTools.sound.setMusicOnChannelPlayingOffset").SetAssociatedGetter("gdjs.evtTools.sound.getMusicOnChannelPlayingOffset");
+    GetAllConditions()["SoundChannelPlayingOffset"].codeExtraInformation
+        .SetFunctionName("gdjs.evtTools.sound.getSoundOnChannelPlayingOffset");
+    GetAllConditions()["MusicChannelPlayingOffset"].codeExtraInformation
+        .SetFunctionName("gdjs.evtTools.sound.getMusicOnChannelPlayingOffset");
+
+    GetAllExpressions()["SoundChannelVolume"].codeExtraInformation
+        .SetFunctionName("gdjs.evtTools.sound.getSoundOnChannelVolume");
+    GetAllExpressions()["MusicChannelVolume"].codeExtraInformation
+        .SetFunctionName("gdjs.evtTools.sound.getMusicOnChannelVolume");
+
+    GetAllExpressions()["SoundChannelPlayingOffset"].codeExtraInformation
+        .SetFunctionName("gdjs.evtTools.sound.getSoundOnChannelPlayingOffset");
+    GetAllExpressions()["MusicChannelPlayingOffset"].codeExtraInformation
+        .SetFunctionName("gdjs.evtTools.sound.getMusicOnChannelPlayingOffset");
+
     StripUnimplementedInstructionsAndExpressions(); //Unimplemented things are listed here:
     /*
-
-    AddAction("ModVolumeSoundCanal",
-                   _("Volume of the sound on a channel"),
-                   _("This action modify the volume of the sound on the specified channel. The volume is between 0 and 100."),
-                   _("Do _PARAM2__PARAM3_ to the volume of the sound on channel _PARAM1_"),
-                   _("Sound level"),
-                   "res/actions/sonVolume24.png",
-                   "res/actions/sonVolume.png")
-        .AddCodeOnlyParameter("currentScene", "")
-        .AddParameter("expression", _("Canal ( 0 - 15 )"), "",false)
-        .AddParameter("operator", _("Modification's sign"), "",false)
-        .AddParameter("expression", _("Value"), "",false)
-        .codeExtraInformation.SetFunctionName("SetSoundVolumeOnChannel").SetManipulatedType("number").SetAssociatedGetter("GetSoundVolumeOnChannel").SetIncludeFile("GDCpp/BuiltinExtensions/AudioTools.h");
-
-    AddAction("ModVolumeMusicCanal",
-                   _("Volume of the music on a channel"),
-                   _("This action modify the volume of the music on the specified channel. The volume is between 0 and 100."),
-                   _("Do _PARAM2__PARAM3_ to the volume of the music on channel _PARAM1_"),
-                   _("Sound level"),
-                   "res/actions/sonVolume24.png",
-                   "res/actions/sonVolume.png")
-        .AddCodeOnlyParameter("currentScene", "")
-        .AddParameter("expression", _("Canal ( 0 - 15 )"), "",false)
-        .AddParameter("operator", _("Modification's sign"), "",false)
-        .AddParameter("expression", _("Value"), "",false)
-        .codeExtraInformation.SetFunctionName("SetMusicVolumeOnChannel").SetManipulatedType("number").SetAssociatedGetter("GetMusicVolumeOnChannel").SetIncludeFile("GDCpp/BuiltinExtensions/AudioTools.h");
 
     AddAction("ModPitchSoundChannel",
                    _("Pitch of the sound of a channel"),
@@ -110,33 +112,6 @@ AudioExtension::AudioExtension()
         .AddParameter("operator", _("Modification's sign"), "",false)
         .AddParameter("expression", _("Value"), "",false)
         .codeExtraInformation.SetFunctionName("SetMusicPitchOnChannel").SetAssociatedGetter("GetMusicPitchOnChannel").SetManipulatedType("number").SetIncludeFile("GDCpp/BuiltinExtensions/AudioTools.h");
-
-
-    AddAction("ModPlayingOffsetSoundChannel",
-                   _("Playing offset of the sound on a channel"),
-                   _("This action modify the playing offset of the sound on a channel"),
-                   _("Do _PARAM2__PARAM3_ to the playing offset of the sound on channel _PARAM1_"),
-                   _("Sounds"),
-                   "res/actions/son24.png",
-                   "res/actions/son.png")
-        .AddCodeOnlyParameter("currentScene", "")
-        .AddParameter("expression", _("Canal ( 0 - 15 )"), "",false)
-        .AddParameter("operator", _("Modification's sign"), "",false)
-        .AddParameter("expression", _("Value"), "",false)
-        .codeExtraInformation.SetFunctionName("SetSoundPlayingOffsetOnChannel").SetAssociatedGetter("GetSoundPlayingOffsetOnChannel").SetManipulatedType("number").SetIncludeFile("GDCpp/BuiltinExtensions/AudioTools.h");
-
-    AddAction("ModPlayingOffsetMusicChannel",
-                   _("Playing offset of the music on a channel"),
-                   _("This action modify the playing offset of the music on the specified channel"),
-                   _("Do _PARAM2__PARAM3_ to the playing offset of the music on channel _PARAM1_"),
-                   _("Musics"),
-                   "res/actions/music24.png",
-                   "res/actions/music.png")
-        .AddCodeOnlyParameter("currentScene", "")
-        .AddParameter("expression", _("Canal ( 0 - 15 )"), "",false)
-        .AddParameter("operator", _("Modification's sign"), "",false)
-        .AddParameter("expression", _("Value"), "",false)
-        .codeExtraInformation.SetFunctionName("SetMusicPlayingOffsetOnChannel").SetAssociatedGetter("GetMusicPlayingOffsetOnChannel").SetManipulatedType("number").SetIncludeFile("GDCpp/BuiltinExtensions/AudioTools.h");
 
     AddCondition("MusicPlaying",
                    _("A music is being played"),
@@ -213,38 +188,6 @@ AudioExtension::AudioExtension()
         .AddParameter("expression", _("Channel"), "",false)
         .codeExtraInformation.SetFunctionName("SoundStopped").SetIncludeFile("GDCpp/BuiltinExtensions/AudioTools.h");
 
-
-
-    AddCondition("SoundCanalVolume",
-                   _("Volume of the sound on a channel"),
-                   _("Test the volume of the sound on the specified channel. The volume is between 0 and 100."),
-                   _("The volume of the sound on channel _PARAM1_ is _PARAM2__PARAM3_"),
-                   _("Sound level"),
-                   "res/conditions/sonVolume24.png",
-                   "res/conditions/sonVolume.png")
-        .AddCodeOnlyParameter("currentScene", "")
-        .AddParameter("expression", _("Canal ( 0 - 15 )"), "",false)
-        .AddParameter("relationalOperator", _("Sign of the test"), "",false)
-        .AddParameter("expression", _("Volume to test"), "",false)
-        .codeExtraInformation.SetFunctionName("GetSoundVolumeOnChannel").SetManipulatedType("number").SetIncludeFile("GDCpp/BuiltinExtensions/AudioTools.h");
-
-
-
-    AddCondition("MusicCanalVolume",
-                   _("Volume of the music on a channel"),
-                   _("Test the volume of the music on specified channel. The volume is between 0 and 100."),
-                   _("The volume of the music on channel _PARAM1_ is _PARAM2__PARAM3_"),
-                   _("Sound level"),
-                   "res/conditions/musicVolume24.png",
-                   "res/conditions/musicVolume.png")
-        .AddCodeOnlyParameter("currentScene", "")
-        .AddParameter("expression", _("Canal ( 0 - 15 )"), "",false)
-        .AddParameter("relationalOperator", _("Sign of the test"), "",false)
-        .AddParameter("expression", _("Volume to test"), "",false)
-        .codeExtraInformation.SetFunctionName("GetMusicVolumeOnChannel").SetManipulatedType("number").SetIncludeFile("GDCpp/BuiltinExtensions/AudioTools.h");
-
-
-
     AddCondition("SoundChannelPitch",
                    _("Pitch of the sound of a channel"),
                    _("Test the pitch of the sound on the specified channel. 1 is the default pitch."),
@@ -272,58 +215,6 @@ AudioExtension::AudioExtension()
         .AddParameter("relationalOperator", _("Sign of the test"), "",false)
         .AddParameter("expression", _("Pitch to test"), "",false)
         .codeExtraInformation.SetFunctionName("GetMusicPitchOnChannel").SetManipulatedType("number").SetIncludeFile("GDCpp/BuiltinExtensions/AudioTools.h");
-
-
-
-    AddCondition("SoundChannelPlayingOffset",
-                   _("Playing offset of the sound on a channel"),
-                   _("Test the playing offset of the sound on the specified channel."),
-                   _("The playing offset of the sound on channel _PARAM1_ is _PARAM2__PARAM3_"),
-                   _("Sounds"),
-                   "res/conditions/sonVolume24.png",
-                   "res/conditions/sonVolume.png")
-        .AddCodeOnlyParameter("currentScene", "")
-        .AddParameter("expression", _("Canal ( 0 - 15 )"), "",false)
-        .AddParameter("relationalOperator", _("Sign of the test"), "",false)
-        .AddParameter("expression", _("Position ( in seconds )"), "",false)
-        .codeExtraInformation.SetFunctionName("GetSoundPlayingOffsetOnChannel").SetManipulatedType("number").SetIncludeFile("GDCpp/BuiltinExtensions/AudioTools.h");
-
-
-
-    AddCondition("MusicChannelPlayingOffset",
-                   _("Playing offset of the music on a channel"),
-                   _("Test the playing offset of the music on the specified channel."),
-                   _("The playing offset of the music on channel _PARAM1_ is _PARAM2__PARAM3_"),
-                   _("Musics"),
-                   "res/conditions/musicVolume24.png",
-                   "res/conditions/musicVolume.png")
-        .AddCodeOnlyParameter("currentScene", "")
-        .AddParameter("expression", _("Canal ( 0 - 15 )"), "",false)
-        .AddParameter("relationalOperator", _("Sign of the test"), "",false)
-        .AddParameter("expression", _("Position ( in seconds )"), "",false)
-        .codeExtraInformation.SetFunctionName("GetMusicPlayingOffsetOnChannel").SetManipulatedType("number").SetIncludeFile("GDCpp/BuiltinExtensions/AudioTools.h");
-
-
-
-    AddExpression("SoundChannelPlayingOffset", _("Sound playing offset"), _("Sound playing offset"), _("Sounds"), "res/actions/son.png")
-        .AddCodeOnlyParameter("currentScene", "")
-        .AddParameter("expression", _("Channel"), "",false)
-        .codeExtraInformation.SetFunctionName("GetSoundPlayingOffsetOnChannel").SetIncludeFile("GDCpp/BuiltinExtensions/AudioTools.h");
-
-    AddExpression("MusicChannelPlayingOffset", _("Music playing offset"), _("Music playing offset"), _("Musics"), "res/actions/music.png")
-        .AddCodeOnlyParameter("currentScene", "")
-        .AddParameter("expression", _("Channel"), "",false)
-        .codeExtraInformation.SetFunctionName("GetMusicPlayingOffsetOnChannel").SetIncludeFile("GDCpp/BuiltinExtensions/AudioTools.h");
-
-    AddExpression("SoundChannelVolume", _("Sound volume"), _("Sound volume"), _("Sounds"), "res/actions/son.png")
-        .AddCodeOnlyParameter("currentScene", "")
-        .AddParameter("expression", _("Channel"), "",false)
-        .codeExtraInformation.SetFunctionName("GetSoundVolumeOnChannel").SetIncludeFile("GDCpp/BuiltinExtensions/AudioTools.h");
-
-    AddExpression("MusicChannelVolume", _("Music volume"), _("Music volume"), _("Musics"), "res/actions/music.png")
-        .AddCodeOnlyParameter("currentScene", "")
-        .AddParameter("expression", _("Channel"), "",false)
-        .codeExtraInformation.SetFunctionName("GetMusicVolumeOnChannel").SetIncludeFile("GDCpp/BuiltinExtensions/AudioTools.h");
 
     AddExpression("SoundChannelPitch", _("Sound's pitch"), _("Sound's pitch"), _("Sounds"), "res/actions/son.png")
         .AddCodeOnlyParameter("currentScene", "")

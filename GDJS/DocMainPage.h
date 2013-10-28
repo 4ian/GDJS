@@ -35,12 +35,13 @@
  * -# \subpage downloadGDSDK
  * -# \subpage installWinLibs
  * -# \subpage installWinCompiler
- * -# \subpage installWinCB
+ * -# \subpage installAndUseCMake
  * <br>
  *
  * <b>GNU/Linux</b>
  * -# \subpage downloadGDSDK
  * -# \subpage installLinux
+ * -# \subpage installAndUseCMake
  *
  */
 
@@ -52,18 +53,19 @@
  *
  * Then, extract it somewhere and put the <b>GDJS</b> folder inside the Game Develop SDK folder.
  *
- * If you want to work on official extensions, there are not directly shipped with the SDK, but
+ * If you want to work on official extensions, they are not directly shipped with the SDK, but
  * are available on https://github.com/4ian/gd-extensions
  */
 
 /**
  *  \page installWinLibs (Windows) Download and install SFML, wxWidgets and Boost
  *
- * %Game Develop uses development versions of wxWidgets and Boost. So as to prevent incompatibilities between the core of %Game Develop
- * and the extensions, %Game Develop require the extensions to use the same version of the libraries.
+ * %Game Develop uses development versions of SFML, wxWidgets or Boost. So as to prevent incompatibilities between the core of %Game Develop and
+ * the extensions, %Game Develop require the extensions to use the same version of the libraries.
  * \section download Download
 
  * You can download the specific versions of the libraries used by the current version of %Game Develop using these links:<br>
+ * - http://www.compilgames.net/code/GameDevelopSDK/SFML.7z
  * - http://www.compilgames.net/code/GameDevelopSDK/wxwidgets.7z
  * - http://www.compilgames.net/code/GameDevelopSDK/boost_1_46_1.7z
  *
@@ -82,37 +84,86 @@
  * So as to prevent incompatibilities between the compiler ( and the standard C++ library provided with ) used by %Game Develop and
  * the compiler used by the extensions, %Game Develop require the extensions and the platforms to use the same version of TDM-GCC.<br>
  *
- * \section download Download
+ * \section installWinCompiler_download Download
  *
- * The current version of the compiler used by %Game Develop can be found and downloaded on the website : http://www.en.compilgames.net
+ * The current version of the compiler used by %Game Develop can be found and downloaded on the website : http://www.compilgames.net
  *
- * \section install Installation
+ * \section installWinCompiler_install Installation
  *
  * The installation is fairly simple :<br>
  * <br>
- * -Launch the installer.<br>
- * -Choose Create.<br>
+ * - Launch the installer.<br>
+ * - Choose Create.<br>
 
  \image html images/compilerInstall1.png
 
- * -Choose an installation directory.<br>
+ * - Choose an installation directory.<br>
 
  \image html images/compilerInstall2.png
 
- * -Choose the components to be installed. You don't have to change anything, the default options are good enough.<br>
+ * - Choose the components to be installed. You don't have to change anything, the default options are good enough.<br>
 
  \image html images/compilerInstall3.png
 
- * -Click on install so as to launch the installation process. When the process is over, the compiler is installed, and can be used with Code::Blocks.<br>
+ * - Click on install so as to launch the installation process.<br>
  */
 
 /**
- *  \page installWinCB (Windows) Download and install Code::Blocks
+ *  \page installAndUseCMake (All) Install and use Cmake
  *
- * Projects files provided with the SDK are Code::Blocks projects.<br>
- * <br>
- * You can download Code::Blocks on the official website : www.codeblocks.org.<br>
- * Note that the last released version can be a bit old, you can download a recent version ( "Nighty build" ) on the forum : http://forums.codeblocks.org/index.php/board,20.0.html
+ * Building is done using CMake: It is an open-source build system that can generate build files for lots of IDE and build tools ( Makefiles... ).
+ *
+ * \section installAndUseCMake_download Download and install CMake
+ *
+ * First, install CMake: <br>
+ * Download it [here](http://www.cmake.org/cmake/resources/software.html) or get it using your package manager if you're
+ * using a Linux distribution.
+ *
+ * \section installAndUseCMake_use Using CMake to generate the build files
+ *
+ * \subsection installAndUseCMake_use_gui Using the GUI
+ *
+ * - Start the CMake user interface ( _cmake-gui_ ). Choose the GDSDK directory as the source directory, and Binaries/.build as the directory where to build the binaries:
+
+ \image html images/usecmake1.png
+
+ * - Click on *Configure*. If asked to create the build directory, answer yes. Choose then your favorite generator: *MinGW Makefiles* (on Windows) or *Unix Makefiles* (on Linux) generate a traditional Makefile that can be built using the
+ * *mingw32-make* ( on Windows) or *make* ( on Linux ) command. You can also choose the *Ninja* generator to use the [Ninja build system](http://martine.github.io/ninja/).
+
+  \image html images/usecmake2.png
+
+ * - When you click on Finish, CMake do a first configuration. Adjust any variable if necessary ( no changes is needed by default ), then click on Generate.
+
+  \image html images/usecmake3.png
+
+ * - You can then launch a terminal/command prompt, go to the *.build* folder ( `cd SDKFolder/Binaries/.build` ) and launch the build 
+ * using the generator you've choosen: `mingw32-make`, or `make` on Linux.
+ *
+ * Binaries are created into *Binaries/Output/Release* folder.
+ * 
+ * \subsection installAndUseCMake_use_cmd Using the command line
+ *
+ * Using the commandline with CMake is also easy:
+ * 
+ * ~~~~~~~~~~~~~~~~~~~~~
+ * cd SDKFolder/Binaries
+ * mkdir .build
+ * cd .build
+ * cmake .. -G "MinGW Makefiles"
+ * mingw32-make
+ * ~~~~~~~~~~~~~~~~~~~~~
+ *
+ * or using the fast [Ninja build system](http://martine.github.io/ninja/) :
+ * ~~~~~~~~~~~~~~~~~~~~~
+ * cd SDKFolder/Binaries
+ * mkdir .build
+ * cd .build
+ * cmake .. -G "Ninja"
+ * ninja
+ * ~~~~~~~~~~~~~~~~~~~~~
+ *
+ * Binaries are of course also created into *Binaries/Output/Release* folder.<br>
+ * ( For linux, this is the directory where you put the files of Game Develop )
  */
 
 /**
@@ -137,10 +188,19 @@
 /**
  *  \page installLinux (Linux) Install development files
  *
+ * \section downloadGD Download and extract Game Develop for Linux
+ *
+ * If you didn't already downloaded Game Develop for Linux, do it now from [the official website](http://www.compilgames.net/) or
+ * even directly from [this link](http://www.compilgames.net/dl/gdlinux.tar.bz2).<br>
+ *
+ * Then extract all the files inside the <b>GameDevelop</b> folder inside the *Binaries/Output/Release/ * folder
+ * of the SDK. ( You should have files like libGDCore.so now present in Binaries/Output/Release )
+ *
+ * \section download Download, (build) and install libraries
+ *
  * %Game Develop is compiled with gcc under Linux.<br>
  * So as to prevent incompatibilities between the compiler ( and the standard C++ library provided with ) used by %Game Develop and the compiler used by the extensions, %Game Develop require the extensions to use the same version of gcc.<br>
 
- * \section download Download, (build) and install libraries
  * \subsection sfml SFML
 
  * %Game Develop may uses some specific version of SFML library. You can download a precompiled package for linux here: http://www.compilgames.net/code/GameDevelopSDK/SFMLlinux.7z <br>
@@ -160,10 +220,10 @@
  * sudo make install
  * \endcode
  *
- * \subsection codeBlocks Install Code::Blocks
- * You'll need the Code::Blocks IDE to open %Game Develop Extensions project files.
- * Code::Blocks is generally available for your distribution thanks to the usual package manager.
+ * Note that you need to have GTK+ 2.0 development file installed. ( In your package manager, search for the <b>libgtk2.0-dev</b> package and install it. )
  *
+ * \subsection codeBlocks Install CMake
+ * You'll need CMake to build the extensions: See more on the page on how to install and use CMake.
  */
 
 /**

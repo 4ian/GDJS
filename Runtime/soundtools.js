@@ -54,6 +54,38 @@ gdjs.evtTools.sound.continueMusicOnChannel = function(runtimeScene, channel) {
     runtimeScene.getSoundManager().continueMusicOnChannel(channel);
 }
 
+gdjs.evtTools.sound.getMusicOnChannelVolume = function(runtimeScene, channel) {
+    runtimeScene.getSoundManager().getMusicOnChannelVolume(channel);
+};
+
+gdjs.evtTools.sound.setMusicOnChannelVolume = function(runtimeScene, channel, volume) {
+    runtimeScene.getSoundManager().setMusicOnChannelVolume(channel, volume);
+};
+
+gdjs.evtTools.sound.getMusicOnChannelPlayingOffset = function(runtimeScene, channel) {
+    runtimeScene.getSoundManager().getMusicOnChannelPlayingOffset(channel);
+};
+
+gdjs.evtTools.sound.setMusicOnChannelPlayingOffset = function(runtimeScene, channel, playingOffset) {
+    runtimeScene.getSoundManager().setMusicOnChannelPlayingOffset(channel, playingOffset);
+};
+
+gdjs.evtTools.sound.getSoundOnChannelVolume = function(runtimeScene, channel) {
+    runtimeScene.getSoundManager().getSoundOnChannelVolume(channel);
+};
+
+gdjs.evtTools.sound.setSoundOnChannelVolume = function(runtimeScene, channel, volume) {
+    runtimeScene.getSoundManager().setSoundOnChannelVolume(channel, volume);
+};
+
+gdjs.evtTools.sound.getSoundOnChannelPlayingOffset = function(runtimeScene, channel) {
+    runtimeScene.getSoundManager().getSoundOnChannelPlayingOffset(channel);
+};
+
+gdjs.evtTools.sound.setSoundOnChannelPlayingOffset = function(runtimeScene, channel, playingOffset) {
+    runtimeScene.getSoundManager().setSoundOnChannelPlayingOffset(channel, playingOffset);
+};
+
 gdjs.evtTools.sound.getGlobalVolume = function(runtimeScene) {
     runtimeScene.getSoundManager().getGlobalVolume();
 }

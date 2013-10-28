@@ -407,6 +407,15 @@ CommonInstructionsExtension::CommonInstructionsExtension()
                 else
                     realObjects.push_back(objectToPick);
 
+                //Ensure that all returned objects actually exists.
+                for (unsigned int i = 0; i < realObjects.size();)
+                {
+                    if ( !codeGenerator.GetLayout().HasObjectNamed(realObjects[i]) && !codeGenerator.GetProject().HasObjectNamed(realObjects[i]) )
+                        realObjects.erase(realObjects.begin()+i);
+                    else
+                        ++i;
+                }
+                
                 if ( realObjects.empty() ) return "";
 
                 for (unsigned int i = 0;i<realObjects.size();++i)

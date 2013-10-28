@@ -13,14 +13,31 @@
 gdjs.Sound = function(soundFile) {
 	this.audio = new Audio(soundFile || "");
 	this._volume = 100;
+	this._requestedCurrentTime = null; //Can be set to the requested playing offset, when the audio is not ready yet. See below:
+	
+	//Extra work when the audio is ready:
+	//Setting its playing offset to the request one, if any.
+	var that = this;
+	this.audio.addEventListener("canplay", function() {
+		if ( that._requestedCurrentTime != null ) { //The sound must start playing at the request offset.
+			that.audio.currentTime = that._requestedCurrentTime;
+			that._requestedCurrentTime = null;
+		}
+	});
 };
 
 gdjs.Sound.prototype.setVolume = function(volume, globalVolume) {
+	if ( volume < 0 ) volume = 0;
+	if ( volume > 100 ) volume = 100;
+	if ( globalVolume < 0 ) globalVolume = 0;
+	if ( globalVolume > 100 ) globalVolume = 100;
+
 	this._volume = volume;
 	this.updateVolume(globalVolume);
 };
 
 gdjs.Sound.prototype.updateVolume = function(globalVolume) {
+	if ( globalVolume < 0 ) globalVolume = 0;
 	this.audio.volume = this._volume/100*globalVolume/100;
 };
 
@@ -45,6 +62,17 @@ gdjs.Sound.prototype.stop = function() {
 	this.audio.pause();
 };
 
+gdjs.Sound.prototype.getPlayingOffset = function() {
+	return this.audio.readyState == 4 ? this.audio.currentTime : 0;
+};
+
+gdjs.Sound.prototype.setPlayingOffset = function(playingOffset) {
+	if ( this.audio.readyState == 4 )
+		this.audio.currentTime = playingOffset;
+	else
+		this._requestedCurrentTime = playingOffset;
+};
+
 /**
  * SoundManager is used to manage the sounds and musics of a RuntimeScene.
  *
@@ -59,7 +87,7 @@ gdjs.SoundManager = function()
     this._freeSounds = []; //Sounds without an assigned channel.
     this._freeMusics = []; //Musics without an assigned channel.
     this._globalVolume = 100;
-};;
+};
 
 gdjs.SoundManager.prototype._getRecyledResource = function(arr) {
 	//Try to recycle an old sound.
@@ -111,6 +139,28 @@ gdjs.SoundManager.prototype.continueSoundOnChannel = function(channel) {
 	if ( theSound !== null && theSound !== undefined ) theSound.play();
 };
 
+gdjs.SoundManager.prototype.getSoundOnChannelVolume = function(channel) {
+	var theSound = this._sounds[channel];
+	if ( theSound !== null && theSound !== undefined ) return theSound.getVolume();
+	return 0;
+};
+
+gdjs.SoundManager.prototype.setSoundOnChannelVolume = function(channel, volume) {
+	var theSound = this._sounds[channel];
+	if ( theSound !== null && theSound !== undefined ) theSound.setVolume(volume, this._globalVolume);
+};
+
+gdjs.SoundManager.prototype.getSoundOnChannelPlayingOffset = function(channel) {
+	var theSound = this._sounds[channel];
+	if ( theSound !== null && theSound !== undefined ) return theSound.getPlayingOffset();
+	return 0;
+};
+
+gdjs.SoundManager.prototype.setSoundOnChannelPlayingOffset = function(channel, playingOffset) {
+	var theSound = this._sounds[channel];
+	if ( theSound !== null && theSound !== undefined ) theSound.setPlayingOffset(playingOffset);
+};
+
 gdjs.SoundManager.prototype.playMusic = function(soundFile, loop, volume, pitch) {
 	var theMusic = this._getRecyledResource(this._freeMusics);
 
@@ -146,6 +196,28 @@ gdjs.SoundManager.prototype.pauseMusicOnChannel = function(channel) {
 gdjs.SoundManager.prototype.continueMusicOnChannel = function(channel) {
 	var theMusic = this._musics[channel];
 	if ( theMusic !== null && theMusic !== undefined ) theMusic.play();
+};
+
+gdjs.SoundManager.prototype.getMusicOnChannelVolume = function(channel) {
+	var theMusic = this._musics[channel];
+	if ( theMusic !== null && theMusic !== undefined ) return theMusic.getVolume();
+	return 0;
+};
+
+gdjs.SoundManager.prototype.setMusicOnChannelVolume = function(channel, volume) {
+	var theMusic = this._musics[channel];
+	if ( theMusic !== null && theMusic !== undefined ) theMusic.setVolume(volume, this._globalVolume);
+};
+
+gdjs.SoundManager.prototype.getMusicOnChannelPlayingOffset = function(channel) {
+	var theMusic = this._musics[channel];
+	if ( theMusic !== null && theMusic !== undefined ) return theMusic.getPlayingOffset();
+	return 0;
+};
+
+gdjs.SoundManager.prototype.setMusicOnChannelPlayingOffset = function(channel, playingOffset) {
+	var theMusic = this._musics[channel];
+	if ( theMusic !== null && theMusic !== undefined ) theMusic.setPlayingOffset(playingOffset);
 };
 
 gdjs.SoundManager.prototype.setGlobalVolume = function(volume) {
