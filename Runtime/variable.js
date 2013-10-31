@@ -32,7 +32,7 @@ gdjs.Variable = function(varData)
 				this._value = parseFloat(initialValue);
 			}
 			else { //We have a string ( Maybe empty. ).
-				if ( initialValue.length !== 0 )
+				if ( initialValue.length === 0 )
 					this._value = 0;
 				else {
 					this._str = initialValue;

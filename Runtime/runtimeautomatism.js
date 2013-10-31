@@ -14,13 +14,13 @@
  * @param owner The object owning the automatism
  */
 gdjs.RuntimeAutomatism = function(runtimeScene, automatismData, owner)
-{ 
+{
     this.name = automatismData.attr.Name || "";
     this.type = automatismData.attr.Type || "";
     this._nameId = gdjs.RuntimeObject.getNameIdentifier(this.name);
     this._activated = true;
     this.owner = owner;
-}
+};
 /**
  * Get the name of the automatism.
  * @method getName
@@ -28,7 +28,7 @@ gdjs.RuntimeAutomatism = function(runtimeScene, automatismData, owner)
  */
 gdjs.RuntimeAutomatism.prototype.getName = function() {
 	return this.name;
-}
+};
 
 /**
  * Get the name identifier of the automatism.
@@ -37,7 +37,7 @@ gdjs.RuntimeAutomatism.prototype.getName = function() {
  */
 gdjs.RuntimeAutomatism.prototype.getNameId = function() {
 	return this._nameId;
-}
+};
 
 /**
  * Called at each frame before events. Call doStepPreEvents.<br>
@@ -47,7 +47,7 @@ gdjs.RuntimeAutomatism.prototype.getNameId = function() {
  */
 gdjs.RuntimeAutomatism.prototype.stepPreEvents = function(runtimeScene) {
 	if ( this._activated ) this.doStepPreEvents(runtimeScene);
-}
+};
 
 /**
  * Called at each frame after events. Call doStepPostEvents.<br>
@@ -57,7 +57,7 @@ gdjs.RuntimeAutomatism.prototype.stepPreEvents = function(runtimeScene) {
  */
 gdjs.RuntimeAutomatism.prototype.stepPostEvents = function(runtimeScene) {
 	if ( this._activated ) this.doStepPostEvents(runtimeScene);
-}
+};
 
 /**
  * De/Activate the automatism
@@ -79,9 +79,9 @@ gdjs.RuntimeAutomatism.prototype.activate = function(enable) {
  * Return true if the automatism is activated
  * @method activated
  */
-gdjs.RuntimeAutomatism.prototype.activated = function() { 
-	return this._activated; 
-}
+gdjs.RuntimeAutomatism.prototype.activated = function() {
+	return this._activated;
+};
 
 /**
  * Automatisms writers: Reimplement this method to do extra work 
@@ -90,7 +90,7 @@ gdjs.RuntimeAutomatism.prototype.activated = function() {
  */
 gdjs.RuntimeAutomatism.prototype.onActivate = function() {
 
-}
+};
 
 /**
  * Automatisms writers: Reimplement this method to do extra work
@@ -99,7 +99,7 @@ gdjs.RuntimeAutomatism.prototype.onActivate = function() {
  */
 gdjs.RuntimeAutomatism.prototype.onDeActivate = function() {
 
-}
+};
 
 /**
  * Automatisms writers: This method is called each tick before events are done.
@@ -108,7 +108,7 @@ gdjs.RuntimeAutomatism.prototype.onDeActivate = function() {
  */
 gdjs.RuntimeAutomatism.prototype.doStepPreEvents = function(runtimeScene) {
 
-}
+};
 
 /**
  * Automatisms writers: This method is called each tick after events are done.

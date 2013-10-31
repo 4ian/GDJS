@@ -16,43 +16,43 @@ gdjs.evtTools.sound = gdjs.evtTools.sound || {};
 
 gdjs.evtTools.sound.playSound = function(runtimeScene, soundFile, loop, volume, pitch) {
     runtimeScene.getSoundManager().playSound(soundFile, loop, volume, pitch);
-}
+};
 
 gdjs.evtTools.sound.playSoundOnChannel = function(runtimeScene, soundFile, channel, loop, volume, pitch) {
     runtimeScene.getSoundManager().playSoundOnChannel(soundFile, channel, loop, volume, pitch);
-}
+};
 
 gdjs.evtTools.sound.stopSoundOnChannel = function(runtimeScene, channel) {
     runtimeScene.getSoundManager().stopSoundOnChannel(channel);
-}
+};
 
 gdjs.evtTools.sound.pauseSoundOnChannel = function(runtimeScene, channel) {
     runtimeScene.getSoundManager().pauseSoundOnChannel(channel);
-}
+};
 
 gdjs.evtTools.sound.continueSoundOnChannel = function(runtimeScene, channel) {
     runtimeScene.getSoundManager().continueSoundOnChannel(channel);
-}
+};
 
 gdjs.evtTools.sound.playMusic = function(runtimeScene, soundFile, loop, volume, pitch) {
     runtimeScene.getSoundManager().playMusic(soundFile, loop, volume, pitch);
-}
+};
 
 gdjs.evtTools.sound.playMusicOnChannel = function(runtimeScene, soundFile, channel, loop, volume, pitch) {
     runtimeScene.getSoundManager().playMusicOnChannel(soundFile, channel, loop, volume, pitch);
-}
+};
 
 gdjs.evtTools.sound.stopMusicOnChannel = function(runtimeScene, channel) {
     runtimeScene.getSoundManager().stopMusicOnChannel(channel);
-}
+};
 
 gdjs.evtTools.sound.pauseMusicOnChannel = function(runtimeScene, channel) {
     runtimeScene.getSoundManager().pauseMusicOnChannel(channel);
-}
+};
 
 gdjs.evtTools.sound.continueMusicOnChannel = function(runtimeScene, channel) {
     runtimeScene.getSoundManager().continueMusicOnChannel(channel);
-}
+};
 
 gdjs.evtTools.sound.getMusicOnChannelVolume = function(runtimeScene, channel) {
     runtimeScene.getSoundManager().getMusicOnChannelVolume(channel);
@@ -88,8 +88,8 @@ gdjs.evtTools.sound.setSoundOnChannelPlayingOffset = function(runtimeScene, chan
 
 gdjs.evtTools.sound.getGlobalVolume = function(runtimeScene) {
     runtimeScene.getSoundManager().getGlobalVolume();
-}
+};
 
 gdjs.evtTools.sound.setGlobalVolume = function(runtimeScene, globalVolume) {
     runtimeScene.getSoundManager().setGlobalVolume(globalVolume);
-}
+};
