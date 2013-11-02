@@ -62,6 +62,18 @@ gdjs.Sound.prototype.stop = function() {
 	this.audio.pause();
 };
 
+gdjs.Sound.prototype.isPlaying = function() {
+	return this.audio && !this.audio.paused;
+};
+
+gdjs.Sound.prototype.isPaused = function() {
+	return this.audio && this.audio.paused && this.audio.readyState == 4 && this.audio.currentTime !== 0;
+};
+
+gdjs.Sound.prototype.isStopped = function() {
+	return !this.audio || (this.audio.paused && (this.audio.readyState != 4 || this.audio.currentTime === 0));
+};
+
 gdjs.Sound.prototype.getPlayingOffset = function() {
 	return this.audio.readyState == 4 ? this.audio.currentTime : 0;
 };
@@ -139,6 +151,27 @@ gdjs.SoundManager.prototype.continueSoundOnChannel = function(channel) {
 	if ( theSound !== null && theSound !== undefined ) theSound.play();
 };
 
+gdjs.SoundManager.prototype.isSoundOnChannelPlaying = function(channel) {
+	var theSound = this._sounds[channel];
+	if ( theSound !== null && theSound !== undefined ) return theSound.isPlaying();
+
+	return false;
+};
+
+gdjs.SoundManager.prototype.isSoundOnChannelPaused = function(channel) {
+	var theSound = this._sounds[channel];
+	if ( theSound !== null && theSound !== undefined ) return theSound.isPaused();
+
+	return false;
+};
+
+gdjs.SoundManager.prototype.isSoundOnChannelStopped = function(channel) {
+	var theSound = this._sounds[channel];
+	if ( theSound !== null && theSound !== undefined ) return theSound.isStopped();
+
+	return true;
+};
+
 gdjs.SoundManager.prototype.getSoundOnChannelVolume = function(channel) {
 	var theSound = this._sounds[channel];
 	if ( theSound !== null && theSound !== undefined ) return theSound.getVolume();
@@ -196,6 +229,27 @@ gdjs.SoundManager.prototype.pauseMusicOnChannel = function(channel) {
 gdjs.SoundManager.prototype.continueMusicOnChannel = function(channel) {
 	var theMusic = this._musics[channel];
 	if ( theMusic !== null && theMusic !== undefined ) theMusic.play();
+};
+
+gdjs.SoundManager.prototype.isMusicOnChannelPlaying = function(channel) {
+	var theMusic = this._musics[channel];
+	if ( theMusic !== null && theMusic !== undefined ) return theMusic.isPlaying();
+
+	return false;
+};
+
+gdjs.SoundManager.prototype.isMusicOnChannelPaused = function(channel) {
+	var theMusic = this._musics[channel];
+	if ( theMusic !== null && theMusic !== undefined ) return theMusic.isPaused();
+
+	return false;
+};
+
+gdjs.SoundManager.prototype.isMusicOnChannelStopped = function(channel) {
+	var theMusic = this._musics[channel];
+	if ( theMusic !== null && theMusic !== undefined ) return theMusic.isStopped();
+
+	return true;
 };
 
 gdjs.SoundManager.prototype.getMusicOnChannelVolume = function(channel) {

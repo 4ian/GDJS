@@ -34,6 +34,18 @@ gdjs.evtTools.sound.continueSoundOnChannel = function(runtimeScene, channel) {
     runtimeScene.getSoundManager().continueSoundOnChannel(channel);
 };
 
+gdjs.evtTools.sound.isSoundOnChannelPlaying = function(runtimeScene, channel) {
+    return runtimeScene.getSoundManager().isSoundOnChannelPlaying(channel);
+};
+
+gdjs.evtTools.sound.isSoundOnChannelPaused = function(runtimeScene, channel) {
+    return runtimeScene.getSoundManager().isSoundOnChannelPaused(channel);
+};
+
+gdjs.evtTools.sound.isSoundOnChannelStopped = function(runtimeScene, channel) {
+    return runtimeScene.getSoundManager().isSoundOnChannelStopped(channel);
+};
+
 gdjs.evtTools.sound.playMusic = function(runtimeScene, soundFile, loop, volume, pitch) {
     runtimeScene.getSoundManager().playMusic(soundFile, loop, volume, pitch);
 };
@@ -52,6 +64,18 @@ gdjs.evtTools.sound.pauseMusicOnChannel = function(runtimeScene, channel) {
 
 gdjs.evtTools.sound.continueMusicOnChannel = function(runtimeScene, channel) {
     runtimeScene.getSoundManager().continueMusicOnChannel(channel);
+};
+
+gdjs.evtTools.sound.isMusicOnChannelPlaying = function(runtimeScene, channel) {
+    return runtimeScene.getSoundManager().isMusicOnChannelPlaying(channel);
+};
+
+gdjs.evtTools.sound.isMusicOnChannelPaused = function(runtimeScene, channel) {
+    return runtimeScene.getSoundManager().isMusicOnChannelPaused(channel);
+};
+
+gdjs.evtTools.sound.isMusicOnChannelStopped = function(runtimeScene, channel) {
+    return runtimeScene.getSoundManager().isMusicOnChannelStopped(channel);
 };
 
 gdjs.evtTools.sound.getMusicOnChannelVolume = function(runtimeScene, channel) {

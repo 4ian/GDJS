@@ -47,6 +47,18 @@ AudioExtension::AudioExtension()
         .SetFunctionName("gdjs.evtTools.sound.pauseMusicOnChannel");
     GetAllActions()["RePlayMusicCanal"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.sound.continueMusicOnChannel");
+    GetAllConditions()["MusicPlaying"].codeExtraInformation
+        .SetFunctionName("gdjs.evtTools.sound.isMusicOnChannelPlaying");
+    GetAllConditions()["MusicPaused"].codeExtraInformation
+        .SetFunctionName("gdjs.evtTools.sound.isMusicOnChannelPaused");
+    GetAllConditions()["MusicStopped"].codeExtraInformation
+        .SetFunctionName("gdjs.evtTools.sound.isMusicOnChannelStopped");
+    GetAllConditions()["SoundPlaying"].codeExtraInformation
+        .SetFunctionName("gdjs.evtTools.sound.isSoundOnChannelPlaying");
+    GetAllConditions()["SoundPaused"].codeExtraInformation
+        .SetFunctionName("gdjs.evtTools.sound.isSoundOnChannelPaused");
+    GetAllConditions()["SoundStopped"].codeExtraInformation
+        .SetFunctionName("gdjs.evtTools.sound.isSoundOnChannelStopped");
 
     GetAllActions()["ModGlobalVolume"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.sound.setGlobalVolume").SetAssociatedGetter("gdjs.evtTools.sound.getGlobalVolume");
@@ -112,81 +124,6 @@ AudioExtension::AudioExtension()
         .AddParameter("operator", _("Modification's sign"), "",false)
         .AddParameter("expression", _("Value"), "",false)
         .codeExtraInformation.SetFunctionName("SetMusicPitchOnChannel").SetAssociatedGetter("GetMusicPitchOnChannel").SetManipulatedType("number").SetIncludeFile("GDCpp/BuiltinExtensions/AudioTools.h");
-
-    AddCondition("MusicPlaying",
-                   _("A music is being played"),
-                   _("Test if the music on a channel is being played"),
-                   _("The music on channel _PARAM1_ is being played"),
-                   _("Musics"),
-                   "res/conditions/musicplaying24.png",
-                   "res/conditions/musicplaying.png")
-        .AddCodeOnlyParameter("currentScene", "")
-        .AddParameter("expression", _("Channel"), "",false)
-        .codeExtraInformation.SetFunctionName("MusicPlaying").SetIncludeFile("GDCpp/BuiltinExtensions/AudioTools.h");
-
-
-
-    AddCondition("MusicPaused",
-                   _("A music is paused"),
-                   _("Test if the music on the specified canal is paused."),
-                   _("The music on channel _PARAM1_ is paused"),
-                   _("Musics"),
-                   "res/conditions/musicpaused24.png",
-                   "res/conditions/musicpaused.png")
-        .AddCodeOnlyParameter("currentScene", "")
-        .AddParameter("expression", _("Channel"), "",false)
-        .codeExtraInformation.SetFunctionName("MusicPaused").SetIncludeFile("GDCpp/BuiltinExtensions/AudioTools.h");
-
-
-
-    AddCondition("MusicStopped",
-                   _("A music is stopped"),
-                   _("Test if the music on the specified canal is stopped."),
-                   _("The music on channel _PARAM1_ is stopped"),
-                   _("Musics"),
-                   "res/conditions/musicstopped24.png",
-                   "res/conditions/musicstopped.png")
-        .AddCodeOnlyParameter("currentScene", "")
-        .AddParameter("expression", _("Channel"), "",false)
-        .codeExtraInformation.SetFunctionName("MusicStopped").SetIncludeFile("GDCpp/BuiltinExtensions/AudioTools.h");
-
-
-    AddCondition("SoundPlaying",
-                   _("A sound is being played"),
-                   _("Test if the sound on a channel is being played."),
-                   _("Thee sound on channel _PARAM1_ is being played"),
-                   _("Sounds"),
-                   "res/conditions/sonplaying24.png",
-                   "res/conditions/sonplaying.png")
-        .AddCodeOnlyParameter("currentScene", "")
-        .AddParameter("expression", _("Channel"), "",false)
-        .codeExtraInformation.SetFunctionName("SoundPlaying").SetIncludeFile("GDCpp/BuiltinExtensions/AudioTools.h");
-
-
-
-    AddCondition("SoundPaused",
-                   _("A sound is paused"),
-                   _("Test if the sound on the specified canal is paused."),
-                   _("The sound on channel _PARAM1_ is paused"),
-                   _("Sounds"),
-                   "res/conditions/sonpaused24.png",
-                   "res/conditions/sonpaused.png")
-        .AddCodeOnlyParameter("currentScene", "")
-        .AddParameter("expression", _("Channel"), "",false)
-        .codeExtraInformation.SetFunctionName("SoundPaused").SetIncludeFile("GDCpp/BuiltinExtensions/AudioTools.h");
-
-
-
-    AddCondition("SoundStopped",
-                   _("A sound is stopped"),
-                   _("Test if the sound on the specified canal is stopped."),
-                   _("The sound on channel _PARAM1_ is stopped"),
-                   _("Sounds"),
-                   "res/conditions/sonstopped24.png",
-                   "res/conditions/sonstopped.png")
-        .AddCodeOnlyParameter("currentScene", "")
-        .AddParameter("expression", _("Channel"), "",false)
-        .codeExtraInformation.SetFunctionName("SoundStopped").SetIncludeFile("GDCpp/BuiltinExtensions/AudioTools.h");
 
     AddCondition("SoundChannelPitch",
                    _("Pitch of the sound of a channel"),
