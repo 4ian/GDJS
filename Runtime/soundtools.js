@@ -111,7 +111,7 @@ gdjs.evtTools.sound.setSoundOnChannelPlayingOffset = function(runtimeScene, chan
 };
 
 gdjs.evtTools.sound.getGlobalVolume = function(runtimeScene) {
-    runtimeScene.getSoundManager().getGlobalVolume();
+    return runtimeScene.getSoundManager().getGlobalVolume();
 };
 
 gdjs.evtTools.sound.setGlobalVolume = function(runtimeScene, globalVolume) {

@@ -142,7 +142,6 @@ bool Exporter::ExportLayoutForPreview(gd::Layout & layout, std::string exportDir
     //Strip the project ( *after* generating events as the events may use strioped things ( objects groups... ) ) 
     StripProject(exportedProject);
     exportedProject.SetFirstLayout(layout.GetName());
-    exportedProject.GetLayout(layout.GetName()).GetEvents().clear();
 
     //Export the project
     std::string result = ExportToJSON(exportedProject, gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js"),
@@ -389,10 +388,22 @@ bool Exporter::ExportIncludesAndLibs(std::vector<std::string> & includesFiles, s
             {
                 std::cout << "Execution of the closure compiler failed ( Command line : " << cmd << ")." << std::endl;
                 std::cout << "Output: ";
-                for (size_t i = 0;i<output.size();++i) std::cout << output[i] << std::endl;
-                for (size_t i = 0;i<errors.size();++i) std::cout << errors[i] << std::endl;
+                bool outOfMemoryError = false;
+                for (size_t i = 0;i<output.size();++i)
+                {
+                    outOfMemoryError |= output[i].find("OutOfMemoryError") < output[i].length();
+                    std::cout << output[i] << std::endl;
+                } 
+                for (size_t i = 0;i<errors.size();++i)
+                {
+                    outOfMemoryError |= errors[i].find("OutOfMemoryError") < errors[i].length();
+                    std::cout << errors[i] << std::endl;
+                } 
 
-                wxLogWarning(_("The exported script could not be minified.\n\nMay be an extension is triggering this error: Try to contact the developer if you think it is the case."));
+                if ( outOfMemoryError)
+                    wxLogWarning(_("The exported script could not be minified: It seems that the script is too heavy and need too much memory to be minified.\n\nTry using sub events and reduce the number of events."));
+                else
+                    wxLogWarning(_("The exported script could not be minified.\n\nMay be an extension is triggering this error: Try to contact the developer if you think it is the case."));
                 minify = false;
             }
             else
@@ -443,20 +454,15 @@ bool Exporter::ExportIncludesAndLibs(std::vector<std::string> & includesFiles, s
     return true;
 }
 
-void Exporter::StripProject(gd::Project & strippedProject, std::string layout)
+void Exporter::StripProject(gd::Project & strippedProject)
 {
     strippedProject.GetObjectGroups().clear();
     while ( strippedProject.GetExternalEventsCount() > 0 ) strippedProject.RemoveExternalEvents(strippedProject.GetExternalEvents(0).GetName());
 
-    for (unsigned int i = 0;i<strippedProject.GetLayoutCount();)
+    for (unsigned int i = 0;i<strippedProject.GetLayoutCount();++i)
     {
-        if ( !layout.empty() && layout != strippedProject.GetLayout(i).GetName() )
-            strippedProject.RemoveLayout(strippedProject.GetLayout(i).GetName());
-        else
-        {
             strippedProject.GetLayout(i).GetObjectGroups().clear();
-            ++i;
-        }
+            strippedProject.GetLayout(i).GetEvents().clear();
     }
 }
 
@@ -491,7 +497,7 @@ void Exporter::ShowProjectExportDialog(gd::Project & project)
         return;
     }
 
-    //Strip the project ( *after* generating events as the events may use strioped things ( objects groups... ) )...
+    //Strip the project ( *after* generating events as the events may use stripped things ( objects groups... ) )...
     StripProject(exportedProject);
 
     //...and export it
