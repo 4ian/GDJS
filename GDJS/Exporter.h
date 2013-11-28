@@ -10,6 +10,7 @@
 #include "GDCore/IDE/ProjectExporter.h"
 namespace gd { class Project; }
 namespace gd { class Layout; }
+class wxProgressDialog;
 
 namespace gdjs
 {
@@ -84,8 +85,9 @@ private:
      *
      * \param project The project with resources to be exported.
      * \param exportDir The directory where the preview must be created.
+     * \param progressDlg Optional wxProgressDialog which will be updated with the progress.
      */
-    static void ExportResources(gd::Project & project, std::string exportDir);
+    static void ExportResources(gd::Project & project, std::string exportDir, wxProgressDialog * progressDlg = NULL);
 
     /**
      * \brief Copy all the includes files and the standard libraries files to the export directory.
@@ -121,6 +123,18 @@ private:
      * \param includesFiles The JS files to be included in the HTML file. Order is important.
      */
     bool ExportIndexFile(gd::Project & project, std::string exportDir, const std::vector<std::string> & includesFiles);
+
+    /**
+     * \brief Generate the metadata file and save it to the export directory.
+     * The metadata is used for the online game sharing service.
+     *
+     * The includes files must be relative to the export directory.
+     *
+     * \param project The project with layouts to be exported.
+     * \param exportDir The directory where the preview/export must be done.
+     * \param includesFiles The JS files to be included in the metadata
+     */
+    bool ExportMetadataFile(gd::Project & project, std::string exportDir, const std::vector<std::string> & includesFiles);
 
     gd::Project * project; ///< The project being exported. Can be NULL if no project was set.
     std::string lastError; ///< The last error that occurred.

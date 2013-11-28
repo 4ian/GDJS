@@ -282,6 +282,7 @@ gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document, rende
     }; 
     renderer.view.onmousedown = function(e){
         game.onMouseButtonPressed(e.button === 2 ? 1 : 0);
+        window.focus();
         return false;
     };
     renderer.view.onmouseup = function(e){
@@ -295,6 +296,7 @@ gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document, rende
         return false;
     };
     window.addEventListener('click', function(e) {
+        window.focus();
         e.preventDefault();
         return false;
     }, false);

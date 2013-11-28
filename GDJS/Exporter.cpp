@@ -8,9 +8,13 @@
 #include <streambuf>
 #include <string>
 #include <wx/filename.h>
+#include <wx/dir.h>
 #include <wx/log.h>
 #include <wx/msgdlg.h>
 #include <wx/config.h>
+#include <wx/progdlg.h>
+#include <wx/zipstrm.h>
+#include <wx/wfstream.h>
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include "GDCore/TinyXml/tinyxml.h"
@@ -53,7 +57,7 @@ static void GenerateFontsDeclaration(const std::string & outputDir, std::string 
     {
         if ( file.Upper().EndsWith(".TTF") )
         {
-            wxFileName relativeFile = wxFileName::FileName(file);
+            wxFileName relativeFile(file);
             relativeFile.MakeRelativeTo(outputDir);
             css += "@font-face{ font-family : \"gdjs_font_";
             css += gd::ToString(relativeFile.GetFullPath());
@@ -210,6 +214,67 @@ std::string Exporter::ExportToJSON(const gd::Project & project, std::string file
     }
 
     return "";
+}
+
+bool Exporter::ExportMetadataFile(gd::Project & project, std::string exportDir, const std::vector<std::string> & includesFiles)
+{
+    std::string metadata = "{";
+
+    //Fonts metadata
+    metadata += "\"fonts\":[";
+    bool first = true;
+    wxString file = wxFindFirstFile( exportDir + "/*" );
+    while ( !file.empty() )
+    {
+        if ( file.Upper().EndsWith(".TTF") )
+        {
+            wxFileName relativeFile(file);
+            relativeFile.MakeRelativeTo(exportDir);
+
+            if ( !first ) metadata += ", ";
+            metadata += "{\"ffamilyname\":\"gdjs_font_"+gd::ToString(relativeFile.GetFullPath())+"\"";
+            metadata += ", \"filename\":\""+gd::ToString(relativeFile.GetFullPath())+"\", \"format\":\"truetype\"}";
+
+            first = false;
+        }
+
+        file = wxFindNextFile();
+    }
+
+    //Used scripts files
+    metadata += "],\"scripts\":[";
+    for (std::vector<std::string>::const_iterator it = includesFiles.begin(); it != includesFiles.end(); ++it)
+    {
+        if ( !wxFileExists(exportDir+"/"+*it) )
+            continue;
+
+        if (it != includesFiles.begin()) metadata += ", ";
+
+        wxFileName relativeFile(exportDir+"/"+*it);
+        relativeFile.MakeRelativeTo(exportDir);
+        metadata += "\""+gd::ToString(relativeFile.GetFullPath(wxPATH_UNIX))+"\""; 
+    }
+
+    //Other metadata
+    metadata += "], ";
+    metadata += "\"windowSize\":{\"w\": "+gd::ToString(project.GetMainWindowDefaultWidth())
+        +", \"h\": "+gd::ToString(project.GetMainWindowDefaultHeight())+"}";
+    metadata += "}";
+
+    {
+        std::ofstream file;
+        file.open ( std::string(exportDir+"/gd_metadata.json").c_str() );
+        if ( file.is_open() ) {
+            file << metadata;
+            file.close();
+        }
+        else {
+            lastError = "Unable to write the metadata file.";
+            return false;
+        }
+    }
+
+    return true;
 }
 
 bool Exporter::ExportIndexFile(gd::Project & project, std::string exportDir, const std::vector<std::string> & includesFiles)
@@ -416,7 +481,7 @@ bool Exporter::ExportIncludesAndLibs(std::vector<std::string> & includesFiles, s
         }
     }
 
-    //If the close compiler failed or was not request, simply copy all the include files.
+    //If the closure compiler failed or was not request, simply copy all the include files.
     if ( !minify )
     {
         for ( std::vector<std::string>::iterator include = includesFiles.begin() ; include != includesFiles.end(); ++include )
@@ -466,9 +531,9 @@ void Exporter::StripProject(gd::Project & strippedProject)
     }
 }
 
-void Exporter::ExportResources(gd::Project & project, std::string exportDir)
+void Exporter::ExportResources(gd::Project & project, std::string exportDir, wxProgressDialog * progressDialog)
 {
-    gd::ProjectResourcesCopier::CopyAllResourcesTo(project, exportDir, true, NULL, false, false);
+    gd::ProjectResourcesCopier::CopyAllResourcesTo(project, exportDir, true, progressDialog, false, false);
 }
 
 void Exporter::ShowProjectExportDialog(gd::Project & project)
@@ -476,56 +541,115 @@ void Exporter::ShowProjectExportDialog(gd::Project & project)
     ProjectExportDialog dialog(NULL, project);
     if ( dialog.ShowModal() != 1 ) return;
 
-    //Prepare the export directory
+    bool exportForOnlineUpload = true;
     bool minify = dialog.RequestMinify();
     std::string exportDir = dialog.GetExportDir();
-    gd::RecursiveMkDir::MkDir(exportDir);
-    ClearDirectory(exportDir);
-    gd::RecursiveMkDir::MkDir(exportDir+"/libs");
-    gd::RecursiveMkDir::MkDir(exportDir+"/Extensions");
-    std::vector<std::string> includesFiles;
 
-    gd::Project exportedProject = project;
-
-    //Export the resources ( before generating events as some resources filenames may be updated )
-    ExportResources(exportedProject, exportDir);
-
-    //Export events 
-    if ( !ExportEventsCode(exportedProject, gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/"), includesFiles) )
     {
-        wxLogError(_("Error during exporting: Unable to export events ( "+lastError+")."));
-        return;
-    }
+        wxProgressDialog progressDialog(_("Export in progress ( 1/2 )"), _("Exporting the project..."));
 
-    //Strip the project ( *after* generating events as the events may use stripped things ( objects groups... ) )...
-    StripProject(exportedProject);
+        //Prepare the export directory
+        gd::RecursiveMkDir::MkDir(exportDir);
+        ClearDirectory(exportDir);
+        gd::RecursiveMkDir::MkDir(exportDir+"/libs");
+        gd::RecursiveMkDir::MkDir(exportDir+"/Extensions");
+        std::vector<std::string> includesFiles;
 
-    //...and export it
-    std::string result = ExportToJSON(exportedProject, gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js"),
-                                      "gdjs.projectData", false);
-    includesFiles.push_back(gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js"));
+        gd::Project exportedProject = project;
 
-    //Copy all dependencies and the index file.
-    ExportIncludesAndLibs(includesFiles, exportDir, minify);
-    if ( !ExportIndexFile(exportedProject, exportDir, includesFiles) )
-    {
-        wxLogError(_("Error during exporting:\n"+lastError));
-        return;
+        //Export the resources ( before generating events as some resources filenames may be updated )
+        ExportResources(exportedProject, exportDir, &progressDialog);
+
+        progressDialog.SetTitle(_("Export in progress ( 2/2 )"));
+        progressDialog.Update(50, _("Exporting events..."));
+
+        //Export events 
+        if ( !ExportEventsCode(exportedProject, gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/"), includesFiles) )
+        {
+            wxLogError(_("Error during exporting: Unable to export events ( "+lastError+")."));
+            return;
+        }
+
+        progressDialog.Update(60, _("Preparing the project..."));
+
+        //Strip the project ( *after* generating events as the events may use stripped things ( objects groups... ) )...
+        StripProject(exportedProject);
+
+        progressDialog.Update(70, _("Exporting files..."));
+
+        //...and export it
+        std::string result = ExportToJSON(exportedProject, gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js"),
+                                          "gdjs.projectData", false);
+        includesFiles.push_back(gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js"));
+
+        progressDialog.Update(80, minify ? _("Exporting files and minifying them...") : _("Exporting files..."));
+
+        //Copy all dependencies and the index (or metadata) file.
+        ExportIncludesAndLibs(includesFiles, exportDir, minify);
+        if ( (!exportForOnlineUpload && !ExportIndexFile(exportedProject, exportDir, includesFiles)) ||
+             (exportForOnlineUpload && !ExportMetadataFile(exportedProject, exportDir, includesFiles)) )
+        {
+            wxLogError(_("Error during exporting:\n"+lastError));
+            return;
+        }
+
+        //Exporting for online upload requires to zip the whole game.
+        if ( exportForOnlineUpload )
+        {
+            progressDialog.Update(90, _("Creating the zip file..."));
+
+            //Getting all the files to includes in the directory
+            wxArrayString files;
+            wxDir::GetAllFiles(exportDir, &files);
+
+            wxString zipTempName = wxFileName::GetTempDir()+"/GDTemporaries/zipped_"+ToString(&project)+".zip";
+            wxFFileOutputStream out(zipTempName);
+            wxZipOutputStream zip(out);
+            for(unsigned int i = 0; i < files.size(); ++i)
+            {
+                wxFileName filename(files[i]);
+                filename.MakeRelativeTo(exportDir);
+                wxFileInputStream file(files[i]);
+                if ( file.IsOk() )
+                {
+                    zip.PutNextEntry(filename.GetFullPath());
+                    zip.Write(file);
+                }
+            }
+
+            if ( !zip.Close() || !out.Close() )
+                wxLogWarning(_("Unable to finalize the creation of the zip file!\n\nThe exported project won't be put in a zip file."));
+            else
+            {
+                progressDialog.Update(95, _("Cleaning files..."));
+
+                ClearDirectory(exportDir);
+                wxCopyFile(zipTempName, exportDir+"/zipped_project.zip");
+                wxRemoveFile(zipTempName);
+            }
+        }
     }
 
     //Finished!
-    if ( wxMessageBox(_("Compilation achieved. Do you want to open the folder where the project has been compiled\?"),
-                      _("Compilation finished"), wxYES_NO) == wxYES )
+    if ( exportForOnlineUpload )
     {
-        #if defined(WINDOWS)
-        wxExecute("explorer.exe \""+exportDir+"\"");
-        #elif defined(LINUX)
-        system(std::string("xdg-open \""+exportDir).c_str());
-        #elif defined(MAC)
-        system(std::string("open \""+exportDir).c_str());
-        #endif
+
     }
-};
+    else
+    { 
+        if ( wxMessageBox(_("Compilation achieved. Do you want to open the folder where the project has been compiled\?"),
+                          _("Compilation finished"), wxYES_NO) == wxYES )
+        {
+            #if defined(WINDOWS)
+            wxExecute("explorer.exe \""+exportDir+"\"");
+            #elif defined(LINUX)
+            system(std::string("xdg-open \""+exportDir).c_str());
+            #elif defined(MAC)
+            system(std::string("open \""+exportDir).c_str());
+            #endif
+        }
+    }
+}
 
 std::string Exporter::GetProjectExportButtonLabel()
 {
