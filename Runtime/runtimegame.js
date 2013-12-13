@@ -265,6 +265,7 @@ gdjs.RuntimeGame.prototype.getMinimalFramerate = function() {
 gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document, renderer, canvasArea) {
 
     var isMSIE = /*@cc_on!@*/0;
+    renderer.view.style.cssText="idtkscale:'ScaleAspectFill';"; //CocoonJS support
         
     var game = this;
     document.onkeydown = function(e) {
@@ -309,23 +310,20 @@ gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document, rende
         game.onMouseWheel(event.wheelDelta);
     }
     //Simulate mouse events when receiving touch events
-    renderer.view.addEventListener('touchmove', function(e){
+    window.addEventListener('touchmove', function(e){
         e.preventDefault();
         if ( e.touches && e.touches.length > 0 ) {
             if (e.touches[0].pageX)
                 game.onMouseMove(e.touches[0].pageX-canvasArea.offsetLeft, e.touches[0].pageY-canvasArea.offsetTop);
             else
-                game.onMouseMove(e.touches[0].clientX + document.body.scrollLeft + document.documentElement.scrollLeft-canvasArea.offsetLeft, 
+                game.onMouseMove(e.touches[0].clientX + document.body.scrollLeft + document.documentElement.scrollLeft-canvasArea.offsetLeft,
                                  e.touches[0].clientY + document.body.scrollTop + document.documentElement.scrollTop-canvasArea.offsetTop);
         }
     });
-    renderer.view.addEventListener('touchstart', function(e){
+    window.addEventListener('touchstart', function(e){
         e.preventDefault();
-        console.log("touchStart");
         if ( e.touches && e.touches.length > 0 ) {
-        console.log("a");
             if (e.touches[0].pageX) {
-                console.log("pageX:"+e.touches[0].pageX);
                 if ( isNaN(canvasArea.offsetLeft) ) {
                     canvasArea.offsetLeft = 0;
                     canvasArea.offsetTop = 0;
@@ -333,7 +331,6 @@ gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document, rende
                 game.onMouseMove(e.touches[0].pageX-canvasArea.offsetLeft, e.touches[0].pageY-canvasArea.offsetTop);
             }
             else {
-                console.log("clientX:"+e.touches[0].clientX);
                 if ( isNaN(document.body.scrollLeft) ) {
                     document.body.scrollLeft = 0;
                     document.body.scrollTop = 0;
@@ -356,13 +353,13 @@ gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document, rende
         game.onMouseButtonPressed(0);
         return false;
     });
-    renderer.view.addEventListener('touchend', function(e){
+    window.addEventListener('touchend', function(e){
         e.preventDefault();
         if ( e.touches && e.touches.length > 0 ) {
             if (e.touches[0].pageX)
                 game.onMouseMove(e.touches[0].pageX-canvasArea.offsetLeft, e.touches[0].pageY-canvasArea.offsetTop);
             else
-                game.onMouseMove(e.touches[0].clientX + document.body.scrollLeft + document.documentElement.scrollLeft-canvasArea.offsetLeft, 
+                game.onMouseMove(e.touches[0].clientX + document.body.scrollLeft + document.documentElement.scrollLeft-canvasArea.offsetLeft,
                                  e.touches[0].clientY + document.body.scrollTop + document.documentElement.scrollTop-canvasArea.offsetTop);
         }
         game.onMouseButtonReleased(0);
@@ -370,7 +367,7 @@ gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document, rende
     });
     //Hide the adress bar on handheld devices.
     window.addEventListener('load', function(e) {
-        setTimeout(function() { 
+        setTimeout(function() {
             if ( document.documentElement.clientWidth < 600 ) {
                 window.scrollTo(0, 1);
             }

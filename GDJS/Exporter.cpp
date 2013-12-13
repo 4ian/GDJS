@@ -27,6 +27,8 @@
 #include "GDJS/Exporter.h"
 #include "GDJS/EventsCodeGenerator.h"
 #include "GDJS/Dialogs/ProjectExportDialog.h"
+#include "GDJS/Dialogs/UploadOnlineDialog.h"
+#include "GDJS/Dialogs/CocoonJSUploadDialog.h"
 
 using namespace boost::property_tree;
 
@@ -541,7 +543,9 @@ void Exporter::ShowProjectExportDialog(gd::Project & project)
     ProjectExportDialog dialog(NULL, project);
     if ( dialog.ShowModal() != 1 ) return;
 
-    bool exportForOnlineUpload = true;
+    bool exportForGDShare = dialog.GetExportType() == ProjectExportDialog::GameDevShare;
+    bool exportForCocoonJS = dialog.GetExportType() == ProjectExportDialog::CocoonJS;
+    bool exportToZipFile = exportForGDShare || exportForCocoonJS;
     bool minify = dialog.RequestMinify();
     std::string exportDir = dialog.GetExportDir();
 
@@ -586,15 +590,15 @@ void Exporter::ShowProjectExportDialog(gd::Project & project)
 
         //Copy all dependencies and the index (or metadata) file.
         ExportIncludesAndLibs(includesFiles, exportDir, minify);
-        if ( (!exportForOnlineUpload && !ExportIndexFile(exportedProject, exportDir, includesFiles)) ||
-             (exportForOnlineUpload && !ExportMetadataFile(exportedProject, exportDir, includesFiles)) )
+        if ( (!exportForGDShare && !ExportIndexFile(exportedProject, exportDir, includesFiles)) ||
+             (exportForGDShare && !ExportMetadataFile(exportedProject, exportDir, includesFiles)) )
         {
             wxLogError(_("Error during exporting:\n"+lastError));
             return;
         }
 
         //Exporting for online upload requires to zip the whole game.
-        if ( exportForOnlineUpload )
+        if ( exportToZipFile )
         {
             progressDialog.Update(90, _("Creating the zip file..."));
 
@@ -624,16 +628,22 @@ void Exporter::ShowProjectExportDialog(gd::Project & project)
                 progressDialog.Update(95, _("Cleaning files..."));
 
                 ClearDirectory(exportDir);
-                wxCopyFile(zipTempName, exportDir+"/zipped_project.zip");
+                wxCopyFile(zipTempName, exportDir+"/packaged_game.zip");
                 wxRemoveFile(zipTempName);
             }
         }
     }
 
     //Finished!
-    if ( exportForOnlineUpload )
+    if ( exportForGDShare )
     {
-
+        UploadOnlineDialog uploadDialog(NULL, project.GetName(), exportDir+wxFileName::GetPathSeparator()+"packaged_game.zip");
+        uploadDialog.ShowModal();
+    }
+    else if ( exportForCocoonJS )
+    {
+        CocoonJSUploadDialog uploadDialog(NULL, exportDir+wxFileName::GetPathSeparator()+"packaged_game.zip");
+        uploadDialog.ShowModal();
     }
     else
     { 
