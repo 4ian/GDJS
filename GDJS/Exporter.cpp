@@ -279,7 +279,7 @@ bool Exporter::ExportMetadataFile(gd::Project & project, std::string exportDir, 
     return true;
 }
 
-bool Exporter::ExportIndexFile(gd::Project & project, std::string exportDir, const std::vector<std::string> & includesFiles)
+bool Exporter::ExportIndexFile(gd::Project & project, std::string exportDir, const std::vector<std::string> & includesFiles, std::string additionalSpec)
 {
     std::ifstream t("./JsPlatform/Runtime/index.html");
     std::stringstream buffer;
@@ -338,6 +338,20 @@ bool Exporter::ExportIndexFile(gd::Project & project, std::string exportDir, con
         return false;
     }
 
+    pos = str.find("{}/*GDJS_ADDITIONAL_SPEC*/");
+    if ( pos < str.length() )
+    {
+        if (additionalSpec.empty()) additionalSpec = "{}";
+
+        str = str.replace(pos, 26, additionalSpec);
+    }
+    else
+    {
+        std::cout << "Unable to find {}/*GDJS_ADDITIONAL_SPEC*/ in index file." << std::endl;
+        lastError = "Unable to find {}/*GDJS_ADDITIONAL_SPEC*/ in index file.";
+        return false;
+    }
+
     {
         std::ofstream file;
         file.open ( std::string(exportDir+"/index.html").c_str() );
@@ -388,6 +402,7 @@ bool Exporter::ExportEventsCode(gd::Project & project, std::string outputDir, st
     InsertUnique(includesFiles, "soundtools.js");
     InsertUnique(includesFiles, "storagetools.js");
     InsertUnique(includesFiles, "stringtools.js");
+    InsertUnique(includesFiles, "windowtools.js");
 
     for (unsigned int i = 0;i<project.GetLayoutCount();++i)
     {
@@ -589,8 +604,9 @@ void Exporter::ShowProjectExportDialog(gd::Project & project)
         progressDialog.Update(80, minify ? _("Exporting files and minifying them...") : _("Exporting files..."));
 
         //Copy all dependencies and the index (or metadata) file.
+        std::string additionalSpec = exportForCocoonJS ? "{forceFullscreen:true}" : "";
         ExportIncludesAndLibs(includesFiles, exportDir, minify);
-        if ( (!exportForGDShare && !ExportIndexFile(exportedProject, exportDir, includesFiles)) ||
+        if ( (!exportForGDShare && !ExportIndexFile(exportedProject, exportDir, includesFiles, additionalSpec)) ||
              (exportForGDShare && !ExportMetadataFile(exportedProject, exportDir, includesFiles)) )
         {
             wxLogError(_("Error during exporting:\n"+lastError));

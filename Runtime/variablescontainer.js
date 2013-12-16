@@ -66,7 +66,7 @@ gdjs.VariablesContainer.prototype.initFrom = function(data, keepOldVariables) {
         //remove all the variables not assigned above.
         //(Here, remove means flag the variable as not existing, to avoid garbage creation ).
         for(var i =0, len = deletedVars.length;i<len;++i) {
-            if ( deletedVars[i] != undefined ) 
+            if ( deletedVars[i] != undefined )
                 this._variables.get(deletedVars[i]).setUndefinedInContainer();
         }
     }

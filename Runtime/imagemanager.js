@@ -46,7 +46,7 @@ gdjs.ImageManager.prototype.getPIXITexture = function(name) {
 		});
 
 		if ( texture != null ) {
-			console.log("Loaded texture \""+name+"\".");
+			//console.log("Loaded texture \""+name+"\".");
 			this._loadedTextures.put(name, texture);
 			return texture;
 		}

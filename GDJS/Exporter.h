@@ -5,6 +5,7 @@
  */
 #ifndef EXPORTER_H
 #define EXPORTER_H
+#include <vector>
 #include <string>
 #include <set>
 #include "GDCore/IDE/ProjectExporter.h"
@@ -121,8 +122,9 @@ private:
      * \param project The project with layouts to be exported.
      * \param exportDir The directory where the preview must be created.
      * \param includesFiles The JS files to be included in the HTML file. Order is important.
+     * \param additionalSpec JSON string that will be passed to the gdjs.RuntimeGame object.
      */
-    bool ExportIndexFile(gd::Project & project, std::string exportDir, const std::vector<std::string> & includesFiles);
+    bool ExportIndexFile(gd::Project & project, std::string exportDir, const std::vector<std::string> & includesFiles, std::string additionalSpec = "");
 
     /**
      * \brief Generate the metadata file and save it to the export directory.

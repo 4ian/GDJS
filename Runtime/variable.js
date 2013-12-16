@@ -28,21 +28,22 @@ gdjs.Variable = function(varData)
 
 			//Try to guess the type of the value, as GD has no way ( for now ) to specify
 			//the type of a variable.
-			if(!isNaN(initialValue)) {  //Number
-				this._value = parseFloat(initialValue);
+			var valueWhenConsideredAsNumber = parseFloat(initialValue, 10);
+			if(valueWhenConsideredAsNumber === valueWhenConsideredAsNumber) { //"Since NaN is the only JavaScript value that is treated as unequal to itself, you can always test if a value is NaN by checking it for equality to itself"
+				this._value = parseFloat(initialValue, 10);
 			}
-			else { //We have a string ( Maybe empty. ).
+			else { //We have a string (Maybe empty).
 				if ( initialValue.length === 0 )
 					this._value = 0;
 				else {
 					this._str = initialValue;
-				    this._numberDirty = true;
-				    this._stringDirty = false;
+					this._numberDirty = true;
+					this._stringDirty = false;
 				}
 			}
 		}
 		else { //Variable is a structure
-    		this._isStructure = true;
+			this._isStructure = true;
 
 			var that = this;
 			gdjs.iterateOver(varData.Children, "Variable", function(childData) {
@@ -120,7 +121,8 @@ gdjs.Variable.prototype.removeChild = function(childName) {
  */
 gdjs.Variable.prototype.getAsNumber = function() {
 	if ( this._numberDirty ) {
-		this._value = parseFloat(this._str);
+		this._value = parseFloat(this._str, 10);
+		if ( this._value !== this._value ) this._value = 0; //Ensure NaN is not returned as a value.
 		this._numberDirty = false;
 	}
 

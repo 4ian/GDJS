@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <Project>
-    <GDVersion Major="3" Minor="0" Build="11298" Revision="57009" />
+    <GDVersion Major="3" Minor="2" Build="65" Revision="0" />
     <Info winExecutableFilename="" winExecutableIconFile="" linuxExecutableFilename="" macExecutableFilename="" useExternalSourceFiles="false">
         <Nom value="Basic breakout" />
         <Auteur value="" />
@@ -25,6 +25,7 @@
             <Extension name="BuiltinMathematicalTools" />
             <Extension name="BuiltinExternalLayouts" />
             <Extension name="CommonDialogs" />
+            <Extension name="TextObject" />
         </Extensions>
         <Platforms current="Game Develop JS platform">
             <Platform name="Game Develop JS platform" />
@@ -193,6 +194,13 @@
                         </Animation>
                     </Animations>
                 </Objet>
+                <Objet nom="NouvelObjet" type="TextObject::Text" smoothed="true" bold="false" italic="false" underlined="false">
+                    <Variables />
+                    <String value="Text" />
+                    <Font value="" />
+                    <CharacterSize value="20" />
+                    <Color r="255" g="255" b="255" />
+                </Objet>
             </Objets>
             <Layers>
                 <Layer Name="" Visibility="true">
@@ -202,6 +210,9 @@
                     <Camera DefaultSize="true" Width="0.000000" Height="0.000000" DefaultViewport="true" ViewportLeft="0.000000" ViewportTop="0.000000" ViewportRight="1.000000" ViewportBottom="1.000000" />
                 </Layer>
                 <Layer Name="Nouveau calque" Visibility="true">
+                    <Camera DefaultSize="true" Width="0.000000" Height="0.000000" DefaultViewport="true" ViewportLeft="0.000000" ViewportTop="0.000000" ViewportRight="1.000000" ViewportBottom="1.000000" />
+                </Layer>
+                <Layer Name="Static" Visibility="true">
                     <Camera DefaultSize="true" Width="0.000000" Height="0.000000" DefaultViewport="true" ViewportLeft="0.000000" ViewportTop="0.000000" ViewportRight="1.000000" ViewportBottom="1.000000" />
                 </Layer>
             </Layers>
@@ -395,6 +406,11 @@
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
+                <Objet nom="NouvelObjet" x="162.492432" y="89.677048" plan="1" layer="Static" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                    <floatInfos />
+                    <stringInfos />
+                    <InitialVariables />
+                </Objet>
             </Positions>
             <Events>
                 <Event disabled="false" folded="false">
@@ -402,6 +418,18 @@
                     <Couleur r="255.000000" v="230.000000" b="109.000000" textR="0.000000" textG="0.000000" textB="0.000000" />
                     <Com1 value='Bricks should be rotated, and barre should be flashing.&#x0A;A layer is centered on the &quot;balle&quot; Object.' />
                     <Com2 value="" />
+                </Event>
+                <Event disabled="false" folded="false">
+                    <Type value="BuiltinCommonInstructions::Standard" />
+                    <Conditions />
+                    <Actions>
+                        <Action>
+                            <Type value="TextObject::String" />
+                            <Parametre value="NouvelObjet" />
+                            <Parametre value="=" />
+                            <Parametre value='&quot;Mouse X:&quot;+ToString(MouseX(&quot;Static&quot;))+NewLine()+&quot;/Y:&quot;+ToString(MouseY(&quot;Static&quot;))' />
+                        </Action>
+                    </Actions>
                 </Event>
                 <Event disabled="false" folded="false">
                     <Type value="BuiltinCommonInstructions::Standard" />
@@ -442,7 +470,6 @@
                     <Actions>
                         <Action>
                             <Type value="ModVarScene" />
-                            <Parametre value="" />
                             <Parametre value="Visible" />
                             <Parametre value="=" />
                             <Parametre value="0" />
@@ -461,7 +488,6 @@
                             <Actions>
                                 <Action>
                                     <Type value="ModVarScene" />
-                                    <Parametre value="" />
                                     <Parametre value="Visible" />
                                     <Parametre value="=" />
                                     <Parametre value="1" />
@@ -475,7 +501,6 @@
                     <Conditions>
                         <Condition>
                             <Type value="VarScene" Contraire="false" />
-                            <Parametre value="" />
                             <Parametre value="Visible" />
                             <Parametre value="=" />
                             <Parametre value="0" />
@@ -494,7 +519,6 @@
                     <Conditions>
                         <Condition>
                             <Type value="VarScene" Contraire="false" />
-                            <Parametre value="" />
                             <Parametre value="Visible" />
                             <Parametre value="=" />
                             <Parametre value="1" />

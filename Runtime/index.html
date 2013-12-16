@@ -6,27 +6,14 @@
 			margin: 0;
 			padding: 0;
 			background-color: #000000;
+            overflow: hidden; 
 		}
         #canvasArea {
             margin-left: auto;
-            margin-right: auto;        
+            margin-right: auto;
+            overflow: hidden;        
         }
         
-        #betaText {
-            margin-left: auto;
-            margin-right: auto;  
-            width: 800px;
-            text-align:center;
-            color:#aaaaaa;
-            font-size:0.6em;
-            font-family:"Verdana", Sans-serif;
-        }
-        
-        #betaText a {
-            color:#aaaaFF;
-            text-decoration: none;
-            border-bottom: 1px dotted rgb(148, 113, 183);
-        }
         <!-- GDJS_CUSTOM_STYLE -->
 	</style>
     <!-- Libs and GDJS core files : -->
@@ -45,19 +32,19 @@
         gdjs.registerAutomatisms();
         gdjs.registerGlobalCallbacks();
 
-        var game = new gdjs.RuntimeGame(gdjs.projectData.Project);
+        var game = new gdjs.RuntimeGame(gdjs.projectData.Project, {}/*GDJS_ADDITIONAL_SPEC*/);
     
         //Create a renderer
         var canvasArea = document.getElementById("canvasArea");
-        var renderer = game.createStandardCanvas(canvasArea);
+        game.createStandardCanvas(canvasArea);
         
         //Bind keyboards/mouse/touch events
-        game.bindStandardEvents(window, document, renderer, canvasArea);
+        game.bindStandardEvents(window, document);
         
         //Load all assets and start the game
-        game.loadAllAssets(renderer, onAssetsLoaded);
+        game.loadAllAssets(onAssetsLoaded);
         function onAssetsLoaded() {
-            game.startStandardGameLoop(renderer);
+            game.startStandardGameLoop();
         }
     })();
 

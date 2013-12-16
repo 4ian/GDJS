@@ -10,9 +10,10 @@
  * @constructor
  * @namespace gdjs
  * @class RuntimeGame
- * @param The object ( usually stored in data.json ) containing the full project data
+ * @param data The object ( usually stored in data.json ) containing the full project data
+ * @param spec Optional object for specifiying additional options: {forceFullscreen: ...}
  */
-gdjs.RuntimeGame = function(data)
+gdjs.RuntimeGame = function(data, spec)
 {
     //Safety check: Do gdjs initialization if not already done
     if ( gdjs.objectsTypes.keys.length === 0)
@@ -24,11 +25,23 @@ gdjs.RuntimeGame = function(data)
          gdjs.callbacksObjectDeletedFromScene.length === 0)
         gdjs.registerGlobalCallbacks();
 
-
     this._variables = new gdjs.VariablesContainer(data.Variables);
     this._data = data;
     this._imageManager = new gdjs.ImageManager(this);
-    this._minFPS = data ? parseInt(data.Info.FPSmin.attr.value) : 15;
+    this._minFPS = data ? parseInt(data.Info.FPSmin.attr.value, 10) : 15;
+
+    //Game loop management ( see startStandardGameLoop method)
+    this._notifySceneForResize = false; //When set to true, the current scene is notified that canvas size changed.
+
+    //Rendering (see createStandardCanvas method)
+    this._isFullscreen = false; //Used to track if the canvas is displayed as fullscreen (see setFullscreen method).
+    this._forceFullscreen = spec.forceFullscreen || false; //If set to true, the canvas will always be displayed as fullscreen, even if _isFullscreen == false.
+    this._renderer = null;
+    this._canvasArea = null;
+    this._defaultWidth = parseInt(gdjs.projectData.Project.Info.WindowW.attr.value, 10); //Default size for scenes cameras
+    this._defaultHeight = parseInt(gdjs.projectData.Project.Info.WindowH.attr.value, 10);
+    this._currentWidth = parseInt(gdjs.projectData.Project.Info.WindowW.attr.value, 10); //Current size of the canvas
+    this._currentHeight = parseInt(gdjs.projectData.Project.Info.WindowH.attr.value, 10);
 
     //Inputs :
     this._pressedKeys = new Hashtable();
@@ -36,7 +49,7 @@ gdjs.RuntimeGame = function(data)
     this._mouseX = 0;
     this._mouseY = 0;
     this._mouseWheelDelta = 0;
-}
+};
 
 /**
  * Get the variables of the runtimeGame.
@@ -45,11 +58,11 @@ gdjs.RuntimeGame = function(data)
  */
 gdjs.RuntimeGame.prototype.getVariables = function() {
 	return this._variables;
-}
+};
 
 gdjs.RuntimeGame.prototype.getImageManager = function() {
 	return this._imageManager;
-}
+};
 
 /**
  * Get the object containing the game data
@@ -70,13 +83,13 @@ gdjs.RuntimeGame.prototype.getGameData = function() {
 gdjs.RuntimeGame.prototype.getSceneData = function(sceneName) {
 	var scene = undefined;
 	gdjs.iterateOver(this._data.Scenes, "Scene", function(sceneData) {
-		if ( sceneName == undefined || sceneData.attr.nom === sceneName ) {
+		if ( sceneName === undefined || sceneData.attr.nom === sceneName ) {
 			scene = sceneData;
 			return false;
 		}
 	});
 
-	if ( scene == undefined )
+	if ( scene === undefined )
 		console.warn("The game has no scene called \""+sceneName+"\"");
 
 	return scene;
@@ -92,7 +105,7 @@ gdjs.RuntimeGame.prototype.getSceneData = function(sceneName) {
 gdjs.RuntimeGame.prototype.hasScene = function(sceneName) {
 	var isTrue = false;
 	gdjs.iterateOver(this._data.Scenes, "Scene", function(sceneData) {
-		if ( sceneName == undefined || sceneData.attr.nom == sceneName ) {
+		if ( sceneName === undefined || sceneData.attr.nom == sceneName ) {
 			isTrue = true;
 			return false;
 		}
@@ -127,7 +140,7 @@ gdjs.RuntimeGame.prototype.getExternalLayoutData = function(name) {
  */
 gdjs.RuntimeGame.prototype.getInitialObjectsData = function() {
 	return this._data.Objects;
-}
+};
 
 /**
  * Should be called whenever a key is pressed
@@ -136,7 +149,7 @@ gdjs.RuntimeGame.prototype.getInitialObjectsData = function() {
  */
 gdjs.RuntimeGame.prototype.onKeyPressed = function(keyCode) {
 	this._pressedKeys.put(keyCode, true);
-}
+};
 
 /**
  * Should be called whenever a key is released
@@ -145,7 +158,7 @@ gdjs.RuntimeGame.prototype.onKeyPressed = function(keyCode) {
  */
 gdjs.RuntimeGame.prototype.onKeyReleased = function(keyCode) {
 	this._pressedKeys.put(keyCode, false);
-}
+};
 
 /**
  * Return true if the key corresponding to keyCode is pressed.
@@ -154,7 +167,7 @@ gdjs.RuntimeGame.prototype.onKeyReleased = function(keyCode) {
  */
 gdjs.RuntimeGame.prototype.isKeyPressed = function(keyCode) {
 	return this._pressedKeys.containsKey(keyCode) && this._pressedKeys.get(keyCode);
-}
+};
 
 /**
  * Return true if any key is pressed
@@ -170,7 +183,7 @@ gdjs.RuntimeGame.prototype.anyKeyPressed = function(keyCode) {
 	}
 
 	return false;
-}
+};
 
 /**
  * Should be called when the mouse is moved.<br>
@@ -183,7 +196,7 @@ gdjs.RuntimeGame.prototype.anyKeyPressed = function(keyCode) {
 gdjs.RuntimeGame.prototype.onMouseMove = function(x,y) {
 	this._mouseX = x;
 	this._mouseY = y;
-}
+};
 
 /**
  * Get the mouse X position
@@ -193,7 +206,7 @@ gdjs.RuntimeGame.prototype.onMouseMove = function(x,y) {
  */
 gdjs.RuntimeGame.prototype.getMouseX = function() {
 	return this._mouseX;
-}
+};
 
 /**
  * Get the mouse Y position
@@ -203,7 +216,53 @@ gdjs.RuntimeGame.prototype.getMouseX = function() {
  */
 gdjs.RuntimeGame.prototype.getMouseY = function() {
 	return this._mouseY;
-}
+};
+
+gdjs.RuntimeGame.prototype.getDefaultWidth = function() {
+    return this._defaultWidth;
+};
+
+gdjs.RuntimeGame.prototype.getDefaultHeight = function() {
+    return this._defaultHeight;
+};
+
+/**
+ * Change the default width of the game: It won't affect the canvas size, but
+ * new scene cameras will be created with this size.
+ * @method setDefaultWidth
+ * @param width {Number} The new default width
+ */
+gdjs.RuntimeGame.prototype.setDefaultWidth = function(width) {
+    this._defaultWidth = width;
+};
+
+/**
+ * Change the default height of the game: It won't affect the canvas size, but
+ * new scene cameras will be created with this size.
+ * @method setDefaultHeight
+ * @param height {Number} The new default height
+ */
+gdjs.RuntimeGame.prototype.setDefaultHeight = function(height) {
+    this._defaultHeight = height;
+};
+
+/**
+ * Change the size of the canvas displaying the game.
+ * Note that if the canvas is fullscreen, it won't be resized, but when going back to
+ * non fullscreen mode, the requested size will be used.
+ *
+ * @method setCanvasSize
+ * @param width {Number} The new width
+ * @param height {Number} The new height
+ */
+gdjs.RuntimeGame.prototype.setCanvasSize = function(width, height) {
+    this._currentWidth = width;
+    this._currentHeight = height;
+
+    this._resizeCanvas(this._renderer, this._canvasArea, this._isFullscreen,
+        this._currentWidth, this._currentHeight);
+    this._notifySceneForResize = true;
+};
 
 /**
  * Should be called whenever a mouse button is pressed
@@ -212,7 +271,7 @@ gdjs.RuntimeGame.prototype.getMouseY = function() {
  */
 gdjs.RuntimeGame.prototype.onMouseButtonPressed = function(buttonCode) {
 	this._pressedMouseButtons[buttonCode] = true;
-}
+};
 
 /**
  * Should be called whenever a mouse button is released
@@ -221,7 +280,7 @@ gdjs.RuntimeGame.prototype.onMouseButtonPressed = function(buttonCode) {
  */
 gdjs.RuntimeGame.prototype.onMouseButtonReleased = function(buttonCode) {
 	this._pressedMouseButtons[buttonCode] = false;
-}
+};
 
 /**
  * Return true if the mouse button corresponding to buttonCode is pressed.
@@ -229,8 +288,8 @@ gdjs.RuntimeGame.prototype.onMouseButtonReleased = function(buttonCode) {
  * @param buttonCode {Number} The mouse button code.<br>0: Left button<br>1: Right button
  */
 gdjs.RuntimeGame.prototype.isMouseButtonPressed = function(buttonCode) {
-	return this._pressedMouseButtons[buttonCode] != undefined && this._pressedMouseButtons[buttonCode];
-}
+	return this._pressedMouseButtons[buttonCode] !== undefined && this._pressedMouseButtons[buttonCode];
+};
 
 /**
  * Should be called whenever the mouse wheel is used
@@ -239,7 +298,7 @@ gdjs.RuntimeGame.prototype.isMouseButtonPressed = function(buttonCode) {
  */
 gdjs.RuntimeGame.prototype.onMouseWheel = function(wheelDelta) {
 	this._mouseWheelDelta = wheelDelta;
-}
+};
 
 /**
  * Return the mouse wheel delta
@@ -247,7 +306,7 @@ gdjs.RuntimeGame.prototype.onMouseWheel = function(wheelDelta) {
  */
 gdjs.RuntimeGame.prototype.getMouseWheelDelta = function() {
 	return this._mouseWheelDelta;
-}
+};
 
 /**
  * Return the minimal fps that must be guaranteed by the game.
@@ -256,16 +315,21 @@ gdjs.RuntimeGame.prototype.getMouseWheelDelta = function() {
  */
 gdjs.RuntimeGame.prototype.getMinimalFramerate = function() {
 	return this._minFPS;
-}
+};
 
 /** 
  * Add the standard events handler.
+ * Be sure that the game has a renderer (See createStandardRenderer).
  * @method bindStandardEvents
  */
-gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document, renderer, canvasArea) {
+gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document) {
+    if (!this._renderer || !this._canvasArea) {
+        console.log("Unable to bind events to the game! Be sure that there is a renderer and a canvas area associated to the game.");
+        return;
+    }
 
     var isMSIE = /*@cc_on!@*/0;
-    renderer.view.style.cssText="idtkscale:'ScaleAspectFill';"; //CocoonJS support
+    this._renderer.view.style.cssText="idtkscale:'ScaleAspectFill';"; //CocoonJS support
         
     var game = this;
     document.onkeydown = function(e) {
@@ -274,61 +338,71 @@ gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document, rende
     document.onkeyup = function(e) {
         game.onKeyReleased(e.keyCode);
     };
-    renderer.view.onmousemove = function(e){
-        if (e.pageX)
-            game.onMouseMove(e.pageX-canvasArea.offsetLeft, e.pageY-canvasArea.offsetTop);
-        else
-            game.onMouseMove(e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft-canvasArea.offsetLeft, 
-                             e.clientY + document.body.scrollTop + document.documentElement.scrollTop-canvasArea.offsetTop);
+    this._renderer.view.onmousemove = function(e){
+        var pos = [0,0];
+        if (e.pageX) {
+            pos[0] = e.pageX-game._canvasArea.offsetLeft;
+            pos[1] = e.pageY-game._canvasArea.offsetTop;
+        }
+        else {
+            pos[0] = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft-game._canvasArea.offsetLeft;
+            pos[1] = e.clientY + document.body.scrollTop + document.documentElement.scrollTop-game._canvasArea.offsetTop;
+        }
+
+        //Handle the fact that the game is stretched to fill the canvas.
+        pos[0] *= game.getDefaultWidth()/game._renderer.view.width;
+        pos[1] *= game.getDefaultHeight()/game._renderer.view.height;
+
+        game.onMouseMove(pos[0], pos[1]);
     }; 
-    renderer.view.onmousedown = function(e){
+    this._renderer.view.onmousedown = function(e){
         game.onMouseButtonPressed(e.button === 2 ? 1 : 0);
-        window.focus();
+        if (window.focus) window.focus();
         return false;
     };
-    renderer.view.onmouseup = function(e){
+    this._renderer.view.onmouseup = function(e){
         game.onMouseButtonReleased(e.button === 2 ? 1 : 0);
         return false;
     };
-    renderer.view.onmouseout = function(e){
+    this._renderer.view.onmouseout = function(e){
         game.onMouseButtonReleased(0);
         game.onMouseButtonReleased(1);
         game.onMouseWheel(0);
         return false;
     };
     window.addEventListener('click', function(e) {
-        window.focus();
+        if (window.focus) window.focus();
         e.preventDefault();
         return false;
     }, false);
-    renderer.view.oncontextmenu = function(event) {
+    this._renderer.view.oncontextmenu = function(event) {
         event.preventDefault();
         event.stopPropagation();
         return false;
     };
-    renderer.view.onmousewheel = function (event){
+    this._renderer.view.onmousewheel = function (event){
         game.onMouseWheel(event.wheelDelta);
-    }
+    };
     //Simulate mouse events when receiving touch events
     window.addEventListener('touchmove', function(e){
         e.preventDefault();
         if ( e.touches && e.touches.length > 0 ) {
             if (e.touches[0].pageX)
-                game.onMouseMove(e.touches[0].pageX-canvasArea.offsetLeft, e.touches[0].pageY-canvasArea.offsetTop);
+                game.onMouseMove(e.touches[0].pageX-game._canvasArea.offsetLeft, e.touches[0].pageY-game._canvasArea.offsetTop);
             else
-                game.onMouseMove(e.touches[0].clientX + document.body.scrollLeft + document.documentElement.scrollLeft-canvasArea.offsetLeft,
-                                 e.touches[0].clientY + document.body.scrollTop + document.documentElement.scrollTop-canvasArea.offsetTop);
+                game.onMouseMove(e.touches[0].clientX + document.body.scrollLeft + document.documentElement.scrollLeft-game._canvasArea.offsetLeft,
+                                 e.touches[0].clientY + document.body.scrollTop + document.documentElement.scrollTop-game._canvasArea.offsetTop);
         }
     });
     window.addEventListener('touchstart', function(e){
         e.preventDefault();
         if ( e.touches && e.touches.length > 0 ) {
             if (e.touches[0].pageX) {
-                if ( isNaN(canvasArea.offsetLeft) ) {
-                    canvasArea.offsetLeft = 0;
-                    canvasArea.offsetTop = 0;
+                if ( isNaN(game._canvasArea.offsetLeft) ) {
+                    game._canvasArea.offsetLeft = 0;
+                    game._canvasArea.offsetTop = 0;
                 }
-                game.onMouseMove(e.touches[0].pageX-canvasArea.offsetLeft, e.touches[0].pageY-canvasArea.offsetTop);
+                game.onMouseMove(e.touches[0].pageX-game._canvasArea.offsetLeft, e.touches[0].pageY-game._canvasArea.offsetTop);
             }
             else {
                 if ( isNaN(document.body.scrollLeft) ) {
@@ -342,12 +416,12 @@ gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document, rende
                     document.documentElement.scrollLeft = 0;
                     document.documentElement.scrollTop = 0;
                 }
-                if ( isNaN(canvasArea.offsetLeft) ) {
-                    canvasArea.offsetLeft = 0;
-                    canvasArea.offsetTop = 0;
+                if ( isNaN(game._canvasArea.offsetLeft) ) {
+                    game._canvasArea.offsetLeft = 0;
+                    game._canvasArea.offsetTop = 0;
                 }
-                game.onMouseMove(e.touches[0].clientX + document.body.scrollLeft + document.documentElement.scrollLeft-canvasArea.offsetLeft,
-                                 e.touches[0].clientY + document.body.scrollTop + document.documentElement.scrollTop-canvasArea.offsetTop);
+                game.onMouseMove(e.touches[0].clientX + document.body.scrollLeft + document.documentElement.scrollLeft-game._canvasArea.offsetLeft,
+                                 e.touches[0].clientY + document.body.scrollTop + document.documentElement.scrollTop-game._canvasArea.offsetTop);
             }
         }
         game.onMouseButtonPressed(0);
@@ -357,10 +431,10 @@ gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document, rende
         e.preventDefault();
         if ( e.touches && e.touches.length > 0 ) {
             if (e.touches[0].pageX)
-                game.onMouseMove(e.touches[0].pageX-canvasArea.offsetLeft, e.touches[0].pageY-canvasArea.offsetTop);
+                game.onMouseMove(e.touches[0].pageX-game._canvasArea.offsetLeft, e.touches[0].pageY-game._canvasArea.offsetTop);
             else
-                game.onMouseMove(e.touches[0].clientX + document.body.scrollLeft + document.documentElement.scrollLeft-canvasArea.offsetLeft,
-                                 e.touches[0].clientY + document.body.scrollTop + document.documentElement.scrollTop-canvasArea.offsetTop);
+                game.onMouseMove(e.touches[0].clientX + document.body.scrollLeft + document.documentElement.scrollLeft-game._canvasArea.offsetLeft,
+                                 e.touches[0].clientY + document.body.scrollTop + document.documentElement.scrollTop-game._canvasArea.offsetTop);
         }
         game.onMouseButtonReleased(0);
         return false;
@@ -373,42 +447,103 @@ gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document, rende
             }
         }, 1);
     }, false);
-}
+};
+
+/** 
+ * De/activate fullscreen for the canvas rendering the game.
+ * @method setFullScreen
+ */
+gdjs.RuntimeGame.prototype.setFullScreen = function(enable) {
+    if (this._forceFullscreen) return;
+
+    if (this._isFullscreen !== enable) {
+        this._isFullscreen = !!enable;
+        this._resizeCanvas(this._renderer, this._canvasArea, this._isFullscreen,
+            this._currentWidth, this._currentHeight);
+        this._notifySceneForResize = true;
+
+        if (this._isFullscreen) {
+            if(document.documentElement.requestFullScreen) {
+                document.documentElement.requestFullScreen();
+            } else if(document.documentElement.mozRequestFullScreen) {
+                document.documentElement.mozRequestFullScreen();
+            } else if(document.documentElement.webkitRequestFullScreen) {
+                document.documentElement.webkitRequestFullScreen();
+            }
+        }
+        else {
+            if(document.cancelFullScreen) {
+                document.cancelFullScreen();
+            } else if(document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if(document.webkitCancelFullScreen) {
+                document.webkitCancelFullScreen();
+            }
+        }
+    }
+};
 
 /** 
  * Create a standard canvas inside canvasArea.
+ * The game keep a reference to this canvas and will renderer in it.
+ *
  * @method createStandardCanvas
  */
 gdjs.RuntimeGame.prototype.createStandardCanvas = function(canvasArea) {
+    this._canvasArea = canvasArea;
 
-    var canvasWidth = parseInt(gdjs.projectData.Project.Info.WindowW.attr.value); 
-    var canvasHeight = parseInt(gdjs.projectData.Project.Info.WindowH.attr.value); 
-    var renderer = PIXI.autoDetectRenderer(canvasWidth, canvasHeight);
-    
-    //Manage the canvas position.
+    //Create the renderer and setup the rendering area
+    this._renderer = PIXI.autoDetectRenderer(this._defaultWidth, this._defaultHeight);
     canvasArea.style["position"] = "absolute";
-    canvasArea.style["top"] = (gdjs.getDocHeight()-canvasHeight)/2+"px";
-    canvasArea.style["left"] = (gdjs.getDocWidth()-canvasWidth)/2+"px";
-    canvasArea.style.width = canvasWidth+"px";
-    canvasArea.style.height = canvasHeight+"px";
-    canvasArea.appendChild(renderer.view); // add the renderer view element to the DOM
+    canvasArea.appendChild(this._renderer.view); // add the renderer view element to the DOM
     canvasArea.tabindex="1"; //Ensure that the canvas has the focus.
+    canvasArea.style.overflow="hidden"; //No scrollbar in any case.
+    this._resizeCanvas(this._renderer, this._canvasArea, this._forceFullscreen || this._isFullscreen,
+        this._currentWidth, this._currentHeight);
+
+    //Handle resize
+    var game = this;
+    window.addEventListener("resize", function() {
+        game._resizeCanvas(game._renderer, game._canvasArea, this._forceFullscreen || game._isFullscreen, 
+            game._currentWidth, game._currentHeight);
+        game._notifySceneForResize = true;
+    });
     
-    return renderer;
-}
+    return this._renderer;
+};
+
+/** 
+ * Resize the canvas. Parameters width or height are ignored if isFullscreen === true.
+ *
+ * @method _resizeCanvas
+ * @private
+ * @static
+ */
+gdjs.RuntimeGame.prototype._resizeCanvas = function(renderer, canvasArea, isFullscreen, width, height) {
+    if ( isFullscreen ) {
+        width = window.innerWidth;
+        height = window.innerHeight;
+    }
+
+    if (renderer.width !== width || renderer.height !== height) renderer.resize(width, height);
+    canvasArea.style["top"] = isFullscreen ? "0" : (gdjs.getDocHeight()-height)/2+"px";
+    canvasArea.style["left"] = isFullscreen ? "0" : (gdjs.getDocWidth()-width)/2+"px";
+    canvasArea.style.width = width+"px";
+    canvasArea.style.height = height+"px";
+};
 
 /** 
  * Load all assets, displaying progress in renderer.
  * @method loadAllAssets
  */
-gdjs.RuntimeGame.prototype.loadAllAssets = function(renderer, callback) {
+gdjs.RuntimeGame.prototype.loadAllAssets = function(callback) {
 
     //Load all assets
     var loadingStage = new PIXI.Stage();
     var text = new PIXI.Text(" ", {font: "bold 60px Arial", fill: "#FFFFFF", align: "center"});
     loadingStage.addChild(text);
-    text.position.x = renderer.width/2-50;
-    text.position.y = renderer.height/2;
+    text.position.x = this._renderer.width/2-50;
+    text.position.y = this._renderer.height/2;
     var loadingCount = 0;
     
     var assets = [];
@@ -416,9 +551,9 @@ gdjs.RuntimeGame.prototype.loadAllAssets = function(renderer, callback) {
         if ( res.attr.file ) {
             assets.push(res.attr.file);
         }
-        console.log(res.attr.file);
     });
     
+    var game = this;
     if ( assets.length !== 0 ) {
         var assetLoader = new PIXI.AssetLoader(assets);
         assetLoader.onComplete = onAssetsLoaded;
@@ -434,18 +569,18 @@ gdjs.RuntimeGame.prototype.loadAllAssets = function(renderer, callback) {
     }
     
     function onAssetsLoadingProgress() {
-        renderer.render(loadingStage);
+        game._renderer.render(loadingStage);
         loadingCount++;
         text.setText(Math.floor(loadingCount/assets.length*100) + "%");
     }
-}
+};
 
 /** 
- * Launch the game, displayed in renderer.<br>
+ * Launch the game, displayed in the renderer associated to the game (see createStandardCanvas).<br>
  * The method returns when the game is closed.
  * @method startStandardGameLoop
  */
-gdjs.RuntimeGame.prototype.startStandardGameLoop = function(renderer) {
+gdjs.RuntimeGame.prototype.startStandardGameLoop = function() {
 
     if ( !this.hasScene() ) {
         console.log("The game has no scene.");
@@ -453,7 +588,7 @@ gdjs.RuntimeGame.prototype.startStandardGameLoop = function(renderer) {
     }
 
     //Create the scene to be played
-    var currentScene = new gdjs.RuntimeScene(this, renderer);
+    var currentScene = new gdjs.RuntimeScene(this, this._renderer);
     var firstSceneName = gdjs.projectData.Project.Scenes.attr.firstScene;
     var firstsceneData = this.hasScene(firstSceneName) ? this.getSceneData(firstSceneName) : this.getSceneData();
         
@@ -464,18 +599,27 @@ gdjs.RuntimeGame.prototype.startStandardGameLoop = function(renderer) {
     //The standard game loop
     var game = this;
     function gameLoop() {
+
+        //Manage resize events.
+        if ( game._notifySceneForResize ) {
+            currentScene.onCanvasResized();
+            game._notifySceneForResize = false;
+        }
+
+        //Render and step the scene.
         if ( !currentScene.renderAndStep() ) {
+            //Something special was requested by the current scene.
             if ( currentScene.gameStopRequested() )
                 postGameScreen();
             else {
                 var nextSceneName = currentScene.getRequestedScene();
-                currentScene = new gdjs.RuntimeScene(game, renderer);
+                currentScene = new gdjs.RuntimeScene(game, this._renderer);
                 currentScene.loadFromScene(game.getSceneData(nextSceneName));
                 requestAnimFrame( gameLoop );
-            }   
+            }
         }
         else { 
             requestAnimFrame( gameLoop );
         }
     }
-}
+};

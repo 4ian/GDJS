@@ -16,17 +16,18 @@ gdjs.RuntimeScene = function(runtimeGame, pixiRenderer)
     this._instances = new Hashtable(); //Contains the instances living on the scene
 	this._instancesCache = new Hashtable(); //Used to recycle destroyed instance instead of creating new ones.
     this._objects = new Hashtable(); //Contains the objects data stored in the project
-    this._objectsCtor = new Hashtable(); 
+    this._objectsCtor = new Hashtable();
     this._layers = new Hashtable();
     this._timers = new Hashtable();
 	this._initialAutomatismSharedData = new Hashtable();
     this._pixiRenderer = pixiRenderer;
     this._pixiStage = new PIXI.Stage();
+    this._pixiContainer = new PIXI.DisplayObjectContainer(); //The DisplayObjectContainer meant to contains all pixi objects of the scene.
+    this._pixiStage.addChild( this._pixiContainer );
     this._latestFrameDate = new Date;
     this._variables = new gdjs.VariablesContainer();
     this._runtimeGame = runtimeGame;
     this._lastId = 0;
-    this._initialObjectsData; 
     this._elapsedTime = 0;
     this._timeScale = 1;
     this._timeFromStart = 0;
@@ -39,6 +40,19 @@ gdjs.RuntimeScene = function(runtimeGame, pixiRenderer)
     this.layers = this._layers;
     this._allInstancesList = []; //An array used to create a list of all instance when necessary ( see _constructListOfAllInstances )
     this._instancesRemoved = []; //The instances removed from the scene and waiting to be sent to the cache.
+
+    this.onCanvasResized();
+};
+
+/**
+ * Should be called when the canvas where the scene is rendered has been resized.
+ * See gdjs.RuntimeGame.startStandardGameLoop in particular.
+ *
+ * @method onCanvasResized
+ */
+gdjs.RuntimeScene.prototype.onCanvasResized = function() {
+    this._pixiContainer.scale.x = this._pixiRenderer.width / this._runtimeGame.getDefaultWidth();
+    this._pixiContainer.scale.y = this._pixiRenderer.height / this._runtimeGame.getDefaultHeight();
 };
 
 /**
@@ -58,9 +72,9 @@ gdjs.RuntimeScene.prototype.loadFromScene = function(sceneData) {
 	document.title = sceneData.attr.titre;
 	this._name = sceneData.attr.nom;
 	this._firstFrame = true;
-	this.setBackgroundColor(parseInt(sceneData.attr.r),
-			parseInt(sceneData.attr.v),
-			parseInt(sceneData.attr.b));
+	this.setBackgroundColor(parseInt(sceneData.attr.r, 10),
+			parseInt(sceneData.attr.v, 10),
+			parseInt(sceneData.attr.b, 10));
 
 	//Load layers
     var that = this;
@@ -68,7 +82,7 @@ gdjs.RuntimeScene.prototype.loadFromScene = function(sceneData) {
 		var name = layerData.attr.Name;
 
 		that._layers.put(name, new gdjs.Layer(name, that));
-		console.log("Created layer : \""+name+"\".");
+		//console.log("Created layer : \""+name+"\".");
 	});
 
     //Load variables
@@ -76,7 +90,7 @@ gdjs.RuntimeScene.prototype.loadFromScene = function(sceneData) {
 
 	//Cache the initial shared data of the automatisms
     gdjs.iterateOver(sceneData.AutomatismsSharedDatas, "AutomatismSharedDatas", function(data) {
-		console.log("Initializing shared data for "+data.attr.Name);
+		//console.log("Initializing shared data for "+data.attr.Name);
 		that._initialAutomatismSharedData.put(data.attr.Name, data);
 	});
 
@@ -91,7 +105,7 @@ gdjs.RuntimeScene.prototype.loadFromScene = function(sceneData) {
 		//And cache the constructor for the performance sake:
 		that._objectsCtor.put(objectName, gdjs.getObjectConstructor(objectType));
 
-        console.log("Loaded "+objectName+" in memory ( Global object )");
+        //console.log("Loaded "+objectName+" in memory ( Global object )");
 	});
 	//...then the scene objects
     this._initialObjectsData = sceneData.Objets;
@@ -105,7 +119,7 @@ gdjs.RuntimeScene.prototype.loadFromScene = function(sceneData) {
 		//And cache the constructor for the performance sake:
 		that._objectsCtor.put(objectName, gdjs.getObjectConstructor(objectType));
 
-        console.log("Loaded "+objectName+" in memory");
+        //console.log("Loaded "+objectName+" in memory");
     });
 
     //Create initial instances of objects
@@ -155,7 +169,7 @@ gdjs.RuntimeScene.prototype.createObjectsFrom = function(data, xPos, yPos) {
             newObject.extraInitializationFromInitialInstance(instanceData);
 		}
     });
-}
+};
 
 /**
  * Set the function called each time the runtimeScene is stepped.<br>
@@ -188,7 +202,7 @@ gdjs.RuntimeScene.prototype.renderAndStep = function() {
 
 	this._firstFrame = false;
 
-	return this._requestedScene == "" && !this._gameStopRequested;
+	return this._requestedScene === "" && !this._gameStopRequested;
 };
 
 /** 
@@ -290,7 +304,7 @@ gdjs.RuntimeScene.prototype._updateObjectsPreEvents = function() {
  * @private
  */
 gdjs.RuntimeScene.prototype._updateObjects = function() {
-	this._cacheOrClearRemovedInstances(); 
+	this._cacheOrClearRemovedInstances();
 
 	var allObjectsLists = this._instances.entries();
 	this.updateObjectsForces(allObjectsLists);
@@ -471,6 +485,14 @@ gdjs.RuntimeScene.prototype.getPIXIRenderer = function() {
 };
 
 /**
+ * Get the PIXI DisplayObjectContainer associated to the RuntimeScene.
+ * @method getPIXIContainer
+ */
+gdjs.RuntimeScene.prototype.getPIXIContainer = function() {
+	return this._pixiContainer;
+};
+
+/**
  * Get the runtimeGame associated to the RuntimeScene.
  * @method getGame
  */
@@ -498,38 +520,38 @@ gdjs.RuntimeScene.prototype.getInitialSharedDataForAutomatism = function(name) {
 	}
 
 	return null;
-}
+};
 
 gdjs.RuntimeScene.prototype.getLayer = function(name) {
 	if ( this._layers.containsKey(name) )
 		return this._layers.get(name);
 
 	return this._layers.get("");
-}
+};
 
 gdjs.RuntimeScene.prototype.hasLayer = function(name) {
 	return this._layers.containsKey(name);
-}
+};
 
 gdjs.RuntimeScene.prototype.addTimer = function(name) {
 	this._timers.put(name, new gdjs.Timer(name));
-}
+};
 
 gdjs.RuntimeScene.prototype.hasTimer = function(name) {
 	return this._timers.containsKey(name);
-}
+};
 
 gdjs.RuntimeScene.prototype.getTimer = function(name) {
 	return this._timers.get(name);
-}
+};
 
 gdjs.RuntimeScene.prototype.removeTimer = function(name) {
 	if ( this._timers.containsKey(name) ) this._timers.remove(name);
-}
+};
 
 gdjs.RuntimeScene.prototype.getTimeFromStart = function() {
 	return this._timeFromStart;
-}
+};
 
 /**
  * Get the soundManager of the scene.
@@ -537,7 +559,7 @@ gdjs.RuntimeScene.prototype.getTimeFromStart = function() {
  */
 gdjs.RuntimeScene.prototype.getSoundManager = function() {
 	return this._soundManager;
-}
+};
 
 /**
  * Return true if the scene is rendering its first frame.
@@ -545,7 +567,7 @@ gdjs.RuntimeScene.prototype.getSoundManager = function() {
  */
 gdjs.RuntimeScene.prototype.isFirstFrame = function() {
 	return this._firstFrame;
-}
+};
 
 /**
  * Set the time scale of the scene
@@ -554,7 +576,7 @@ gdjs.RuntimeScene.prototype.isFirstFrame = function() {
  */
 gdjs.RuntimeScene.prototype.setTimeScale = function(timeScale) {
 	if ( timeScale >= 0 ) this._timeScale = timeScale;
-}
+};
 
 /**
  * Get the time scale of the scene
@@ -562,7 +584,7 @@ gdjs.RuntimeScene.prototype.setTimeScale = function(timeScale) {
  */
 gdjs.RuntimeScene.prototype.getTimeScale = function() {
 	return this._timeScale;
-}
+};
 
 /**
  * Return true if the scene requested the game to be stopped.
@@ -570,7 +592,7 @@ gdjs.RuntimeScene.prototype.getTimeScale = function() {
  */
 gdjs.RuntimeScene.prototype.gameStopRequested = function() { 
 	return this._gameStopRequested;
-}
+};
 
 /**
  * When called, the scene will be flagged as requesting the game to be stopped.<br>
@@ -580,7 +602,7 @@ gdjs.RuntimeScene.prototype.gameStopRequested = function() {
  */
 gdjs.RuntimeScene.prototype.requestGameStop = function() {
 	this._gameStopRequested = true;
-}
+};
 
 /**
  * Return the name of the new scene to be launched instead of this one.
@@ -588,7 +610,7 @@ gdjs.RuntimeScene.prototype.requestGameStop = function() {
  */
 gdjs.RuntimeScene.prototype.getRequestedScene = function() { 
 	return this._requestedScene;
-}
+};
 
 /**
  * When called, the scene will be flagged as requesting a new scene to be launched.
@@ -597,5 +619,5 @@ gdjs.RuntimeScene.prototype.getRequestedScene = function() {
  */
 gdjs.RuntimeScene.prototype.requestSceneChange = function(sceneName) {
 	this._requestedScene = sceneName;
-}
+};
 

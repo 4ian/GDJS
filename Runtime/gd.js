@@ -183,7 +183,7 @@ gdjs.registerGlobalCallbacks = function() {
     };
 
     innerRegisterGlobalCallbacks(this, 0);
-    console.log("totalprop:" + totalprop);
+    //console.log("totalprop:" + totalprop);
 };
 
 /**
