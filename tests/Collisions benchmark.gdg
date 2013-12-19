@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <Project>
-    <GDVersion Major="3" Minor="0" Build="11298" Revision="57009" />
+    <GDVersion Major="3" Minor="2" Build="66" Revision="0" />
     <Info winExecutableFilename="" winExecutableIconFile="" linuxExecutableFilename="" macExecutableFilename="" useExternalSourceFiles="false">
         <Nom value="Projet" />
         <Auteur value="" />
@@ -95,7 +95,7 @@
             <Variables />
             <AutomatismsSharedDatas />
             <Positions>
-                <Objet nom="NouvelObjet1" x="108.500000" y="59.000000" plan="1" layer="" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                <Objet nom="NouvelObjet1" x="108.500000" y="59.000000" plan="1" layer="" angle="0.000000" personalizedSize="false" width="278.000000" height="243.000000" locked="false">
                     <floatInfos />
                     <stringInfos />
                     <InitialVariables />
@@ -129,7 +129,7 @@
                     <Events>
                         <Event disabled="false" folded="false">
                             <Type value="BuiltinCommonInstructions::Repeat" />
-                            <RepeatExpression value="100" />
+                            <RepeatExpression value="300" />
                             <Conditions />
                             <Actions>
                                 <Action>
@@ -170,7 +170,7 @@
                     <Type value="BuiltinCommonInstructions::Standard" />
                     <Conditions>
                         <Condition>
-                            <Type value="Collision" Contraire="false" />
+                            <Type value="CollisionNP" Contraire="false" />
                             <Parametre value="NouvelObjet1" />
                             <Parametre value="NouvelObjet" />
                             <Parametre value="" />

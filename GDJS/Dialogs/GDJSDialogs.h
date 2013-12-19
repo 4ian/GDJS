@@ -23,8 +23,8 @@
 #include <wx/choicebk.h>
 #include <wx/panel.h>
 #include <wx/imaglist.h>
-#include <wx/checkbox.h>
 #include <wx/statbox.h>
+#include <wx/checkbox.h>
 
 class BaseUploadOnlineDialog : public wxDialog
 {

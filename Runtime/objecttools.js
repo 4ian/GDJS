@@ -14,8 +14,23 @@
 gdjs.evtTools.object = gdjs.evtTools.object || {};
 
 /**
- * Do a test on two tables of objects so as to remove the objects for which the test is false.
+ * Do a test on two tables of objects so as to pick only the pair of objects for which the test is true.
  * If inverted == true, only the objects of the first table are filtered.
+ *
+ * Note that the func method is not called stricly for each pair: When considering a pair of objects, if 
+ * these objects have already been marked as picked, the func method won't be called again.
+ *
+ * Cost (Worst case, func being always false):
+ *    Cost(Setting property 'picked' of NbObjList1+NbObjList2 objects to false)
+ *  + Cost(functor)*NbObjList1*NbObjList2
+ *  + Cost(Testing NbObjList1+NbObjList2 booleans)
+ *  + Cost(Removing NbObjList1+NbObjList2 objects from all the lists)
+ *
+ * Cost (Best case, func being always true):
+ *    Cost(Setting property 'picked' of NbObjList1+NbObjList2 objects to false)
+ *  + Cost(functor)*(NbObjList1+NbObjList2)
+ *  + Cost(Testing NbObjList1+NbObjList2 booleans)
+ *
  * @method TwoListsTest
  */
 gdjs.evtTools.object.TwoListsTest = function(func, objectsLists1, objectsLists2, inverted, extraParam) {
@@ -49,8 +64,9 @@ gdjs.evtTools.object.TwoListsTest = function(func, objectsLists1, objectsLists2,
                 var arr2 = objects2Values[j];
 
                 for(var l = 0, lenl = arr2.length;l<lenl;++l) {
-                    
-                    if ( arr1[k].id !== arr2[l].id && func(arr1[k], arr2[l], extraParam) ) {
+                    if (arr1[k].pick && arr2[l].pick) continue; //Avoid unnecessary costly call to func.
+
+                    if (arr1[k].id !== arr2[l].id && func(arr1[k], arr2[l], extraParam)) {
                         if ( !inverted ) {
                             isTrue = true;
 
@@ -64,7 +80,7 @@ gdjs.evtTools.object.TwoListsTest = function(func, objectsLists1, objectsLists2,
                 }
             }
             
-            if ( !atLeastOneObject && inverted ) { 
+            if ( !atLeastOneObject && inverted ) {
                 //For example, the object is not overlapping any other object.
                 isTrue = true;
                 arr1[k].pick = true;
@@ -262,7 +278,8 @@ gdjs.evtTools.object.pickRandomObject = function(runtimeScene, objectsLists) {
 
     //Pick only one object
     if ( objects.length !== 0 ) {
-        var id = Math.round(Math.random()*(objects.length-1));
+        var id = Math.floor(Math.random()*objects.length);
+        if (id >= objects.length) id = objects.length-1; //Should never happen.
         var theChosenOne = objects[id];
 
         objectsLists.get(theChosenOne.getName()).push(theChosenOne);

@@ -136,6 +136,7 @@ BaseProjectExportDialog::BaseProjectExportDialog(wxWindow* parent, wxWindowID id
     flexGridSizer55->SetFlexibleDirection( wxBOTH );
     flexGridSizer55->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
     flexGridSizer55->AddGrowableCol(0);
+    flexGridSizer55->AddGrowableRow(1);
     m_panel63->SetSizer(flexGridSizer55);
     
     gdsharelogoPanel = new wxPanel(m_panel63, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL|wxBORDER_SIMPLE);
@@ -154,11 +155,22 @@ BaseProjectExportDialog::BaseProjectExportDialog(wxWindow* parent, wxWindowID id
     
     m_staticText65 = new wxStaticText(m_panel63, wxID_ANY, _("GameDevShare.com is a free online gaming platform for\ngames created with Game Develop."), wxDefaultPosition, wxSize(-1,-1), wxALIGN_CENTRE);
     
-    flexGridSizer55->Add(m_staticText65, 0, wxALL|wxALIGN_CENTER, 10);
+    flexGridSizer55->Add(m_staticText65, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_TOP, 10);
+    
+    wxStaticBoxSizer* staticBoxSizer110 = new wxStaticBoxSizer( new wxStaticBox(m_panel63, wxID_ANY, _("Note")), wxVERTICAL);
+    
+    flexGridSizer55->Add(staticBoxSizer110, 1, wxALL|wxEXPAND|wxALIGN_BOTTOM, 5);
+    
+    wxFlexGridSizer* flexGridSizer116 = new wxFlexGridSizer(  0, 2, 0, 0);
+    flexGridSizer116->SetFlexibleDirection( wxBOTH );
+    flexGridSizer116->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+    flexGridSizer116->AddGrowableCol(0);
+    
+    staticBoxSizer110->Add(flexGridSizer116, 1, wxALL|wxEXPAND, 0);
     
     m_staticText67 = new wxStaticText(m_panel63, wxID_ANY, _("Just click on the \"Export\" button and Game Develop will\npackage your game in a single zip file. Then you'll be\nasked for some information (Name of your game, your\nemail address) and the game will be uploaded on the website."), wxDefaultPosition, wxSize(-1,-1), 0);
     
-    flexGridSizer55->Add(m_staticText67, 0, wxALL|wxALIGN_CENTER, 10);
+    flexGridSizer116->Add(m_staticText67, 0, wxALL|wxEXPAND|wxALIGN_CENTER, 5);
     
     m_panel61 = new wxPanel(exportChoice, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL);
     exportChoice->AddPage(m_panel61, _("Export to a website"), false);
@@ -247,6 +259,7 @@ BaseProjectExportDialog::BaseProjectExportDialog(wxWindow* parent, wxWindowID id
     flexGridSizer551->SetFlexibleDirection( wxBOTH );
     flexGridSizer551->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
     flexGridSizer551->AddGrowableCol(0);
+    flexGridSizer551->AddGrowableRow(1);
     m_panel71->SetSizer(flexGridSizer551);
     
     cocoonjslogoPanel2 = new wxPanel(m_panel71, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL|wxBORDER_SIMPLE);
@@ -265,11 +278,22 @@ BaseProjectExportDialog::BaseProjectExportDialog(wxWindow* parent, wxWindowID id
     
     m_staticText655 = new wxStaticText(m_panel71, wxID_ANY, _("CocoonJS is a technology that helps HTML5 developers\npublish their web-based games and apps in the most\nimportant mobile and web stores."), wxDefaultPosition, wxSize(-1,-1), wxALIGN_CENTRE);
     
-    flexGridSizer551->Add(m_staticText655, 0, wxALL|wxALIGN_CENTER, 10);
+    flexGridSizer551->Add(m_staticText655, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_TOP, 10);
+    
+    wxStaticBoxSizer* staticBoxSizer112 = new wxStaticBoxSizer( new wxStaticBox(m_panel71, wxID_ANY, _("Note")), wxVERTICAL);
+    
+    flexGridSizer551->Add(staticBoxSizer112, 1, wxALL|wxEXPAND, 5);
+    
+    wxFlexGridSizer* flexGridSizer114 = new wxFlexGridSizer(  0, 2, 0, 0);
+    flexGridSizer114->SetFlexibleDirection( wxBOTH );
+    flexGridSizer114->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+    flexGridSizer114->AddGrowableCol(0);
+    
+    staticBoxSizer112->Add(flexGridSizer114, 1, wxALL|wxEXPAND, 0);
     
     m_staticText676 = new wxStaticText(m_panel71, wxID_ANY, _("Just click on the \"Export\" button and Game Develop will\npackage your game in a single zip file.\nYou'll then be able to upload this file on the cloud compiler\nat cloud.ludei.com, which will allows you to compile\nthe game into an iOS/Android app."), wxDefaultPosition, wxSize(-1,-1), wxALIGN_LEFT);
     
-    flexGridSizer551->Add(m_staticText676, 0, wxALL|wxALIGN_CENTER, 10);
+    flexGridSizer114->Add(m_staticText676, 0, wxALL|wxEXPAND|wxALIGN_CENTER|wxALIGN_LEFT, 5);
     
     wxFlexGridSizer* flexGridSizer50 = new wxFlexGridSizer(  0, 3, 0, 0);
     flexGridSizer50->SetFlexibleDirection( wxBOTH );

@@ -354,10 +354,10 @@ gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document) {
         pos[1] *= game.getDefaultHeight()/game._renderer.view.height;
 
         game.onMouseMove(pos[0], pos[1]);
-    }; 
+    };
     this._renderer.view.onmousedown = function(e){
         game.onMouseButtonPressed(e.button === 2 ? 1 : 0);
-        if (window.focus) window.focus();
+        if (window.focus !== undefined) window.focus();
         return false;
     };
     this._renderer.view.onmouseup = function(e){
@@ -371,7 +371,7 @@ gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document) {
         return false;
     };
     window.addEventListener('click', function(e) {
-        if (window.focus) window.focus();
+        if (window.focus !== undefined) window.focus();
         e.preventDefault();
         return false;
     }, false);
