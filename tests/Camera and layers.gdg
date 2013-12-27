@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <Project>
-    <GDVersion Major="3" Minor="2" Build="65" Revision="0" />
+    <GDVersion Major="3" Minor="2" Build="67" Revision="0" />
     <Info winExecutableFilename="" winExecutableIconFile="" linuxExecutableFilename="" macExecutableFilename="" useExternalSourceFiles="false">
         <Nom value="Basic breakout" />
         <Auteur value="" />
@@ -200,6 +200,23 @@
                     <Font value="" />
                     <CharacterSize value="20" />
                     <Color r="255" g="255" b="255" />
+                </Objet>
+                <Objet nom="balle2" type="Sprite">
+                    <Variables />
+                    <Animations>
+                        <Animation typeNormal="false">
+                            <Direction boucle="false" tempsEntre="1.000000">
+                                <Sprites>
+                                    <Sprite image="balle.png">
+                                        <Points />
+                                        <PointOrigine nom="origine" X="0.000000" Y="0.000000" />
+                                        <PointCentre nom="centre" X="3.000000" Y="3.000000" automatic="true" />
+                                        <CustomCollisionMask custom="false" />
+                                    </Sprite>
+                                </Sprites>
+                            </Direction>
+                        </Animation>
+                    </Animations>
                 </Objet>
             </Objets>
             <Layers>
@@ -411,13 +428,29 @@
                     <stringInfos />
                     <InitialVariables />
                 </Objet>
+                <Objet nom="balle2" x="707.615356" y="196.269272" plan="1" layer="Static" angle="0.000000" personalizedSize="false" width="0.000000" height="0.000000" locked="false">
+                    <floatInfos />
+                    <stringInfos />
+                    <InitialVariables />
+                </Objet>
             </Positions>
             <Events>
                 <Event disabled="false" folded="false">
                     <Type value="BuiltinCommonInstructions::Comment" />
                     <Couleur r="255.000000" v="230.000000" b="109.000000" textR="0.000000" textG="0.000000" textB="0.000000" />
-                    <Com1 value='Bricks should be rotated, and barre should be flashing.&#x0A;A layer is centered on the &quot;balle&quot; Object.' />
+                    <Com1 value='Bricks should be rotated, and barre should be flashing.&#x0A;A layer is centered on the &quot;balle&quot; Object.&#x0A;balle2 is following the mouse' />
                     <Com2 value="" />
+                </Event>
+                <Event disabled="false" folded="false">
+                    <Type value="BuiltinCommonInstructions::Standard" />
+                    <Conditions />
+                    <Actions>
+                        <Action>
+                            <Type value="SetFullScreen" />
+                            <Parametre value="" />
+                            <Parametre value="oui" />
+                        </Action>
+                    </Actions>
                 </Event>
                 <Event disabled="false" folded="false">
                     <Type value="BuiltinCommonInstructions::Standard" />
@@ -427,7 +460,15 @@
                             <Type value="TextObject::String" />
                             <Parametre value="NouvelObjet" />
                             <Parametre value="=" />
-                            <Parametre value='&quot;Mouse X:&quot;+ToString(MouseX(&quot;Static&quot;))+NewLine()+&quot;/Y:&quot;+ToString(MouseY(&quot;Static&quot;))' />
+                            <Parametre value='&quot;Mouse X:&quot;+ToString(MouseX(&quot;Static&quot;,0))+NewLine()+&quot;/Y:&quot;+ToString(MouseY(&quot;Static&quot;,0))' />
+                        </Action>
+                        <Action>
+                            <Type value="MettreXY" />
+                            <Parametre value="balle2" />
+                            <Parametre value="=" />
+                            <Parametre value='MouseX(&quot;Static&quot;)' />
+                            <Parametre value="=" />
+                            <Parametre value='MouseY(&quot;Static&quot;)' />
                         </Action>
                     </Actions>
                 </Event>

@@ -42,6 +42,11 @@ gdjs.RuntimeGame = function(data, spec)
     this._defaultHeight = parseInt(gdjs.projectData.Project.Info.WindowH.attr.value, 10);
     this._currentWidth = parseInt(gdjs.projectData.Project.Info.WindowW.attr.value, 10); //Current size of the canvas
     this._currentHeight = parseInt(gdjs.projectData.Project.Info.WindowH.attr.value, 10);
+    
+    if ( navigator.isCocoonJS && !this._forceFullscreen ) { 
+        this._forceFullscreen = true;
+        console.log("Forcing fullscreen for CocoonJS.");
+    }
 
     //Inputs :
     this._pressedKeys = new Hashtable();
@@ -387,22 +392,35 @@ gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document) {
     window.addEventListener('touchmove', function(e){
         e.preventDefault();
         if ( e.touches && e.touches.length > 0 ) {
-            if (e.touches[0].pageX)
-                game.onMouseMove(e.touches[0].pageX-game._canvasArea.offsetLeft, e.touches[0].pageY-game._canvasArea.offsetTop);
-            else
-                game.onMouseMove(e.touches[0].clientX + document.body.scrollLeft + document.documentElement.scrollLeft-game._canvasArea.offsetLeft,
-                                 e.touches[0].clientY + document.body.scrollTop + document.documentElement.scrollTop-game._canvasArea.offsetTop);
+            var pos = [0,0];
+            if (e.touches[0].pageX) {
+                pos[0] = e.touches[0].pageX-game._canvasArea.offsetLeft;
+                pos[1] = e.touches[0].pageY-game._canvasArea.offsetTop;
+            }
+            else {
+                pos[0] = e.touches[0].clientX + document.body.scrollLeft + document.documentElement.scrollLeft-game._canvasArea.offsetLeft;
+                pos[1] = e.touches[0].clientY + document.body.scrollTop + document.documentElement.scrollTop-game._canvasArea.offsetTop;
+            }
+
+            //Handle the fact that the game is stretched to fill the canvas.
+            pos[0] *= game.getDefaultWidth()/game._renderer.view.width;
+            pos[1] *= game.getDefaultHeight()/game._renderer.view.height;
+
+            game.onMouseMove(pos[0], pos[1]);
         }
     });
     window.addEventListener('touchstart', function(e){
         e.preventDefault();
         if ( e.touches && e.touches.length > 0 ) {
+            var pos = [0,0];
             if (e.touches[0].pageX) {
                 if ( isNaN(game._canvasArea.offsetLeft) ) {
                     game._canvasArea.offsetLeft = 0;
                     game._canvasArea.offsetTop = 0;
                 }
-                game.onMouseMove(e.touches[0].pageX-game._canvasArea.offsetLeft, e.touches[0].pageY-game._canvasArea.offsetTop);
+
+                pos[0] = e.touches[0].pageX-game._canvasArea.offsetLeft;
+                pos[1] = e.touches[0].pageY-game._canvasArea.offsetTop;
             }
             else {
                 if ( isNaN(document.body.scrollLeft) ) {
@@ -420,9 +438,15 @@ gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document) {
                     game._canvasArea.offsetLeft = 0;
                     game._canvasArea.offsetTop = 0;
                 }
-                game.onMouseMove(e.touches[0].clientX + document.body.scrollLeft + document.documentElement.scrollLeft-game._canvasArea.offsetLeft,
-                                 e.touches[0].clientY + document.body.scrollTop + document.documentElement.scrollTop-game._canvasArea.offsetTop);
+                pos[0] = e.touches[0].clientX + document.body.scrollLeft + document.documentElement.scrollLeft-game._canvasArea.offsetLeft;
+                pos[1] = e.touches[0].clientY + document.body.scrollTop + document.documentElement.scrollTop-game._canvasArea.offsetTop;
             }
+
+            //Handle the fact that the game is stretched to fill the canvas.
+            pos[0] *= game.getDefaultWidth()/game._renderer.view.width;
+            pos[1] *= game.getDefaultHeight()/game._renderer.view.height;
+
+            game.onMouseMove(pos[0], pos[1]);
         }
         game.onMouseButtonPressed(0);
         return false;
@@ -430,11 +454,21 @@ gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document) {
     window.addEventListener('touchend', function(e){
         e.preventDefault();
         if ( e.touches && e.touches.length > 0 ) {
-            if (e.touches[0].pageX)
-                game.onMouseMove(e.touches[0].pageX-game._canvasArea.offsetLeft, e.touches[0].pageY-game._canvasArea.offsetTop);
-            else
-                game.onMouseMove(e.touches[0].clientX + document.body.scrollLeft + document.documentElement.scrollLeft-game._canvasArea.offsetLeft,
-                                 e.touches[0].clientY + document.body.scrollTop + document.documentElement.scrollTop-game._canvasArea.offsetTop);
+            var pos = [0,0];
+            if (e.touches[0].pageX) {
+                pos[0] = e.touches[0].pageX-game._canvasArea.offsetLeft;
+                pos[1] = e.touches[0].pageY-game._canvasArea.offsetTop;
+            }
+            else {
+                pos[0] = e.touches[0].clientX + document.body.scrollLeft + document.documentElement.scrollLeft-game._canvasArea.offsetLeft;
+                pos[1] = e.touches[0].clientY + document.body.scrollTop + document.documentElement.scrollTop-game._canvasArea.offsetTop;
+            }
+
+            //Handle the fact that the game is stretched to fill the canvas.
+            pos[0] *= game.getDefaultWidth()/game._renderer.view.width;
+            pos[1] *= game.getDefaultHeight()/game._renderer.view.height;
+
+            game.onMouseMove(pos[0], pos[1]);
         }
         game.onMouseButtonReleased(0);
         return false;
@@ -613,12 +647,12 @@ gdjs.RuntimeGame.prototype.startStandardGameLoop = function() {
                 postGameScreen();
             else {
                 var nextSceneName = currentScene.getRequestedScene();
-                currentScene = new gdjs.RuntimeScene(game, this._renderer);
+                currentScene = new gdjs.RuntimeScene(game, game._renderer);
                 currentScene.loadFromScene(game.getSceneData(nextSceneName));
                 requestAnimFrame( gameLoop );
             }
         }
-        else { 
+        else {
             requestAnimFrame( gameLoop );
         }
     }
