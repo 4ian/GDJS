@@ -14,7 +14,7 @@
  *
  * @namespace gdjs
  * @class RuntimeObject
- * @constructor 
+ * @constructor
  * @param runtimeScene The RuntimeScene owning the object.
  * @param objectData The data defining the object
  */
@@ -31,49 +31,50 @@ gdjs.RuntimeObject = function(runtimeScene, objectData)
     this.layer = "";
     this.livingOnScene = true;
     this.id = runtimeScene.createNewUniqueId();
-    
+
     //Hit boxes:
-    if ( this.hitBoxes == undefined ) { //TODO: To be adapted for custom hit boxes.
-        this.hitBoxes = [];
-        this.hitBoxes.push(gdjs.Polygon.createRectangle(0,0));
+    if ( this._defaultHitBoxes === undefined ) {
+        this._defaultHitBoxes = [];
+        this._defaultHitBoxes.push(gdjs.Polygon.createRectangle(0,0));
     }
+    this.hitBoxes = this._defaultHitBoxes;
     this.hitBoxesDirty = true;
-    if ( this.aabb == undefined )
-        this.aabb = { min:[0,0], max:[0,0] }; 
+    if ( this.aabb === undefined )
+        this.aabb = { min:[0,0], max:[0,0] };
     else {
         this.aabb.min[0] = 0; this.aabb.min[1] = 0;
         this.aabb.max[0] = 0; this.aabb.max[1] = 0;
     }
-    
+
     //Variables:
     if ( !this._variables )
         this._variables = new gdjs.VariablesContainer(objectData ? objectData.Variables : undefined);
     else
         gdjs.VariablesContainer.call(this._variables, objectData ? objectData.Variables : undefined);
-        
+
     //Forces:
-    if ( this._forces == undefined ) 
+    if ( this._forces === undefined )
         this._forces = [];
-    else 
+    else
         this.clearForces();
-        
+
     //A force returned by getAverageForce method:
-    if (this._averageForce == undefined) this._averageForce = new gdjs.Force(0,0,false); 
-        
+    if (this._averageForce == undefined) this._averageForce = new gdjs.Force(0,0,false);
+
     //Automatisms:
-    if (this._automatisms == undefined) 
+    if (this._automatisms == undefined)
         this._automatisms = []; //Contains the automatisms of the object
-    
-    if (this._automatismsTable == undefined) 
+
+    if (this._automatismsTable == undefined)
         this._automatismsTable = new Hashtable(); //Also contains the automatisms: Used when an automatism is accessed by its name ( see getAutomatism ).
     else
         this._automatismsTable.clear();
-    
+
     var that = this;
     var i = 0;
     gdjs.iterateOver(objectData, "Automatism", function(autoData) {
         var ctor = gdjs.getAutomatismConstructor(autoData.attr.Type);
-        
+
         //Try to reuse already existing automatisms.
         if ( i < that._automatisms.length ) {
             if ( that._automatisms[i] instanceof ctor )
@@ -82,16 +83,16 @@ gdjs.RuntimeObject = function(runtimeScene, objectData)
                 that._automatisms[i] = new ctor(runtimeScene, autoData, that);
         }
         else that._automatisms.push(new ctor(runtimeScene, autoData, that));
-        
+
         that._automatismsTable.put(autoData.attr.Name, that._automatisms[i]);
-        
+
         i++;
     });
     this._automatisms.length = i;//Make sure to delete already existing automatisms which are not used anymore.
 }
 
 gdjs.RuntimeObject.forcesGarbage = []; //Global container for unused forces, avoiding recreating forces each tick.
-    
+
 //Common members functions related to the object and its runtimeScene :
 
 /**
@@ -189,8 +190,10 @@ gdjs.RuntimeObject.prototype.setPosition = function(x,y) {
  * @param x {Number} The new X position
  */
 gdjs.RuntimeObject.prototype.setX = function(x) {
+    if ( x === this.x ) return;
+
     this.x = x;
-    hitBoxesDirty = true;
+    this.hitBoxesDirty = true;
 }
 
 /**
@@ -210,8 +213,10 @@ gdjs.RuntimeObject.prototype.getX = function() {
  * @param y {Number} The new Y position
  */
 gdjs.RuntimeObject.prototype.setY = function(y) {
+    if ( y === this.y ) return;
+
     this.y = y;
-    hitBoxesDirty = true;
+    this.hitBoxesDirty = true;
 }
 
 /**
@@ -278,7 +283,7 @@ gdjs.RuntimeObject.prototype.getZOrder = function() {
  */
 gdjs.RuntimeObject.prototype.setAngle = function(angle) {
     this.angle = angle;
-    hitBoxesDirty = true;
+    this.hitBoxesDirty = true;
 }
 
 /**
@@ -471,7 +476,7 @@ gdjs.RuntimeObject.prototype.getCenterY = function() {
     return this.getHeight()/2;
 };
 
-//Forces : 
+//Forces :
 
 /**
  * Get a force from the garbage, or create a new force is garbage is empty.<br>
@@ -495,7 +500,7 @@ gdjs.RuntimeObject.prototype._getRecycledForce = function(x, y, isTemporary) {
     }
 };
 
-/** 
+/**
  * Add a force to the object to make it moving.
  * @method addForce
  * @param x {Number} The x coordinates of the force
@@ -506,7 +511,7 @@ gdjs.RuntimeObject.prototype.addForce = function(x,y, isPermanent) {
     this._forces.push(this._getRecycledForce(x, y, !isPermanent));
 };
 
-/** 
+/**
  * Add a force using polar coordinates.
  * @method addPolarForce
  * @param angle {Number} The angle of the force
@@ -520,7 +525,7 @@ gdjs.RuntimeObject.prototype.addPolarForce = function(angle, len, isPermanent) {
     this._forces.push(this._getRecycledForce(forceX, forceY, !isPermanent));
 };
 
-/** 
+/**
  * Add a force oriented toward a position
  * @method addForceTowardPosition
  * @param x {Number} The target x position
@@ -530,15 +535,15 @@ gdjs.RuntimeObject.prototype.addPolarForce = function(angle, len, isPermanent) {
  */
 gdjs.RuntimeObject.prototype.addForceTowardPosition = function(x,y, len, isPermanent) {
 
-    var angle = Math.atan2(y - (this.getDrawableY()+this.getCenterY()), 
+    var angle = Math.atan2(y - (this.getDrawableY()+this.getCenterY()),
                            x - (this.getDrawableX()+this.getCenterX()));
-    
+
     var forceX = Math.cos(angle)*len;
     var forceY = Math.sin(angle)*len;
     this._forces.push(this._getRecycledForce(forceX, forceY, !isPermanent));
 };
 
-/** 
+/**
  * Add a force oriented toward another object.<br>
  * ( Shortcut to addForceTowardPosition )
  * @method addForceTowardObject
@@ -549,12 +554,12 @@ gdjs.RuntimeObject.prototype.addForceTowardPosition = function(x,y, len, isPerma
 gdjs.RuntimeObject.prototype.addForceTowardObject = function(obj, len, isPermanent) {
     if ( obj == null ) return;
 
-    this.addForceTowardPosition(obj.getDrawableX()+obj.getCenterX(), 
+    this.addForceTowardPosition(obj.getDrawableX()+obj.getCenterX(),
                                 obj.getDrawableY()+obj.getCenterY(),
                                 len, isPermanent);
 };
 
-/** 
+/**
  * Deletes all forces applied on the object
  * @method clearForces
  */
@@ -563,7 +568,7 @@ gdjs.RuntimeObject.prototype.clearForces = function() {
     this._forces.length = 0;
 };
 
-/** 
+/**
  * Return true if no forces are applied on the object.
  * @method hasNoForces
  * @return {Boolean} true if no forces are applied on the object.
@@ -579,7 +584,7 @@ gdjs.RuntimeObject.prototype.hasNoForces = function() {
  */
 gdjs.RuntimeObject.prototype.updateForces = function() {
     for(var i = 0;i<this._forces.length;) {
-    
+
         if ( this._forces[i].isTemporary() ) {
             gdjs.RuntimeObject.forcesGarbage.push(this._forces[i]);
             this._forces.remove(i);
@@ -603,27 +608,27 @@ gdjs.RuntimeObject.prototype.getAverageForce = function() {
         averageX += this._forces[i].getX();
         averageY += this._forces[i].getY();
     }
-    
+
     this._averageForce.setX(averageX);
     this._averageForce.setY(averageY);
     return this._averageForce;
 };
 
-/** 
+/**
  * Return true if the average angle of the forces applied on the object
  * is in a given range.
  *
  * @method averageForceAngleIs
  * @param angle {Number} The angle to be tested.
- * @param toleranceInDegrees {Number} The length of the range : 
+ * @param toleranceInDegrees {Number} The length of the range :
  * @return {Boolean} true if the difference between the average angle of the forces
  * and the angle parameter is inferior to toleranceInDegrees parameter.
  */
 gdjs.RuntimeObject.prototype.averageForceAngleIs = function(angle, toleranceInDegrees) {
-    
+
     var averageAngle = this.getAverageForce().getAngle();
     if ( averageAngle < 0 ) averageAngle += 360;
-    
+
     return Math.abs(angle-averageAngle) < toleranceInDegrees/2;
 };
 
@@ -649,12 +654,22 @@ gdjs.RuntimeObject.prototype.getHitBoxes = function() {
     }
     return this.hitBoxes;
 };
+
 /**
  * Update the hit boxes for the object.<br>
  * The default implementation set a basic bouding box based on the result of getWidth and
- * getHeight. 
+ * getHeight.
+ *
+ * You should not call this function by yourself, it is called when necessary by getHitBoxes method.
+ * However, you can redefine it if your object need custom hit boxes.
+ *
+ * @method updateHitBoxes
  */
 gdjs.RuntimeObject.prototype.updateHitBoxes = function() {
+
+    //Ensure we're using the default hitbox (a single rectangle)
+    this.hitBoxes = this._defaultHitBoxes;
+
     var width = this.getWidth();
     var height = this.getHeight();
     this.hitBoxes[0].vertices[0][0] =-width/2.0;
@@ -665,7 +680,7 @@ gdjs.RuntimeObject.prototype.updateHitBoxes = function() {
     this.hitBoxes[0].vertices[2][1] =+height/2.0;
     this.hitBoxes[0].vertices[3][0] =-width/2.0;
     this.hitBoxes[0].vertices[3][1] =+height/2.0;
-    
+
     this.hitBoxes[0].rotate(this.getAngle()/180*3.14159);
     this.hitBoxes[0].move(this.getX()+this.getCenterX(), this.getY()+this.getCenterY());
 };
@@ -677,7 +692,7 @@ gdjs.RuntimeObject.prototype.getAABB = function() {
         this.updateAABB();
         this.hitBoxesDirty = false;
     }
-    
+
     return this.aabb;
 };
 
@@ -710,7 +725,7 @@ gdjs.RuntimeObject.prototype.stepAutomatismsPostEvents = function(runtimeScene) 
     }
 };
 
-/** 
+/**
  * Get an automatism from its name.<br>
  * Be careful, the automatism must exists, no check is made on the name.
  * @method getAutomatism
@@ -720,7 +735,7 @@ gdjs.RuntimeObject.prototype.getAutomatism = function(name) {
     return this._automatismsTable.get(name);
 };
 
-/** 
+/**
  * Check if an automatism is used by the object.
  *
  * @method hasAutomatism
@@ -730,7 +745,7 @@ gdjs.RuntimeObject.prototype.hasAutomatism = function(name) {
     return this._automatismsTable.containsKey(name);
 };
 
-/** 
+/**
  * De/activate an automatism of the object.<br>
  *
  * @method activateAutomatism
@@ -743,7 +758,7 @@ gdjs.RuntimeObject.prototype.activateAutomatism = function(name, enable) {
     }
 };
 
-/** 
+/**
  * De/activate an automatism of the object.<br>
  *
  * @method activateAutomatism
@@ -754,7 +769,7 @@ gdjs.RuntimeObject.prototype.automatismActivated = function(name, enable) {
     if ( this._automatismsTable.containsKey(name) ) {
         this._automatismsTable.get(name).activated();
     }
-    
+
     return false;
 };
 
@@ -766,22 +781,22 @@ gdjs.RuntimeObject.prototype.automatismActivated = function(name, enable) {
  * @param objectsLists Tables of objects
  */
 gdjs.RuntimeObject.prototype.separateFromObjects = function(objectsLists) {
-        
+
     //Prepare the list of objects to iterate over.
     var objects = [];
     var lists = objectsLists.values();
     for(var i = 0, len = lists.length;i<len;++i) {
         objects.push.apply(objects, lists[i]);
     }
-    
+
     var xMove = 0; var yMove = 0;
     var hitBoxes = this.getHitBoxes();
-    
+
     //Check if their is a collision with each object
     for(var i = 0, len = objects.length;i<len;++i) {
         if ( objects[i].id != this.id ) {
             var otherHitBoxes = objects[i].getHitBoxes();
-            
+
             for(var k = 0, lenk = hitBoxes.length;k<lenk;++k) {
                 for(var l = 0, lenl = otherHitBoxes.length;l<lenl;++l) {
                     var result = gdjs.Polygon.collisionTest(hitBoxes[k], otherHitBoxes[l]);
@@ -793,7 +808,7 @@ gdjs.RuntimeObject.prototype.separateFromObjects = function(objectsLists) {
             }
         }
     }
-    
+
     //Move according to the results returned by the collision algorithm.
     this.setPosition(this.getX()+xMove, this.getY()+yMove);
 };
@@ -804,10 +819,10 @@ gdjs.RuntimeObject.prototype.getDistanceFrom = function(otherObject) {
 
 gdjs.RuntimeObject.prototype.getSqDistanceFrom = function(otherObject) {
     if ( otherObject == null ) return 0;
-    
+
     var x = this.getX()+this.getCenterX() - (otherObject.getX()+otherObject.getCenterX());
     var y = this.getY()+this.getCenterY() - (otherObject.getY()+otherObject.getCenterY());
-    
+
     return x*x+y*y;
 }
 
@@ -848,14 +863,14 @@ gdjs.RuntimeObject.prototype.putAroundObject = function(obj,distance,angleInDegr
  * @param objectsLists Tables of objects
  */
 gdjs.RuntimeObject.prototype.separateObjectsWithoutForces = function(objectsLists) {
-        
+
     //Prepare the list of objects to iterate over.
     var objects = [];
     var lists = objectsLists.values();
     for(var i = 0, len = lists.length;i<len;++i) {
         objects.push.apply(objects, lists[i]);
     }
-    
+
     for(var i = 0, len = objects.length;i<len;++i) {
         if ( objects[i].id != this.id ) {
             if ( this.getDrawableX() < objects[i].getDrawableX() ){
@@ -881,42 +896,42 @@ gdjs.RuntimeObject.prototype.separateObjectsWithoutForces = function(objectsList
  * @param objectsLists Tables of objects
  */
 gdjs.RuntimeObject.prototype.separateObjectsWithForces = function(objectsLists, len) {
-        
+
     if ( len == undefined ) len = 10;
-        
+
     //Prepare the list of objects to iterate over.
     var objects = [];
     var lists = objectsLists.values();
     for(var i = 0, len = lists.length;i<len;++i) {
         objects.push.apply(objects, lists[i]);
     }
-    
+
     for(var i = 0, len = objects.length;i<len;++i) {
         if ( objects[i].id != this.id ) {
             if ( this.getDrawableX()+this.getCenterX() < objects[i].getDrawableX()+objects[i].getCenterX() )
             {
-                var av = this.hasNoForces() ? 0 : this.getAverageForce().getX(); 
+                var av = this.hasNoForces() ? 0 : this.getAverageForce().getX();
                 this.addForce( -av - 10, 0, false );
             }
             else
             {
-                var av = this.hasNoForces() ? 0 : this.getAverageForce().getX(); 
+                var av = this.hasNoForces() ? 0 : this.getAverageForce().getX();
                 this.addForce( -av + 10, 0, false );
             }
 
             if ( this.getDrawableY()+this.getCenterY() < objects[i].getDrawableY()+objects[i].getCenterY() )
             {
-                var av = this.hasNoForces() ? 0 : this.getAverageForce().getY(); 
+                var av = this.hasNoForces() ? 0 : this.getAverageForce().getY();
                 this.addForce( 0, -av - 10, false );
             }
             else
             {
-                var av = this.hasNoForces() ? 0 : this.getAverageForce().getY(); 
+                var av = this.hasNoForces() ? 0 : this.getAverageForce().getY();
                 this.addForce( 0, -av + 10, false );
             }
         }
     }
-    
+
     /*
     for(var i = 0, len = objects.length;i<len;++i) {
         if ( objects[i].id != this.id ) {
@@ -944,14 +959,14 @@ gdjs.RuntimeObject.collisionTest = function(obj1, obj2) {
     var y = obj1.getDrawableY()+obj1.getCenterY()-(obj2.getDrawableY()+obj2.getCenterY());
     var obj1BoundingRadius = Math.sqrt(o1w*o1w+o1h*o1h)/2.0;
     var obj2BoundingRadius = Math.sqrt(o2w*o2w+o2h*o2h)/2.0;
-    
+
     if ( Math.sqrt(x*x+y*y) > obj1BoundingRadius + obj2BoundingRadius )
         return false;
-        
+
     //Or if in circle are colliding
     var obj1MinEdge = Math.min(o1w, o1h)/2.0;
     var obj2MinEdge = Math.min(o2w, o2h)/2.0;
-        
+
     if ( x*x+y*y < obj1MinEdge*obj1MinEdge+2*obj1MinEdge*obj2MinEdge+obj2MinEdge*obj2MinEdge )
         return true;
 
@@ -972,12 +987,12 @@ gdjs.RuntimeObject.collisionTest = function(obj1, obj2) {
 /**
  * Check the distance between two objects.
  * @method distanceTest
- * @static 
+ * @static
  */
 gdjs.RuntimeObject.distanceTest = function(obj1, obj2, distance) {
     var x = obj1.getDrawableX()+obj1.getCenterX()-(obj2.getDrawableX()+obj2.getCenterX());
     var y = obj1.getDrawableY()+obj1.getCenterY()-(obj2.getDrawableY()+obj2.getCenterY());
-    
+
     return x*x+y*y <= distance;
 }
 
@@ -989,15 +1004,15 @@ gdjs.RuntimeObject.distanceTest = function(obj1, obj2, distance) {
  * @static
  */
 gdjs.RuntimeObject.getNameIdentifier = function(name) {
-    gdjs.RuntimeObject.getNameIdentifier.identifiers = 
-        gdjs.RuntimeObject.getNameIdentifier.identifiers 
+    gdjs.RuntimeObject.getNameIdentifier.identifiers =
+        gdjs.RuntimeObject.getNameIdentifier.identifiers
         || new Hashtable();
-        
+
     if ( gdjs.RuntimeObject.getNameIdentifier.identifiers.containsKey(name) )
         return gdjs.RuntimeObject.getNameIdentifier.identifiers.get(name);
-    
+
     var newKey = gdjs.RuntimeObject.getNameIdentifier.identifiers.keys().length;
-    
+
     gdjs.RuntimeObject.getNameIdentifier.identifiers.put(name, newKey);
     return newKey;
 }
