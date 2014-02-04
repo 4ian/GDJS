@@ -282,6 +282,8 @@ gdjs.RuntimeObject.prototype.getZOrder = function() {
  * @param angle {Number} The new angle of the object
  */
 gdjs.RuntimeObject.prototype.setAngle = function(angle) {
+    if ( this.angle === angle ) return;
+
     this.angle = angle;
     this.hitBoxesDirty = true;
 }

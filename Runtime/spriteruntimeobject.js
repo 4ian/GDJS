@@ -258,7 +258,7 @@ gdjs.SpriteRuntimeObject.prototype._updatePIXITexture = function() {
 
         if ( this._currentFrame < direction.frames.length ) {
             this._animationFrame = direction.frames[this._currentFrame];
-            if ( this._animationFrame != null )
+            if ( this._animationFrame !== null )
                 this._sprite.setTexture(this._animationFrame.pixiTexture);
 
             return;
@@ -321,7 +321,8 @@ gdjs.SpriteRuntimeObject.prototype.updateHitBoxes = function() {
     if ( !this._animationFrame.hasCustomHitBoxes )
         return gdjs.RuntimeObject.prototype.updateHitBoxes.call(this);
 
-    //console.log("Update for "+this.name); //Uncomment to track updates (and in particular be sure that unnecessary update are avoided).
+    //console.log("Update for "+this.name); //Uncomment to track updates
+    //(and in particular be sure that unnecessary update are avoided).
 
     //Update the current hitboxes with the frame custom hit boxes
     //and apply transformations.

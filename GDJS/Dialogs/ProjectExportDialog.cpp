@@ -11,11 +11,12 @@
 #include "GDCore/PlatformDefinition/Project.h"
 #include "GDCore/CommonTools.h"
 #include "GDJS/Exporter.h"
+#include "GDCore/IDE/SkinHelper.h"
 
 namespace gdjs
 {
 
-ProjectExportDialog::ProjectExportDialog(wxWindow* parent, gd::Project & project_) : 
+ProjectExportDialog::ProjectExportDialog(wxWindow* parent, gd::Project & project_) :
     BaseProjectExportDialog(parent),
     project(project_)
 {
@@ -47,7 +48,7 @@ ProjectExportDialog::~ProjectExportDialog()
 {
 }
 
-ProjectExportDialog::ExportType ProjectExportDialog::GetExportType() 
+ProjectExportDialog::ExportType ProjectExportDialog::GetExportType()
 {
     switch(exportChoice->GetSelection())
     {
