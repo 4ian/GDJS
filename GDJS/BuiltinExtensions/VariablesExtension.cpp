@@ -12,12 +12,7 @@
 #include "GDCore/PlatformDefinition/Project.h"
 #include "GDCore/PlatformDefinition/Layout.h"
 #include "GDCore/CommonTools.h"
-#include <wx/intl.h>
-//Ensure the wxWidgets macro "_" returns a std::string
-#if defined(_)
-    #undef _
-#endif
-#define _(s) std::string(wxGetTranslation((s)).mb_str())
+#include "GDCore/Tools/Localization.h"
 
 using namespace gd;
 
@@ -61,7 +56,7 @@ VariablesExtension::VariablesExtension()
                     gd::CallbacksForGeneratingExpressionCode callbacks(expressionCode, codeGenerator, context);
                     gd::ExpressionParser parser(instruction.GetParameters()[2].GetPlainString());
                     if (!parser.ParseMathExpression(codeGenerator.GetPlatform(), codeGenerator.GetProject(), codeGenerator.GetLayout(), callbacks) || expressionCode.empty())
-                        expressionCode = "0";   
+                        expressionCode = "0";
                 }
                 std::string varGetter;
                 {
@@ -134,7 +129,7 @@ VariablesExtension::VariablesExtension()
                     gd::CallbacksForGeneratingExpressionCode callbacks(expressionCode, codeGenerator, context);
                     gd::ExpressionParser parser(instruction.GetParameters()[2].GetPlainString());
                     if (!parser.ParseMathExpression(codeGenerator.GetPlatform(), codeGenerator.GetProject(), codeGenerator.GetLayout(), callbacks) || expressionCode.empty())
-                        expressionCode = "0";   
+                        expressionCode = "0";
                 }
                 std::string varGetter;
                 {

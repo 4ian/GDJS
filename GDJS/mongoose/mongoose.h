@@ -1,3 +1,4 @@
+#if defined(GD_IDE_ONLY) && !defined(GD_NO_WX_GUI)
 // Copyright (c) 2004-2012 Sergey Lyubka
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -360,3 +361,4 @@ char *mg_md5(char buf[33], ...);
 #endif // __cplusplus
 
 #endif // MONGOOSE_HEADER_INCLUDED
+#endif

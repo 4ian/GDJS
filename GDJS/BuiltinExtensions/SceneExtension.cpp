@@ -9,12 +9,7 @@
 #include "GDCore/Events/ExpressionsCodeGeneration.h"
 #include "GDCore/Events/EventsCodeNameMangler.h"
 #include "GDCore/Events/InstructionMetadata.h"
-#include <wx/intl.h>
-//Ensure the wxWidgets macro "_" returns a std::string
-#if defined(_)
-    #undef _
-#endif
-#define _(s) std::string(wxGetTranslation((s)).mb_str())
+#include "GDCore/Tools/Localization.h"
 
 namespace gdjs
 {

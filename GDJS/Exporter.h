@@ -53,11 +53,13 @@ public:
      */
     const std::string & GetLastError() const { return lastError; };
 
+    #if !defined(GD_NO_WX_GUI)
     /**
      * \brief Try to locate the Java Executable. ( The JRE must be installed ).
      * \return An empty string if not found, a full path to the java executable otherwise.
      */
     static std::string GetJavaExecutablePath();
+    #endif
 
 private:
 

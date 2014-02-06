@@ -7,16 +7,19 @@
 #include <fstream>
 #include <streambuf>
 #include <string>
+#if !defined(GD_NO_WX_GUI)
 #include <wx/filename.h>
 #include <wx/dir.h>
-#include <wx/log.h>
 #include <wx/msgdlg.h>
 #include <wx/config.h>
 #include <wx/progdlg.h>
 #include <wx/zipstrm.h>
 #include <wx/wfstream.h>
+#endif
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include "GDCore/Tools/Localization.h"
+#include "GDCore/Tools/Log.h"
 #include "GDCore/TinyXml/tinyxml.h"
 #include "GDCore/PlatformDefinition/Project.h"
 #include "GDCore/PlatformDefinition/Layout.h"
@@ -42,6 +45,7 @@ static void InsertUnique(std::vector<std::string> & container, std::string str)
         container.push_back(str);
 }
 
+#if !defined(GD_NO_WX_GUI)
 static void ClearDirectory(wxString dir)
 {
     wxString file = wxFindFirstFile( dir + "/*" );
@@ -75,6 +79,7 @@ static void GenerateFontsDeclaration(const std::string & outputDir, std::string 
         file = wxFindNextFile();
     }
 }
+#endif
 
 template<typename Ptree>
 static void NormalizeProjectPropertyTree(Ptree & pt)
@@ -128,6 +133,7 @@ Exporter::~Exporter()
 
 bool Exporter::ExportLayoutForPreview(gd::Layout & layout, std::string exportDir)
 {
+    #if !defined(GD_NO_WX_GUI)
     if ( !project ) return false;
 
     gd::RecursiveMkDir::MkDir(exportDir);
@@ -145,7 +151,7 @@ bool Exporter::ExportLayoutForPreview(gd::Layout & layout, std::string exportDir
     if ( !ExportEventsCode(exportedProject, gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/"), includesFiles) )
         return false;
 
-    //Strip the project ( *after* generating events as the events may use strioped things ( objects groups... ) ) 
+    //Strip the project ( *after* generating events as the events may use strioped things ( objects groups... ) )
     StripProject(exportedProject);
     exportedProject.SetFirstLayout(layout.GetName());
 
@@ -159,13 +165,18 @@ bool Exporter::ExportLayoutForPreview(gd::Layout & layout, std::string exportDir
 
     //Create the index file
     if ( !ExportIndexFile(exportedProject, exportDir, includesFiles) ) return false;
+    #else
+    gd::LogWarning("BAD USE: Exporter::ExportLayoutForPreview cannot be used");
+    #endif
 
     return true;
 }
 
 std::string Exporter::ExportToJSON(const gd::Project & project, std::string filename, std::string wrapIntoVariable, bool prettyPrinting)
 {
+    #if !defined(GD_NO_WX_GUI)
     gd::RecursiveMkDir::MkDir(wxFileName::FileName(filename).GetPath());
+    #endif
 
     //Save the project in memory
     TiXmlDocument doc;
@@ -202,6 +213,7 @@ std::string Exporter::ExportToJSON(const gd::Project & project, std::string file
 
     if (!wrapIntoVariable.empty()) output = wrapIntoVariable + " = " + output + ";";
 
+    #if !defined(GD_NO_WX_GUI)
     //Save to file
     {
         std::ofstream file;
@@ -214,12 +226,16 @@ std::string Exporter::ExportToJSON(const gd::Project & project, std::string file
         else
             return "Unable to write "+filename;
     }
+    #else
+    gd::LogWarning("BAD USE: Project cannot be exported to JSON file");
+    #endif
 
     return "";
 }
 
 bool Exporter::ExportMetadataFile(gd::Project & project, std::string exportDir, const std::vector<std::string> & includesFiles)
 {
+    #if !defined(GD_NO_WX_GUI)
     std::string metadata = "{";
 
     //Fonts metadata
@@ -254,7 +270,7 @@ bool Exporter::ExportMetadataFile(gd::Project & project, std::string exportDir, 
 
         wxFileName relativeFile(exportDir+"/"+*it);
         relativeFile.MakeRelativeTo(exportDir);
-        metadata += "\""+gd::ToString(relativeFile.GetFullPath(wxPATH_UNIX))+"\""; 
+        metadata += "\""+gd::ToString(relativeFile.GetFullPath(wxPATH_UNIX))+"\"";
     }
 
     //Other metadata
@@ -275,12 +291,16 @@ bool Exporter::ExportMetadataFile(gd::Project & project, std::string exportDir, 
             return false;
         }
     }
+    #else
+    gd::LogWarning("BAD USE: Exporter::ExportMetadataFile is not available");
+    #endif
 
     return true;
 }
 
 bool Exporter::ExportIndexFile(gd::Project & project, std::string exportDir, const std::vector<std::string> & includesFiles, std::string additionalSpec)
 {
+    #if !defined(GD_NO_WX_GUI)
     std::ifstream t("./JsPlatform/Runtime/index.html");
     std::stringstream buffer;
     buffer << t.rdbuf();
@@ -364,12 +384,16 @@ bool Exporter::ExportIndexFile(gd::Project & project, std::string exportDir, con
             return false;
         }
     }
+    #else
+    gd::LogWarning("BAD USE: Exporter::ExportIndexFile is not available");
+    #endif
 
     return true;
 }
 
 bool Exporter::ExportEventsCode(gd::Project & project, std::string outputDir, std::vector<std::string> & includesFiles)
 {
+    #if !defined(GD_NO_WX_GUI)
     gd::RecursiveMkDir::MkDir(outputDir);
 
     //First, do not forget common includes ( They must be included before events generated code files ).
@@ -428,12 +452,16 @@ bool Exporter::ExportEventsCode(gd::Project & project, std::string outputDir, st
             return false;
         }
     }
+    #else
+    gd::LogWarning("BAD USE: Exporter::ExportEventsCode is not available");
+    #endif
 
     return true;
 }
 
 bool Exporter::ExportIncludesAndLibs(std::vector<std::string> & includesFiles, std::string exportDir, bool minify)
 {
+    #if !defined(GD_NO_WX_GUI)
     //Includes files :
     if ( minify )
     {
@@ -441,7 +469,7 @@ bool Exporter::ExportIncludesAndLibs(std::vector<std::string> & includesFiles, s
         if ( javaExec.empty() || !wxFileExists(javaExec) )
         {
             std::cout << "Java executable not found." << std::endl;
-            wxLogWarning(_("The exported script could not be minified : Check that the Java Runtime Environment is installed."));
+            gd::LogWarning(_("The exported script could not be minified : Check that the Java Runtime Environment is installed."));
             minify = false;
         }
         else
@@ -475,17 +503,17 @@ bool Exporter::ExportIncludesAndLibs(std::vector<std::string> & includesFiles, s
                 {
                     outOfMemoryError |= output[i].find("OutOfMemoryError") < output[i].length();
                     std::cout << output[i] << std::endl;
-                } 
+                }
                 for (size_t i = 0;i<errors.size();++i)
                 {
                     outOfMemoryError |= errors[i].find("OutOfMemoryError") < errors[i].length();
                     std::cout << errors[i] << std::endl;
-                } 
+                }
 
                 if ( outOfMemoryError)
-                    wxLogWarning(_("The exported script could not be minified: It seems that the script is too heavy and need too much memory to be minified.\n\nTry using sub events and reduce the number of events."));
+                    gd::LogWarning(_("The exported script could not be minified: It seems that the script is too heavy and need too much memory to be minified.\n\nTry using sub events and reduce the number of events."));
                 else
-                    wxLogWarning(_("The exported script could not be minified.\n\nMay be an extension is triggering this error: Try to contact the developer if you think it is the case."));
+                    gd::LogWarning(_("The exported script could not be minified.\n\nMay be an extension is triggering this error: Try to contact the developer if you think it is the case."));
                 minify = false;
             }
             else
@@ -532,6 +560,9 @@ bool Exporter::ExportIncludesAndLibs(std::vector<std::string> & includesFiles, s
             }
         }
     }
+    #else
+    gd::LogWarning("BAD USE: Exporter::ExportIncludesAndLibs is not available");
+    #endif
 
     return true;
 }
@@ -543,8 +574,8 @@ void Exporter::StripProject(gd::Project & strippedProject)
 
     for (unsigned int i = 0;i<strippedProject.GetLayoutCount();++i)
     {
-            strippedProject.GetLayout(i).GetObjectGroups().clear();
-            strippedProject.GetLayout(i).GetEvents().clear();
+        strippedProject.GetLayout(i).GetObjectGroups().clear();
+        strippedProject.GetLayout(i).GetEvents().clear();
     }
 }
 
@@ -555,6 +586,7 @@ void Exporter::ExportResources(gd::Project & project, std::string exportDir, wxP
 
 void Exporter::ShowProjectExportDialog(gd::Project & project)
 {
+    #if !defined(GD_NO_WX_GUI)
     ProjectExportDialog dialog(NULL, project);
     if ( dialog.ShowModal() != 1 ) return;
 
@@ -582,10 +614,10 @@ void Exporter::ShowProjectExportDialog(gd::Project & project)
         progressDialog.SetTitle(_("Export in progress ( 2/2 )"));
         progressDialog.Update(50, _("Exporting events..."));
 
-        //Export events 
+        //Export events
         if ( !ExportEventsCode(exportedProject, gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/"), includesFiles) )
         {
-            wxLogError(_("Error during exporting: Unable to export events ( "+lastError+")."));
+            gd::LogError(_("Error during exporting: Unable to export events ( "+lastError+")."));
             return;
         }
 
@@ -609,7 +641,7 @@ void Exporter::ShowProjectExportDialog(gd::Project & project)
         if ( (!exportForGDShare && !ExportIndexFile(exportedProject, exportDir, includesFiles, additionalSpec)) ||
              (exportForGDShare && !ExportMetadataFile(exportedProject, exportDir, includesFiles)) )
         {
-            wxLogError(_("Error during exporting:\n"+lastError));
+            gd::LogError(_("Error during exporting:\n"+lastError));
             return;
         }
 
@@ -638,7 +670,7 @@ void Exporter::ShowProjectExportDialog(gd::Project & project)
             }
 
             if ( !zip.Close() || !out.Close() )
-                wxLogWarning(_("Unable to finalize the creation of the zip file!\n\nThe exported project won't be put in a zip file."));
+                gd::LogWarning(_("Unable to finalize the creation of the zip file!\n\nThe exported project won't be put in a zip file."));
             else
             {
                 progressDialog.Update(95, _("Cleaning files..."));
@@ -662,7 +694,7 @@ void Exporter::ShowProjectExportDialog(gd::Project & project)
         uploadDialog.ShowModal();
     }
     else
-    { 
+    {
         if ( wxMessageBox(_("Compilation achieved. Do you want to open the folder where the project has been compiled\?"),
                           _("Compilation finished"), wxYES_NO) == wxYES )
         {
@@ -675,6 +707,9 @@ void Exporter::ShowProjectExportDialog(gd::Project & project)
             #endif
         }
     }
+    #else
+    gd::LogError("BAD USE: Exporter::ShowProjectExportDialog is not available.");
+    #endif
 }
 
 std::string Exporter::GetProjectExportButtonLabel()
@@ -682,6 +717,7 @@ std::string Exporter::GetProjectExportButtonLabel()
     return gd::ToString(_("Export to the web"));
 }
 
+    #if !defined(GD_NO_WX_GUI)
 std::string Exporter::GetJavaExecutablePath()
 {
     std::vector<std::string> guessPaths;
@@ -714,5 +750,6 @@ std::string Exporter::GetJavaExecutablePath()
 
     return "";
 }
+#endif
 
 }

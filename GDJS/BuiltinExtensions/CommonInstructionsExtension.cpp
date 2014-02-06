@@ -21,12 +21,7 @@
 #include "GDCore/Events/EventsCodeGenerationContext.h"
 #include "GDCore/Events/ExpressionsCodeGeneration.h"
 #include <set>
-#include <wx/intl.h>
-//Ensure the wxWidgets macro "_" returns a std::string
-#if defined(_)
-    #undef _
-#endif
-#define _(s) std::string(wxGetTranslation((s)).mb_str())
+#include "GDCore/Tools/Localization.h"
 
 using namespace std;
 using namespace gd;
@@ -415,7 +410,7 @@ CommonInstructionsExtension::CommonInstructionsExtension()
                     else
                         ++i;
                 }
-                
+
                 if ( realObjects.empty() ) return "";
 
                 for (unsigned int i = 0;i<realObjects.size();++i)

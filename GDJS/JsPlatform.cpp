@@ -10,10 +10,12 @@
 #include "GDCore/CommonTools.h"
 #include "GDJS/JsPlatform.h"
 #include "GDJS/Exporter.h"
+#include "GDCore/Tools/Log.h"
+#if !defined(GD_NO_WX_GUI)
 #include <wx/filename.h>
-#include <wx/log.h>
 #include <wx/bitmap.h>
 #include <wx/time.h>
+#endif
 
 //Built-in extensions
 #include "GDJS/BuiltinExtensions/SpriteExtension.h"
@@ -41,6 +43,7 @@ namespace gdjs
 
 JsPlatform *JsPlatform::singleton = NULL;
 
+#if !defined(GD_NO_WX_GUI)
 /**
  * \brief Allow the platform to launch preview in a browser.
  *
@@ -66,15 +69,15 @@ public:
         Exporter exporter(&project);
         if ( !exporter.ExportLayoutForPreview(layout, exportDir) )
         {
-            wxLogError(_("An error occurred when launching the preview:\n\n")+exporter.GetLastError()
+            gd::LogError(_("An error occurred when launching the preview:\n\n")+exporter.GetLastError()
                        +_("\n\nPlease report this error on the Game Develop website, or contact the extension developer if it seems related to a third party extension."));
         }
 
         //Without "http://", the function fails ( on Windows at least ).
         //The timestamp is here to prevent browsers caching contents.
-        if ( !wxLaunchDefaultBrowser("http://localhost:2828?"+gd::ToString(wxGetLocalTime())) ) 
+        if ( !wxLaunchDefaultBrowser("http://localhost:2828?"+gd::ToString(wxGetLocalTime())) )
         {
-            wxLogError(_("Unable to launch your browser :(\nOpen manually your browser and type \"localhost:2828\" in\nthe address bar ( without the quotes ) to launch the preview!"));
+            gd::LogError(_("Unable to launch your browser :(\nOpen manually your browser and type \"localhost:2828\" in\nthe address bar ( without the quotes ) to launch the preview!"));
         }
 
         return false;
@@ -83,19 +86,24 @@ private:
     gd::Project & project;
     gd::Layout & layout;
 };
+#endif
 
 void JsPlatform::OnIDEInitialized()
 {
     //Initializing the tiny web server used to preview the games
+    #if !defined(GD_NO_WX_GUI)
     std::cout << "Starting web server..." << std::endl;
     std::string exportDir = gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSPreview/");
     httpServer.Run(exportDir);
+    #endif
 }
 
+#if !defined(GD_NO_WX_GUI)
 boost::shared_ptr<gd::LayoutEditorPreviewer> JsPlatform::GetLayoutPreviewer(gd::LayoutEditorCanvas & editor) const
 {
     return boost::shared_ptr<gd::LayoutEditorPreviewer>(new Previewer(editor.GetProject(), editor.GetLayout()));
 }
+#endif
 
 boost::shared_ptr<gd::ProjectExporter> JsPlatform::GetProjectExporter() const
 {
@@ -159,6 +167,7 @@ void JsPlatform::DestroySingleton()
     }
 }
 
+#if !defined(EMSCRIPTEN)
 /**
  * Used by Game Develop to create the platform class
  */
@@ -172,5 +181,6 @@ extern "C" gd::Platform * GD_API CreateGDPlatform() {
 extern "C" void GD_API DestroyGDPlatform() {
     JsPlatform::DestroySingleton();
 }
+#endif
 
 }

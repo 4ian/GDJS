@@ -1,3 +1,4 @@
+#if defined(GD_IDE_ONLY) && !defined(GD_NO_WX_GUI)
 // Copyright (c) 2004-2013 Sergey Lyubka
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -5210,3 +5211,4 @@ struct mg_context *mg_start(const struct mg_callbacks *callbacks,
 
   return ctx;
 }
+#endif

@@ -8,9 +8,11 @@
 #include "GDCore/PlatformDefinition/Platform.h"
 #include "GDCore/PlatformDefinition/PlatformExtension.h"
 #include "GDCore/CommonTools.h"
-#include <wx/bitmap.h>
-#include <wx/intl.h>
+#include "GDCore/Tools/Localization.h"
 #include "HttpServer.h"
+#if !defined(GD_NO_WX_GUI)
+#include <wx/bitmap.h>
+#endif
 
 namespace gdjs
 {
@@ -41,6 +43,7 @@ public:
      */
     virtual std::string GetExtensionDestroyFunctionName() { return "DestroyGDJSExtension"; }
 
+    #if !defined(GD_NO_WX_GUI)
     /**
      * \brief Expose the previewer to the IDE
      *
@@ -48,6 +51,7 @@ public:
      * then launch the preview in an external browser
      */
     virtual boost::shared_ptr<gd::LayoutEditorPreviewer> GetLayoutPreviewer(gd::LayoutEditorCanvas & editor) const;
+    #endif
 
     /**
      * \brief Expose to the IDE how to export games.
@@ -60,7 +64,7 @@ public:
     virtual void OnIDEInitialized();
 
     /**
-     * Get access to the JsPlatform instance. ( JsPlatform is a singleton ).
+     * Get access to the JsPlatform instance (JsPlatform is a singleton).
      */
     static JsPlatform & Get();
 
@@ -75,8 +79,10 @@ private:
     JsPlatform();
     virtual ~JsPlatform() {};
 
+    #if !defined(GD_NO_WX_GUI)
     wxBitmap icon; ///< The platform icon shown to the user in the IDE.
     HttpServer httpServer; ///< The server used for the previews.
+    #endif
 
     static JsPlatform * singleton;
 };

@@ -3,6 +3,7 @@
 // Do not modify this file by hand!
 //////////////////////////////////////////////////////////////////////
 
+#if defined(GD_IDE_ONLY) && !defined(GD_NO_WX_GUI)
 #ifndef GDJS_BASE_CLASSES_H
 #define GDJS_BASE_CLASSES_H
 
@@ -106,4 +107,5 @@ public:
     virtual ~BaseCocoonJSUploadDialog();
 };
 
+#endif
 #endif
