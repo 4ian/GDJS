@@ -7,7 +7,7 @@
 /**
  * The runtimeScene object represents a scene being played and rendered in the browser in a canvas.
  *
- * @class RuntimeScene 
+ * @class RuntimeScene
  * @param PixiRenderer The PIXI.Renderer to be used
  */
 gdjs.RuntimeScene = function(runtimeGame, pixiRenderer)
@@ -24,7 +24,7 @@ gdjs.RuntimeScene = function(runtimeGame, pixiRenderer)
     this._pixiStage = new PIXI.Stage();
     this._pixiContainer = new PIXI.DisplayObjectContainer(); //The DisplayObjectContainer meant to contains all pixi objects of the scene.
     this._pixiStage.addChild( this._pixiContainer );
-    this._latestFrameDate = new Date;
+    this._latestFrameDate = new Date();
     this._variables = new gdjs.VariablesContainer();
     this._runtimeGame = runtimeGame;
     this._lastId = 0;
@@ -128,6 +128,7 @@ gdjs.RuntimeScene.prototype.loadFromScene = function(sceneData) {
     //Set up the function to be executed at each tick
     var module = gdjs[sceneData.attr.mangledName+"Code"];
     if ( module && module.func ) this._eventsFunction = module.func;
+    this._eventsContext = new gdjs.EventsContext();
 
     //Call global callback
 	for(var i = 0;i<gdjs.callbacksRuntimeSceneLoaded.length;++i) {
@@ -140,13 +141,14 @@ gdjs.RuntimeScene.prototype.loadFromScene = function(sceneData) {
 gdjs.RuntimeScene.prototype.unloadScene = function() {
 	if ( !this._isLoaded ) return;
 
+    this._eventsContext = new gdjs.EventsContext();
 	for(var i = 0;i<gdjs.callbacksRuntimeSceneUnloaded.length;++i) {
 		gdjs.callbacksRuntimeSceneUnloaded[i](this);
 	}
 };
 
 /**
- * Create objects from initial instances data ( for example, the initial instances 
+ * Create objects from initial instances data ( for example, the initial instances
  * of the scene or from an external layout ).
  *
  * @method createObjectsFrom
@@ -196,7 +198,7 @@ gdjs.RuntimeScene.prototype.setEventsFunction = function(func) {
 gdjs.RuntimeScene.prototype.renderAndStep = function() {
 	this._updateTime();
 	this._updateObjectsPreEvents();
-	this._eventsFunction(this);
+	this._eventsFunction(this, this._eventsContext);
 	this._updateObjects();
 	this.render();
 
@@ -205,12 +207,12 @@ gdjs.RuntimeScene.prototype.renderAndStep = function() {
 	return this._requestedScene === "" && !this._gameStopRequested;
 };
 
-/** 
+/**
  * Render the PIXI stage associated to the runtimeScene.
  * @method render
  */
-gdjs.RuntimeScene.prototype.render = function(){    
-	// render the PIXI stage   
+gdjs.RuntimeScene.prototype.render = function(){
+	// render the PIXI stage
 	this._pixiRenderer.render(this._pixiStage);
 };
 
@@ -590,7 +592,7 @@ gdjs.RuntimeScene.prototype.getTimeScale = function() {
  * Return true if the scene requested the game to be stopped.
  * @method gameStopRequested
  */
-gdjs.RuntimeScene.prototype.gameStopRequested = function() { 
+gdjs.RuntimeScene.prototype.gameStopRequested = function() {
 	return this._gameStopRequested;
 };
 
@@ -608,7 +610,7 @@ gdjs.RuntimeScene.prototype.requestGameStop = function() {
  * Return the name of the new scene to be launched instead of this one.
  * @method getRequestedScene
  */
-gdjs.RuntimeScene.prototype.getRequestedScene = function() { 
+gdjs.RuntimeScene.prototype.getRequestedScene = function() {
 	return this._requestedScene;
 };
 

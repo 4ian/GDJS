@@ -89,7 +89,7 @@ gdjs.RuntimeObject = function(runtimeScene, objectData)
         i++;
     });
     this._automatisms.length = i;//Make sure to delete already existing automatisms which are not used anymore.
-}
+};
 
 gdjs.RuntimeObject.forcesGarbage = []; //Global container for unused forces, avoiding recreating forces each tick.
 
@@ -103,7 +103,7 @@ gdjs.RuntimeObject.forcesGarbage = []; //Global container for unused forces, avo
  */
 gdjs.RuntimeObject.prototype.updateTime = function(elapsedTime) {
     //Nothing to do.
-}
+};
 
 /**
  * Called when the object is created from an initial instance at the startup of the scene.<br>
@@ -114,7 +114,7 @@ gdjs.RuntimeObject.prototype.updateTime = function(elapsedTime) {
  */
 gdjs.RuntimeObject.prototype.extraInitializationFromInitialInstance = function(initialInstanceData) {
     //Nothing to do.
-}
+};
 
 /**
  * Remove an object from a scene.<br>
@@ -127,7 +127,7 @@ gdjs.RuntimeObject.prototype.deleteFromScene = function(runtimeScene) {
         runtimeScene.markObjectForDeletion(this);
         this.livingOnScene = false;
     }
-}
+};
 
 /**
  * Called when the object is removed from its scene.
@@ -136,7 +136,7 @@ gdjs.RuntimeObject.prototype.deleteFromScene = function(runtimeScene) {
  * @param runtimeScene The RuntimeScene owning the object.
  */
 gdjs.RuntimeObject.prototype.onDeletedFromScene = function(runtimeScene) {
-}
+};
 
 //Common properties:
 
@@ -147,7 +147,7 @@ gdjs.RuntimeObject.prototype.onDeletedFromScene = function(runtimeScene) {
  */
 gdjs.RuntimeObject.prototype.getName = function() {
     return this.name;
-}
+};
 
 /**
  * Get the name identifier of the object.
@@ -156,7 +156,7 @@ gdjs.RuntimeObject.prototype.getName = function() {
  */
 gdjs.RuntimeObject.prototype.getNameId = function() {
     return this._nameId;
-}
+};
 
 /**
  * Get the unique identifier of the object.<br>
@@ -169,7 +169,7 @@ gdjs.RuntimeObject.prototype.getNameId = function() {
  */
 gdjs.RuntimeObject.prototype.getUniqueId = function() {
     return this.id;
-}
+};
 
 /**
  * Set the position of the object.
@@ -181,7 +181,7 @@ gdjs.RuntimeObject.prototype.getUniqueId = function() {
 gdjs.RuntimeObject.prototype.setPosition = function(x,y) {
     this.setX(x);
     this.setY(y);
-}
+};
 
 /**
  * Set the X position of the object.
@@ -194,7 +194,7 @@ gdjs.RuntimeObject.prototype.setX = function(x) {
 
     this.x = x;
     this.hitBoxesDirty = true;
-}
+};
 
 /**
  * Get the X position of the object.
@@ -204,7 +204,7 @@ gdjs.RuntimeObject.prototype.setX = function(x) {
  */
 gdjs.RuntimeObject.prototype.getX = function() {
     return this.x;
-}
+};
 
 /**
  * Set the Y position of the object.
@@ -217,7 +217,7 @@ gdjs.RuntimeObject.prototype.setY = function(y) {
 
     this.y = y;
     this.hitBoxesDirty = true;
-}
+};
 
 /**
  * Get the Y position of the object.
@@ -227,7 +227,7 @@ gdjs.RuntimeObject.prototype.setY = function(y) {
  */
 gdjs.RuntimeObject.prototype.getY = function() {
     return this.y;
-}
+};
 
 /**
  * Get the X position of the rendered object.<br>
@@ -240,7 +240,7 @@ gdjs.RuntimeObject.prototype.getY = function() {
  */
 gdjs.RuntimeObject.prototype.getDrawableX = function() {
     return this.getX();
-}
+};
 
 /**
  * Get the Y position of the rendered object.<br>
@@ -253,7 +253,7 @@ gdjs.RuntimeObject.prototype.getDrawableX = function() {
  */
 gdjs.RuntimeObject.prototype.getDrawableY = function() {
     return this.getY();
-}
+};
 
 /**
  * Set the Z order of the object.
@@ -263,7 +263,7 @@ gdjs.RuntimeObject.prototype.getDrawableY = function() {
  */
 gdjs.RuntimeObject.prototype.setZOrder = function(z) {
     this.zOrder = z;
-}
+};
 
 /**
  * Get the Z order of the object.
@@ -273,7 +273,7 @@ gdjs.RuntimeObject.prototype.setZOrder = function(z) {
  */
 gdjs.RuntimeObject.prototype.getZOrder = function() {
     return this.zOrder;
-}
+};
 
 /**
  * Set the angle of the object.
@@ -286,7 +286,7 @@ gdjs.RuntimeObject.prototype.setAngle = function(angle) {
 
     this.angle = angle;
     this.hitBoxesDirty = true;
-}
+};
 
 /**
  * Get the rotation of the object.

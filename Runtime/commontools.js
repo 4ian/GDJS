@@ -10,34 +10,7 @@
  * @static
  * @private
  */
-gdjs.evtTools.common = gdjs.evtTools.common || {eventsObjectsMap: new Hashtable()};
-
-/**
- * Clear the map containing objects lists.
- * Should be used by events generated code only.
- */
-gdjs.evtTools.common.clearEventsObjectsMap = function() {
-    gdjs.evtTools.common.eventsObjectsMap.clear();
-
-    return gdjs.evtTools.common;
-};
-
-/**
- * Add an objects list to the objects lists map.
- * Should be used by events generated code only.
- */
-gdjs.evtTools.common.addObjectsToEventsMap = function(name, objectList) {
-    gdjs.evtTools.common.eventsObjectsMap.put(name, objectList);
-    return gdjs.evtTools.common;
-};
-
-/**
- * Return the objects lists map.
- * Should be used by events generated code only.
- */
-gdjs.evtTools.common.getEventsObjectsMap = function() {
-    return gdjs.evtTools.common.eventsObjectsMap.clone();
-};
+gdjs.evtTools.common = gdjs.evtTools.common || {};
 
 /**
  * Get the value of a variable. Equivalent of variable.getAsNumber().
@@ -195,6 +168,10 @@ gdjs.evtTools.common.mod = function(x, y) {
 
 gdjs.evtTools.common.angleDifference = function(angle1, angle2) {
     return gdjs.evtTools.common.mod(gdjs.evtTools.common.mod(angle1 - angle2, 360.0) + 180.0, 360.0) - 180.0;
+};
+
+gdjs.evtTools.common.lerp = function(a, b, x) {
+    return a+(b-a)*x;
 };
 
 gdjs.evtTools.common.trunc = function(x) {

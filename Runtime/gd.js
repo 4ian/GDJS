@@ -32,9 +32,9 @@ gdjs.rgbToHex = function(r, g, b) {
  */
 gdjs.random = function(max) {
     if ( max <= 0 ) return 0;
-    return Math.floor((Math.random()*max)); 
+    return Math.floor((Math.random()*max));
 }
-    
+
 /**
  * Convert an angle in degrees to radians.
  * @method toRad
@@ -130,7 +130,7 @@ gdjs.registerObjects = function() {
  * Automatisms must be part of gdjs and have their property "thisIsARuntimeAutomatismConstructor"
  * defined and set to the name of the type of the automatism so as to be recognized.
  * The name of the type of the automatism must be complete, with the namespace if any. For
- * example, if you are providing a Draggable automatism in the DraggableAutomatism extension, 
+ * example, if you are providing a Draggable automatism in the DraggableAutomatism extension,
  * the full name of the type of the automatism is "DraggableAutomatism::Draggable".
  *
  * @method registerAutomatisms
@@ -163,7 +163,7 @@ gdjs.registerGlobalCallbacks = function() {
     innerRegisterGlobalCallbacks = function (obj, nestLevel) {
 
         for (var p in obj) {
-            if (obj.hasOwnProperty(p) && obj[p] !== null && 
+            if (obj.hasOwnProperty(p) && obj[p] !== null &&
                 Object.prototype.toString.call( obj[p] ) !== '[object Array]' && typeof obj === "object") {
                 totalprop++;
                 if ( obj[p].gdjsCallbackRuntimeSceneLoaded !== undefined) {
@@ -196,10 +196,10 @@ gdjs.registerGlobalCallbacks = function() {
 gdjs.getObjectConstructor = function(name) {
     if ( name != undefined && gdjs.objectsTypes.containsKey(name) )
         return gdjs.objectsTypes.get(name);
-    
+
     console.warn("Object type \""+name+"\" was not found.");
     return gdjs.objectsTypes.get(""); //Create a base empty runtime object.
-}
+};
 
 /**
  * Get the constructor of an automatism.
@@ -211,14 +211,14 @@ gdjs.getObjectConstructor = function(name) {
 gdjs.getAutomatismConstructor = function(name) {
     if ( name != undefined && gdjs.automatismsTypes.containsKey(name) )
         return gdjs.automatismsTypes.get(name);
-    
+
     console.warn("Automatism type \""+name+"\" was not found.");
     return gdjs.automatismsTypes.get(""); //Create a base empty runtime automatism.
-}
+};
 
 Array.prototype.remove = function(from) {
-    //Adapted from the nice article available at 
-    //https://www.scirra.com/blog/76/how-to-write-low-garbage-real-time-javascript 
+    //Adapted from the nice article available at
+    //https://www.scirra.com/blog/76/how-to-write-low-garbage-real-time-javascript
     for (var i = from, len = this.length - 1; i < len; i++)
         this[i] = this[i + 1];
 

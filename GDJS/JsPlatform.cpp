@@ -149,6 +149,7 @@ JsPlatform::JsPlatform() :
     gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/LinkedObjects."+extension, *this);
     gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/TiledSpriteObject."+extension, *this);
     gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/PlatformAutomatism."+extension, *this);
+    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/PathfindingAutomatism."+extension, *this);
 };
 
 JsPlatform & JsPlatform::Get()

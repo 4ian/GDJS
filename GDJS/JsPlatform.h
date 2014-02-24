@@ -75,9 +75,9 @@ public:
      **/
     static void DestroySingleton();
 
-private:
     JsPlatform();
     virtual ~JsPlatform() {};
+private:
 
     #if !defined(GD_NO_WX_GUI)
     wxBitmap icon; ///< The platform icon shown to the user in the IDE.

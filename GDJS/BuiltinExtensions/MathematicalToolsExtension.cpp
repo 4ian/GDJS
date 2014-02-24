@@ -97,6 +97,8 @@ MathematicalToolsExtension::MathematicalToolsExtension()
         .codeExtraInformation.SetFunctionName("Math.round");
     GetAllExpressions()["trunc"]
         .codeExtraInformation.SetFunctionName("gdjs.evtTools.common.trunc");
+    GetAllExpressions()["lerp"]
+        .codeExtraInformation.SetFunctionName("gdjs.evtTools.common.lerp");
 
     StripUnimplementedInstructionsAndExpressions();
 }

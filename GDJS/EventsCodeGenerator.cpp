@@ -121,7 +121,8 @@ std::string EventsCodeGenerator::GenerateSceneEventsCompleteCode(gd::Project & p
     codeGenerator.GetCustomCodeOutsideMain()+"\n\n"
     +globalObjectLists+"\n"
     +globalConditionsBooleans+"\n"
-    +"gdjs."+gd::SceneNameMangler::GetMangledSceneName(scene.GetName())+"Code.func = function(runtimeScene) {\n"
+    +"gdjs."+gd::SceneNameMangler::GetMangledSceneName(scene.GetName())+"Code.func = function(runtimeScene, context) {\n"
+    +"context.startNewFrame();\n"
     +globalObjectListsReset+"\n"
 	+codeGenerator.GetCustomCodeInMain()
     +wholeEventsCode
@@ -417,7 +418,7 @@ std::string EventsCodeGenerator::GenerateObjectsDeclarationCode(gd::EventsCodeGe
             if (context.GetParentContext())
                 declarationsCode += ".createFrom("+GetObjectListName(*it, *context.GetParentContext())+");\n";
             else
-                std::cout << "ERROR: During code generation, a context tried tried to use an alreadu declared object list without having a parent" << std::endl;
+                std::cout << "ERROR: During code generation, a context tried tried to use an already declared object list without having a parent" << std::endl;
         }
     }
     for ( set<string>::iterator it = context.GetObjectsListsToBeDeclaredEmpty().begin() ; it != context.GetObjectsListsToBeDeclaredEmpty().end(); ++it )
@@ -433,7 +434,7 @@ std::string EventsCodeGenerator::GenerateObjectsDeclarationCode(gd::EventsCodeGe
             if (context.GetParentContext())
                 declarationsCode += ".createFrom("+GetObjectListName(*it, *context.GetParentContext())+");\n";
             else
-                std::cout << "ERROR: During code generation, a context tried tried to use an alreadu declared object list without having a parent" << std::endl;
+                std::cout << "ERROR: During code generation, a context tried tried to use an already declared object list without having a parent" << std::endl;
         }
     }
 
@@ -489,7 +490,7 @@ std::string EventsCodeGenerator::GenerateParameterCodes(const std::string & para
     {
         std::vector<std::string> realObjects = ExpandObjectsName(parameter, context);
 
-        argOutput += "gdjs.evtTools.common.clearEventsObjectsMap()";
+        argOutput += "context.clearEventsObjectsMap()";
         for (unsigned int i = 0;i<realObjects.size();++i)
         {
             context.ObjectsListNeeded(realObjects[i]);
@@ -502,7 +503,7 @@ std::string EventsCodeGenerator::GenerateParameterCodes(const std::string & para
     {
         std::vector<std::string> realObjects = ExpandObjectsName(parameter, context);
 
-        argOutput += "gdjs.evtTools.common.clearEventsObjectsMap()";
+        argOutput += "context.clearEventsObjectsMap()";
         for (unsigned int i = 0;i<realObjects.size();++i)
         {
             context.EmptyObjectsListNeeded(realObjects[i]);

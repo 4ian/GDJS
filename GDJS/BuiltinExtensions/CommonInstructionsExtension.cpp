@@ -262,6 +262,23 @@ CommonInstructionsExtension::CommonInstructionsExtension()
     }
 
     {
+        class CodeGenerator : public gd::InstructionMetadata::ExtraInformation::CustomCodeGenerator
+        {
+            virtual std::string GenerateCode(gd::Instruction & instruction, gd::EventsCodeGenerator & codeGenerator, gd::EventsCodeGenerationContext & context)
+            {
+                unsigned int uniqueId = (unsigned int)&instruction;
+                std::string outputCode = codeGenerator.GenerateBooleanFullName("conditionTrue", context)+".val = ";
+                outputCode += "context.triggerOnce("+ToString(uniqueId)+");\n";
+                return outputCode;
+            };
+        };
+        gd::InstructionMetadata::ExtraInformation::CustomCodeGenerator * codeGen = new CodeGenerator;
+
+        GetAllConditions()["BuiltinCommonInstructions::Once"].codeExtraInformation.optionalCustomCodeGenerator =
+            boost::shared_ptr<gd::InstructionMetadata::ExtraInformation::CustomCodeGenerator>(codeGen);
+    }
+
+    {
         class CodeGen : public gd::EventMetadata::CodeGenerator
         {
             virtual std::string Generate(gd::BaseEvent & event_, gd::EventsCodeGenerator & codeGenerator, gd::EventsCodeGenerationContext & parentContext)
