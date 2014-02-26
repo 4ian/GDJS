@@ -266,7 +266,7 @@ CommonInstructionsExtension::CommonInstructionsExtension()
         {
             virtual std::string GenerateCode(gd::Instruction & instruction, gd::EventsCodeGenerator & codeGenerator, gd::EventsCodeGenerationContext & context)
             {
-                unsigned int uniqueId = (unsigned int)&instruction;
+                size_t uniqueId = (size_t)&instruction;
                 std::string outputCode = codeGenerator.GenerateBooleanFullName("conditionTrue", context)+".val = ";
                 outputCode += "context.triggerOnce("+ToString(uniqueId)+");\n";
                 return outputCode;
