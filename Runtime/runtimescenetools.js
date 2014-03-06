@@ -87,7 +87,7 @@ gdjs.evtTools.runtimeScene.getTimeFromStartInSeconds = function(runtimeScene) {
     return runtimeScene.getTimeFromStart()/1000;
 };
 
-gdjs.evtTools.runtimeScene.getTime = function(what) {
+gdjs.evtTools.runtimeScene.getTime = function(runtimeScene, what) {
     var now = new Date();
 
     if ( what === "hour" )

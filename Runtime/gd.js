@@ -23,7 +23,7 @@ var gdjs = gdjs || {
  */
 gdjs.rgbToHex = function(r, g, b) {
     return "" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-}
+};
 
 /**
  * Get a random integer between 0 and max.
@@ -32,8 +32,8 @@ gdjs.rgbToHex = function(r, g, b) {
  */
 gdjs.random = function(max) {
     if ( max <= 0 ) return 0;
-    return Math.floor((Math.random()*max));
-}
+    return Math.floor((Math.random()*(max+1)));
+};
 
 /**
  * Convert an angle in degrees to radians.
@@ -42,7 +42,7 @@ gdjs.random = function(max) {
  */
 gdjs.toRad = function(angleInDegrees) {
     return angleInDegrees/180*3.14159;
-}
+};
 
 /**
  * Convert an angle in radians to degrees.
@@ -51,7 +51,7 @@ gdjs.toRad = function(angleInDegrees) {
  */
 gdjs.toDegrees = function(angleInRadians) {
     return angleInRadians*180/3.14159;
-}
+};
 
 /**
  * Get the height of the document ( or of the viewport ) displayed in browser
@@ -66,7 +66,7 @@ gdjs.getDocHeight = function() {
         D.body.offsetHeight, D.documentElement.offsetHeight,
         D.body.clientHeight, D.documentElement.clientHeight
     );
-}
+};
 
 /**
  * Get the width of the document ( or of the viewport ) displayed in browser
@@ -80,7 +80,7 @@ gdjs.getDocWidth = function() {
         D.body.offsetWidth, D.documentElement.offsetWidth,
         D.body.clientWidth, D.documentElement.clientWidth
     );
-}
+};
 
 
 /**
@@ -102,7 +102,7 @@ gdjs.iterateOver = function(object, propertyName, func) {
         }
     }
     else func(object[propertyName]);
-}
+};
 
 /**
  * Register the runtime objects this.can be used in runtimeScene.<br>
@@ -123,7 +123,7 @@ gdjs.registerObjects = function() {
             }
         }
     }
-}
+};
 
 /**
  * Register the runtime automatisms that can be used bt runtimeObject.<br>
@@ -144,7 +144,7 @@ gdjs.registerAutomatisms = function() {
             }
         }
     }
-}
+};
 
 /**
  * Register the callbacks that will be called when a runtimeScene is loaded/unloaded or

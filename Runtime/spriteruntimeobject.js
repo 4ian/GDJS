@@ -274,10 +274,8 @@ gdjs.SpriteRuntimeObject.prototype._updatePIXITexture = function() {
  * @method updateTime
  */
 gdjs.SpriteRuntimeObject.prototype.updateTime = function(elapsedTime) {
-    if ( this._animationPaused ) return;
-
     var oldFrame = this._currentFrame;
-    this._frameElapsedTime += elapsedTime;
+    this._frameElapsedTime += this._animationPaused ? 0 : elapsedTime;
 
     if ( this._currentAnimation >= this._animations.length ||
          this._currentDirection >= this._animations[this._currentAnimation].directions.length) {
@@ -411,6 +409,9 @@ gdjs.SpriteRuntimeObject.prototype.getDirectionOrAngle = function() {
     }
 };
 
+/**
+ * Change the current frame displayed by the animation
+ */
 gdjs.SpriteRuntimeObject.prototype.setAnimationFrame = function(newFrame) {
     if ( this._currentAnimation >= this._animations.length ||
          this._currentDirection >= this._animations[this._currentAnimation].directions.length) {
@@ -418,11 +419,18 @@ gdjs.SpriteRuntimeObject.prototype.setAnimationFrame = function(newFrame) {
     }
     var direction = this._animations[this._currentAnimation].directions[this._currentDirection];
 
-    if ( newFrame > 0 && newFrame < direction.frames.length && newFrame != this._currentFrame ) {
+    if ( newFrame >= 0 && newFrame < direction.frames.length && newFrame != this._currentFrame ) {
         this._currentFrame = newFrame;
         this._textureDirty = true;
         this.hitBoxesDirty = true;
     }
+};
+
+/**
+ * Get the index of the current frame displayed by the animation
+ */
+gdjs.SpriteRuntimeObject.prototype.getAnimationFrame = function() {
+    return this._currentFrame;
 };
 
 /**

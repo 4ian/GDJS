@@ -59,13 +59,13 @@ gdjs.RuntimeObject = function(runtimeScene, objectData)
         this.clearForces();
 
     //A force returned by getAverageForce method:
-    if (this._averageForce == undefined) this._averageForce = new gdjs.Force(0,0,false);
+    if (this._averageForce === undefined) this._averageForce = new gdjs.Force(0,0,false);
 
     //Automatisms:
-    if (this._automatisms == undefined)
+    if (this._automatisms === undefined)
         this._automatisms = []; //Contains the automatisms of the object
 
-    if (this._automatismsTable == undefined)
+    if (this._automatismsTable === undefined)
         this._automatismsTable = new Hashtable(); //Also contains the automatisms: Used when an automatism is accessed by its name ( see getAutomatism ).
     else
         this._automatismsTable.clear();

@@ -35,7 +35,7 @@ gdjs.evtTools.network.sendHttpRequest = function(host, uri, body, method, conten
 	    }
 
 	    if ( xhr === undefined ) return;
-	     
+
 	    xhr.open(method, host+uri, false);
 	    xhr.setRequestHeader( "Content-Type", contentType === "" ? "application/x-www-form-urlencoded" : contentType );
 	    xhr.send(body);
@@ -95,7 +95,10 @@ gdjs.evtTools.network._objectToVariable = function(obj, variable)
 gdjs.evtTools.network.jsonToVariableStructure = function(jsonStr, variable)
 {
     if ( jsonStr.length === 0 ) return;
-	var obj = JSON.parse(jsonStr);
-
-	gdjs.evtTools.network._objectToVariable(obj, variable);
+    try {
+		var obj = JSON.parse(jsonStr);
+		gdjs.evtTools.network._objectToVariable(obj, variable);
+	} catch(e) {
+		//Do nothing iF JSON was not properly parsed;
+	}
 }
