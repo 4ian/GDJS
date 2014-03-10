@@ -29,7 +29,7 @@ gdjs.ImageManager.prototype.getPIXITexture = function(name) {
 	if ( this._loadedTextures.containsKey(name) ) {
 		return this._loadedTextures.get(name);
 	}
-	if ( name == "" ) {
+	if ( name === "" ) {
 		return this._invalidTexture;
 	}
 
@@ -90,11 +90,11 @@ gdjs.ImageManager.prototype.getPowerOf2PIXITexture = function(name) {
 
     return pixiTexture;
 };
- 
+
 function isPowerOfTwo(x) {
     return (x & (x - 1)) == 0;
 }
- 
+
 function nearestPowerOf2(x) {
     return Math.pow(2, Math.round(Math.log(x) / Math.LN2));
 }

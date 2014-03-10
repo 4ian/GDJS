@@ -3,7 +3,6 @@
 // Do not modify this file by hand!
 //////////////////////////////////////////////////////////////////////
 
-#if defined(GD_IDE_ONLY) && !defined(GD_NO_WX_GUI)
 #ifndef GDJS_BASE_CLASSES_H
 #define GDJS_BASE_CLASSES_H
 
@@ -67,6 +66,11 @@ protected:
     wxStaticText* ID_STATICTEXT1;
     wxStaticText* ID_STATICTEXT3;
     wxHyperlinkCtrl* ID_HYPERLINKCTRL2;
+    wxPanel* m_panel118;
+    wxPanel* cocoonjslogoPanel22;
+    wxStaticBitmap* m_staticBitmap5744;
+    wxStaticText* m_staticText6555;
+    wxStaticText* m_staticText6768;
     wxPanel* m_panel71;
     wxPanel* cocoonjslogoPanel2;
     wxStaticBitmap* m_staticBitmap574;
@@ -107,5 +111,4 @@ public:
     virtual ~BaseCocoonJSUploadDialog();
 };
 
-#endif
 #endif

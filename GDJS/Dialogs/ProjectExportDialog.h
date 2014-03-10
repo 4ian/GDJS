@@ -29,6 +29,7 @@ public:
     {
         Normal,
         GameDevShare,
+        IntelXDK,
         CocoonJS
     };
 

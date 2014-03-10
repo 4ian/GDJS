@@ -164,7 +164,7 @@ bool Exporter::ExportLayoutForPreview(gd::Layout & layout, std::string exportDir
     ExportIncludesAndLibs(includesFiles, exportDir, false);
 
     //Create the index file
-    if ( !ExportIndexFile(exportedProject, exportDir, includesFiles) ) return false;
+    if ( !ExportStandardIndexFile(exportedProject, exportDir, includesFiles) ) return false;
     #else
     gd::LogWarning("BAD USE: Exporter::ExportLayoutForPreview cannot be used");
     #endif
@@ -298,9 +298,10 @@ bool Exporter::ExportMetadataFile(gd::Project & project, std::string exportDir, 
     return true;
 }
 
-bool Exporter::ExportIndexFile(gd::Project & project, std::string exportDir, const std::vector<std::string> & includesFiles, std::string additionalSpec)
+bool Exporter::ExportStandardIndexFile(gd::Project & project, std::string exportDir, const std::vector<std::string> & includesFiles, std::string additionalSpec)
 {
     #if !defined(GD_NO_WX_GUI)
+    //Open the index.html template
     std::ifstream t("./JsPlatform/Runtime/index.html");
     std::stringstream buffer;
     buffer << t.rdbuf();
@@ -311,13 +312,123 @@ bool Exporter::ExportIndexFile(gd::Project & project, std::string exportDir, con
     std::string customHtml;
     GenerateFontsDeclaration(exportDir, customCss, customHtml);
 
-    size_t pos = str.find("<!-- GDJS_CUSTOM_STYLE -->");
+    //Generate the file
+    if ( !CompleteIndexFile(str, customCss, customHtml, exportDir, includesFiles, additionalSpec) )
+        return false;
+
+    //Write the index.html file
+    std::ofstream file;
+    file.open ( std::string(exportDir+"/index.html").c_str() );
+    if ( file.is_open() ) {
+        file << str;
+        file.close();
+    }
+    else {
+        lastError = "Unable to write index file.";
+        return false;
+    }
+    #else
+    gd::LogWarning("BAD USE: Exporter::ExportStandardIndexFile is not available");
+    #endif
+
+    return true;
+}
+
+bool Exporter::ExportIntelXDKIndexFile(gd::Project & project, std::string exportDir, const std::vector<std::string> & includesFiles, std::string additionalSpec)
+{
+    #if !defined(GD_NO_WX_GUI)
+    {
+        //Open the index.html template
+        std::ifstream t("./JsPlatform/Runtime/XDKindex.html");
+        std::stringstream buffer;
+        buffer << t.rdbuf();
+        std::string str = buffer.str();
+
+        //Generate custom declarations for font resources
+        std::string customCss;
+        std::string customHtml;
+        GenerateFontsDeclaration(exportDir, customCss, customHtml);
+
+        //Generate the file
+        if ( !CompleteIndexFile(str, customCss, customHtml, exportDir, includesFiles, additionalSpec) )
+            return false;
+
+        //Write the index.html file
+        std::ofstream file;
+        file.open ( std::string(exportDir+"/index.html").c_str() );
+        if ( file.is_open() ) {
+            file << str;
+            file.close();
+        }
+        else {
+            lastError = "Unable to write index file.";
+            return false;
+        }
+    }
+    {
+        //Open the XDK project file template
+        std::ifstream t("./JsPlatform/Runtime/XDKProject.xdk");
+        std::stringstream buffer;
+        buffer << t.rdbuf();
+        std::string str = buffer.str();
+
+        //Complete the project file
+        std::string nowTimeStamp = gd::ToString(wxDateTime::Now().GetTicks());
+        size_t pos = str.find("\"GDJS_LAST_MODIFIED\"");
+        if ( pos < str.length() )
+            str = str.replace(pos, 20, nowTimeStamp);
+        else
+        {
+            std::cout << "Unable to find \"GDJS_LAST_MODIFIED\" in the project file." << std::endl;
+            lastError = "Unable to find \"GDJS_LAST_MODIFIED\" in the project file.";
+            return false;
+        }
+        pos = str.find("\"GDJS_CREATION\"");
+        if ( pos < str.length() )
+            str = str.replace(pos, 20, nowTimeStamp);
+        else
+        {
+            std::cout << "Unable to find \"GDJS_CREATION\" in the project file." << std::endl;
+            lastError = "Unable to find \"GDJS_CREATION\" in the project file.";
+            return false;
+        }
+
+        //Write the file
+        std::ofstream file;
+        file.open ( std::string(exportDir+"/XDKProject.xdk").c_str() );
+        if ( file.is_open() ) {
+            file << str;
+            file.close();
+        }
+        else {
+            lastError = "Unable to write the intel XDK project file.";
+            return false;
+        }
+    }
+    {
+        wxLogNull noLogPlease;
+        if ( !wxCopyFile("./JsPlatform/Runtime/XDKProject.xdke", exportDir+"/XDKProject.xdke", true) )
+        {
+            lastError = "Unable to write the intel XDK second project file.";
+            return false;
+        }
+    }
+    #else
+    gd::LogWarning("BAD USE: Exporter::ExportIntelXDKIndexFile is not available");
+    #endif
+
+    return true;
+}
+
+bool Exporter::CompleteIndexFile(std::string & str, std::string customCss, std::string customHtml, std::string exportDir, const std::vector<std::string> & includesFiles, std::string additionalSpec)
+{
+    size_t pos = str.find("/* GDJS_CUSTOM_STYLE */");
     if ( pos < str.length() )
-        str = str.replace(pos, 26, customCss);
+        str = str.replace(pos, 23, customCss);
     else
     {
-        std::cout << "Unable to find <!-- GDJS_CUSTOM_STYLE --> in index file." << std::endl;
-        lastError = "Unable to find <!-- GDJS_CUSTOM_STYLE --> in index file.";
+        std::cout << "Unable to find /* GDJS_CUSTOM_STYLE */ in index file." << std::endl;
+        lastError = "Unable to find /* GDJS_CUSTOM_STYLE */ in index file.";
         return false;
     }
 
@@ -326,15 +437,14 @@ bool Exporter::ExportIndexFile(gd::Project & project, std::string exportDir, con
         str = str.replace(pos, 25, customHtml);
     else
     {
-        std::cout << "Unable to find <!-- GDJS_CUSTOM_STYLE --> in index file." << std::endl;
-        lastError = "Unable to find <!-- GDJS_CUSTOM_STYLE --> in index file.";
+        std::cout << "Unable to find <!-- GDJS_CUSTOM_HTML --> in index file." << std::endl;
+        lastError = "Unable to find <!-- GDJS_CUSTOM_HTML --> in index file.";
         return false;
     }
 
     pos = str.find("<!-- GDJS_CODE_FILES -->");
     if ( pos < str.length() )
     {
-
         std::string codeFilesIncludes;
         for (std::vector<std::string>::const_iterator it = includesFiles.begin(); it != includesFiles.end(); ++it)
         {
@@ -371,22 +481,6 @@ bool Exporter::ExportIndexFile(gd::Project & project, std::string exportDir, con
         lastError = "Unable to find {}/*GDJS_ADDITIONAL_SPEC*/ in index file.";
         return false;
     }
-
-    {
-        std::ofstream file;
-        file.open ( std::string(exportDir+"/index.html").c_str() );
-        if ( file.is_open() ) {
-            file << str;
-            file.close();
-        }
-        else {
-            lastError = "Unable to write index file.";
-            return false;
-        }
-    }
-    #else
-    gd::LogWarning("BAD USE: Exporter::ExportIndexFile is not available");
-    #endif
 
     return true;
 }
@@ -593,6 +687,7 @@ void Exporter::ShowProjectExportDialog(gd::Project & project)
 
     bool exportForGDShare = dialog.GetExportType() == ProjectExportDialog::GameDevShare;
     bool exportForCocoonJS = dialog.GetExportType() == ProjectExportDialog::CocoonJS;
+    bool exportForIntelXDK = dialog.GetExportType() == ProjectExportDialog::IntelXDK;
     bool exportToZipFile = exportForGDShare || exportForCocoonJS;
     bool minify = dialog.RequestMinify();
     std::string exportDir = dialog.GetExportDir();
@@ -624,7 +719,7 @@ void Exporter::ShowProjectExportDialog(gd::Project & project)
 
         progressDialog.Update(60, _("Preparing the project..."));
 
-        //Strip the project ( *after* generating events as the events may use stripped things ( objects groups... ) )...
+        //Strip the project (*after* generating events as the events may use stripped things like objects groups...)...
         StripProject(exportedProject);
 
         progressDialog.Update(70, _("Exporting files..."));
@@ -639,8 +734,12 @@ void Exporter::ShowProjectExportDialog(gd::Project & project)
         //Copy all dependencies and the index (or metadata) file.
         std::string additionalSpec = exportForCocoonJS ? "{forceFullscreen:true}" : "";
         ExportIncludesAndLibs(includesFiles, exportDir, minify);
-        if ( (!exportForGDShare && !ExportIndexFile(exportedProject, exportDir, includesFiles, additionalSpec)) ||
-             (exportForGDShare && !ExportMetadataFile(exportedProject, exportDir, includesFiles)) )
+        bool indexFile = false;
+        if (exportForIntelXDK) indexFile = ExportIntelXDKIndexFile(exportedProject, exportDir, includesFiles, additionalSpec);
+        else if (exportForGDShare) indexFile = ExportMetadataFile(exportedProject, exportDir, includesFiles);
+        else indexFile = ExportStandardIndexFile(exportedProject, exportDir, includesFiles, additionalSpec);
+
+        if ( !indexFile)
         {
             gd::LogError(_("Error during exporting:\n"+lastError));
             return;
@@ -693,6 +792,12 @@ void Exporter::ShowProjectExportDialog(gd::Project & project)
     {
         CocoonJSUploadDialog uploadDialog(NULL, exportDir+wxFileName::GetPathSeparator()+"packaged_game.zip");
         uploadDialog.ShowModal();
+    }
+    else if ( exportForIntelXDK )
+    {
+        //TODO
+        /*CocoonJSUploadDialog uploadDialog(NULL, exportDir+wxFileName::GetPathSeparator()+"packaged_game.zip");
+        uploadDialog.ShowModal();*/
     }
     else
     {

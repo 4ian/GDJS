@@ -42,10 +42,14 @@ gdjs.RuntimeGame = function(data, spec)
     this._defaultHeight = parseInt(gdjs.projectData.Project.Info.WindowH.attr.value, 10);
     this._currentWidth = parseInt(gdjs.projectData.Project.Info.WindowW.attr.value, 10); //Current size of the canvas
     this._currentHeight = parseInt(gdjs.projectData.Project.Info.WindowH.attr.value, 10);
-    
-    if ( navigator.isCocoonJS && !this._forceFullscreen ) { 
+
+    if (navigator.isCocoonJS && !this._forceFullscreen) {
         this._forceFullscreen = true;
         console.log("Forcing fullscreen for CocoonJS.");
+    }
+    if ( typeof intel != "undefined" ) {
+        this._forceFullscreen = true;
+        console.log("Forcing fullscreen for Intel XDK.");
     }
 
     //Inputs :
@@ -322,7 +326,7 @@ gdjs.RuntimeGame.prototype.getMinimalFramerate = function() {
 	return this._minFPS;
 };
 
-/** 
+/**
  * Add the standard events handler.
  * Be sure that the game has a renderer (See createStandardRenderer).
  * @method bindStandardEvents
@@ -335,7 +339,7 @@ gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document) {
 
     var isMSIE = /*@cc_on!@*/0;
     this._renderer.view.style.cssText="idtkscale:'ScaleAspectFill';"; //CocoonJS support
-        
+
     var game = this;
     document.onkeydown = function(e) {
         game.onKeyPressed(e.keyCode);
@@ -483,7 +487,7 @@ gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document) {
     }, false);
 };
 
-/** 
+/**
  * De/activate fullscreen for the canvas rendering the game.
  * @method setFullScreen
  */
@@ -517,7 +521,7 @@ gdjs.RuntimeGame.prototype.setFullScreen = function(enable) {
     }
 };
 
-/** 
+/**
  * Create a standard canvas inside canvasArea.
  * The game keep a reference to this canvas and will renderer in it.
  *
@@ -538,15 +542,15 @@ gdjs.RuntimeGame.prototype.createStandardCanvas = function(canvasArea) {
     //Handle resize
     var game = this;
     window.addEventListener("resize", function() {
-        game._resizeCanvas(game._renderer, game._canvasArea, this._forceFullscreen || game._isFullscreen, 
+        game._resizeCanvas(game._renderer, game._canvasArea, this._forceFullscreen || game._isFullscreen,
             game._currentWidth, game._currentHeight);
         game._notifySceneForResize = true;
     });
-    
+
     return this._renderer;
 };
 
-/** 
+/**
  * Resize the canvas. Parameters width or height are ignored if isFullscreen === true.
  *
  * @method _resizeCanvas
@@ -566,7 +570,7 @@ gdjs.RuntimeGame.prototype._resizeCanvas = function(renderer, canvasArea, isFull
     canvasArea.style.height = height+"px";
 };
 
-/** 
+/**
  * Load all assets, displaying progress in renderer.
  * @method loadAllAssets
  */
@@ -579,14 +583,14 @@ gdjs.RuntimeGame.prototype.loadAllAssets = function(callback) {
     text.position.x = this._renderer.width/2-50;
     text.position.y = this._renderer.height/2;
     var loadingCount = 0;
-    
+
     var assets = [];
     gdjs.iterateOver(gdjs.projectData.Project.Resources.Resources, "Resource", function(res) {
         if ( res.attr.file ) {
             assets.push(res.attr.file);
         }
     });
-    
+
     var game = this;
     if ( assets.length !== 0 ) {
         var assetLoader = new PIXI.AssetLoader(assets);
@@ -597,11 +601,11 @@ gdjs.RuntimeGame.prototype.loadAllAssets = function(callback) {
     else {
         onAssetsLoaded();
     }
-    
+
     function onAssetsLoaded() {
         callback();
     }
-    
+
     function onAssetsLoadingProgress() {
         game._renderer.render(loadingStage);
         loadingCount++;
@@ -609,7 +613,7 @@ gdjs.RuntimeGame.prototype.loadAllAssets = function(callback) {
     }
 };
 
-/** 
+/**
  * Launch the game, displayed in the renderer associated to the game (see createStandardCanvas).<br>
  * The method returns when the game is closed.
  * @method startStandardGameLoop
@@ -625,11 +629,11 @@ gdjs.RuntimeGame.prototype.startStandardGameLoop = function() {
     var currentScene = new gdjs.RuntimeScene(this, this._renderer);
     var firstSceneName = gdjs.projectData.Project.Scenes.attr.firstScene;
     var firstsceneData = this.hasScene(firstSceneName) ? this.getSceneData(firstSceneName) : this.getSceneData();
-        
+
     currentScene.loadFromScene(firstsceneData);
-    
+
     requestAnimFrame(gameLoop);
-    
+
     //The standard game loop
     var game = this;
     function gameLoop() {

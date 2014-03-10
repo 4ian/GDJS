@@ -22,7 +22,7 @@ ProjectExportDialog::ProjectExportDialog(wxWindow* parent, gd::Project & project
     project(project_)
 {
     //TODO: Remove when CocoonJS support is fully working.
-    exportChoice->RemovePage(2);
+    exportChoice->RemovePage(3);
 
     exportFolderEdit->AutoCompleteDirectories();
     if ( wxDirExists(project.GetLastCompilationDirectory()) )
@@ -56,6 +56,8 @@ ProjectExportDialog::ExportType ProjectExportDialog::GetExportType()
         case 0:
             return GameDevShare;
         case 2:
+            return IntelXDK;
+        case 3:
             return CocoonJS;
         default:
             return Normal;

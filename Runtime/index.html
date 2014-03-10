@@ -1,4 +1,4 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
 <head>
 	<style>
@@ -6,15 +6,15 @@
 			margin: 0;
 			padding: 0;
 			background-color: #000000;
-            overflow: hidden; 
+            overflow: hidden;
 		}
         #canvasArea {
             margin-left: auto;
             margin-right: auto;
-            overflow: hidden;        
+            overflow: hidden;
         }
-        
-        <!-- GDJS_CUSTOM_STYLE -->
+
+        /* GDJS_CUSTOM_STYLE */
 	</style>
     <!-- Libs and GDJS core files : -->
 	<!-- GDJS_CODE_FILES -->
@@ -25,7 +25,7 @@
 
     <!-- GDJS_CUSTOM_HTML -->
 	<script>
-    
+
     (function() {
         //Initialization
         gdjs.registerObjects();
@@ -33,14 +33,14 @@
         gdjs.registerGlobalCallbacks();
 
         var game = new gdjs.RuntimeGame(gdjs.projectData.Project, {}/*GDJS_ADDITIONAL_SPEC*/);
-    
+
         //Create a renderer
         var canvasArea = document.getElementById("canvasArea");
         game.createStandardCanvas(canvasArea);
-        
+
         //Bind keyboards/mouse/touch events
         game.bindStandardEvents(window, document);
-        
+
         //Load all assets and start the game
         game.loadAllAssets(onAssetsLoaded);
         function onAssetsLoaded() {
@@ -49,5 +49,5 @@
     })();
 
 	</script>
-	</body>
+</body>
 </html>

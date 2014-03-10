@@ -117,7 +117,7 @@ private:
     bool ExportEventsCode(gd::Project & project, std::string outputDir, std::vector<std::string> & includesFiles);
 
     /**
-     * \brief Generate the index file and save it to the export directory.
+     * \brief Generate the standard index file and save it to the export directory.
      *
      * The includes files must be relative to the export directory.
      *
@@ -126,7 +126,31 @@ private:
      * \param includesFiles The JS files to be included in the HTML file. Order is important.
      * \param additionalSpec JSON string that will be passed to the gdjs.RuntimeGame object.
      */
-    bool ExportIndexFile(gd::Project & project, std::string exportDir, const std::vector<std::string> & includesFiles, std::string additionalSpec = "");
+    bool ExportStandardIndexFile(gd::Project & project, std::string exportDir, const std::vector<std::string> & includesFiles, std::string additionalSpec = "");
+
+    /**
+     * \brief Generate the standard index file for use with Intel XDK and save it to the export directory.
+     *
+     * The includes files must be relative to the export directory.
+     *
+     * \param project The project with layouts to be exported.
+     * \param exportDir The directory where the project must be generated.
+     * \param includesFiles The JS files to be included in the HTML file. Order is important.
+     * \param additionalSpec JSON string that will be passed to the gdjs.RuntimeGame object.
+     */
+    bool ExportIntelXDKIndexFile(gd::Project & project, std::string exportDir, const std::vector<std::string> & includesFiles, std::string additionalSpec = "");
+
+    /**
+     * \brief Replace the annotations in a index.html file by the specified content.
+     *
+     * \param indexFileContent The source of the index.html file.
+     * \param customCss "<!-- GDJS_CUSTOM_STYLE -->" will be replaced by the content of the string.
+     * \param customHtml "<!-- GDJS_CUSTOM_HTML -->" will be replaced by the content of the string.
+     * \param exportDir The directory where the project must be generated.
+     * \param codeFilesIncludes "<!-- GDJS_CODE_FILES -->" will be replaced by HTML tags to include the filenames contained inside the vector.
+     * \param additionalSpec The string "GDJS_ADDITIONAL_SPEC" surrounded by comments marks will be replaced by the content of the string.
+     */
+    bool CompleteIndexFile(std::string & indexFileContent, std::string customCss, std::string customHtml, std::string exportDir, const std::vector<std::string> & includesFiles, std::string additionalSpec);
 
     /**
      * \brief Generate the metadata file and save it to the export directory.

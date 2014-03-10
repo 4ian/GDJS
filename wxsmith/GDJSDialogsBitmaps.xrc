@@ -3,4 +3,5 @@
   <object class="wxBitmap" name="cocoonjslogo">..\..\Binaries\Output\Release\res\cocoonjslogo.png</object>
   <object class="wxBitmap" name="gdsharelogo">..\..\Binaries\Output\Release\res\gdsharelogo.png</object>
   <object class="wxBitmap" name="helpicon">..\..\Binaries\Output\Release\res\helpicon.png</object>
+  <object class="wxBitmap" name="intelxdklogo">..\..\Binaries\Output\Release\res\intelxdklogo.png</object>
 </resource>
