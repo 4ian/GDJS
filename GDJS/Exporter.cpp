@@ -795,7 +795,7 @@ void Exporter::ShowProjectExportDialog(gd::Project & project)
     }
     else if ( exportForIntelXDK )
     {
-        //TODO
+        //TODO: Not finished.
         /*CocoonJSUploadDialog uploadDialog(NULL, exportDir+wxFileName::GetPathSeparator()+"packaged_game.zip");
         uploadDialog.ShowModal();*/
     }
