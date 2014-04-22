@@ -43,7 +43,7 @@ CommonInstructionsExtension::CommonInstructionsExtension()
         class CodeGen : public gd::EventMetadata::CodeGenerator
         {
             virtual void Preprocess(gd::BaseEvent & event_, gd::EventsCodeGenerator & codeGenerator,
-                                    std::vector < gd::BaseEventSPtr > & eventList, unsigned int indexOfTheEventInThisList)
+                                    gd::EventsList & eventList, unsigned int indexOfTheEventInThisList)
             {
                 gd::LinkEvent & event = dynamic_cast<gd::LinkEvent&>(event_);
                 event.ReplaceLinkByLinkedEvents(codeGenerator.GetProject(), eventList, indexOfTheEventInThisList);

@@ -3,6 +3,7 @@
  * Copyright 2008-2014 Florian Rival (Florian.Rival@gmail.com). All rights reserved.
  * This project is released under the GNU Lesser General Public License.
  */
+#if !defined(EMSCRIPTEN)
 #include <sstream>
 #include <fstream>
 #include <streambuf>
@@ -422,6 +423,7 @@ bool Exporter::ExportIntelXDKIndexFile(gd::Project & project, std::string export
 
 bool Exporter::CompleteIndexFile(std::string & str, std::string customCss, std::string customHtml, std::string exportDir, const std::vector<std::string> & includesFiles, std::string additionalSpec)
 {
+    #if !defined(GD_NO_WX_GUI)
     size_t pos = str.find("/* GDJS_CUSTOM_STYLE */");
     if ( pos < str.length() )
         str = str.replace(pos, 23, customCss);
@@ -482,6 +484,7 @@ bool Exporter::CompleteIndexFile(std::string & str, std::string customCss, std::
         return false;
     }
 
+    #endif
     return true;
 }
 
@@ -670,7 +673,7 @@ void Exporter::StripProject(gd::Project & strippedProject)
     for (unsigned int i = 0;i<strippedProject.GetLayoutCount();++i)
     {
         strippedProject.GetLayout(i).GetObjectGroups().clear();
-        strippedProject.GetLayout(i).GetEvents().clear();
+        strippedProject.GetLayout(i).GetEvents().Clear();
     }
 }
 
@@ -859,3 +862,4 @@ std::string Exporter::GetJavaExecutablePath()
 #endif
 
 }
+#endif

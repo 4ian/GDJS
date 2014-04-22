@@ -21,7 +21,7 @@ ENDIF()
 ###
 set(GD_base_dir ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(GDCORE_include_dir ${GD_base_dir}/Core)
-set(GDCORE_lib_dir ${GD_base_dir}/Binaries/Output/${CMAKE_BUILD_TYPE})
+set(GDCORE_lib_dir ${GD_base_dir}/Binaries/Output/${CMAKE_BUILD_TYPE}_${CMAKE_SYSTEM_NAME})
 set(boost_include_dir ${GD_base_dir}/ExtLibs/boost)
 set(sfml_include_dir ${GD_base_dir}/ExtLibs/SFML/include)
 IF(WIN32) #Special case for wxWidgets on Windows
@@ -94,11 +94,13 @@ ENDIF(WIN32)
 #The target
 ###
 include_directories(.)
-file(
-        GLOB_RECURSE
-        source_files
-        GDJS/*
-)
+file(GLOB f1 GDJS/*)
+file(GLOB_RECURSE f2 GDJS/Bindings/* GDJS/BuiltinExtensions/* GDJS/mongoose/*)
+set(source_files ${f1} ${f2})
+IF(NOT EMSCRIPTEN)
+file(GLOB_RECURSE f3 GDJS/Dialogs/*)
+set(source_files ${source_files} ${f3})
+ENDIF()
 
 add_library(
         GDJS
@@ -113,9 +115,9 @@ IF(WIN32)
 ELSE()
 	set_target_properties(GDJS PROPERTIES PREFIX "lib")
 ENDIF(WIN32)
-set(LIBRARY_OUTPUT_PATH ${GD_base_dir}/Binaries/Output/${CMAKE_BUILD_TYPE}/JsPlatform)
-set(ARCHIVE_OUTPUT_PATH ${GD_base_dir}/Binaries/Output/${CMAKE_BUILD_TYPE}/JsPlatform)
-set(RUNTIME_OUTPUT_PATH ${GD_base_dir}/Binaries/Output/${CMAKE_BUILD_TYPE}/JsPlatform)
+set(LIBRARY_OUTPUT_PATH ${GD_base_dir}/Binaries/Output/${CMAKE_BUILD_TYPE}_${CMAKE_SYSTEM_NAME}/JsPlatform)
+set(ARCHIVE_OUTPUT_PATH ${GD_base_dir}/Binaries/Output/${CMAKE_BUILD_TYPE}_${CMAKE_SYSTEM_NAME}/JsPlatform)
+set(RUNTIME_OUTPUT_PATH ${GD_base_dir}/Binaries/Output/${CMAKE_BUILD_TYPE}_${CMAKE_SYSTEM_NAME}/JsPlatform)
 
 #Linker files
 ###

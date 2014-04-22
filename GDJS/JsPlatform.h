@@ -51,12 +51,12 @@ public:
      * then launch the preview in an external browser
      */
     virtual boost::shared_ptr<gd::LayoutEditorPreviewer> GetLayoutPreviewer(gd::LayoutEditorCanvas & editor) const;
-    #endif
 
     /**
      * \brief Expose to the IDE how to export games.
      */
     virtual boost::shared_ptr<gd::ProjectExporter> GetProjectExporter() const;
+    #endif
 
     /**
      * \brief When the IDE is ready, start the tiny web server used for preview.

@@ -136,15 +136,15 @@
 
   \image html images/usecmake3.png
 
- * - You can then launch a terminal/command prompt, go to the *.build* folder ( `cd SDKFolder/Binaries/.build` ) and launch the build 
+ * - You can then launch a terminal/command prompt, go to the *.build* folder ( `cd SDKFolder/Binaries/.build` ) and launch the build
  * using the generator you've choosen: `mingw32-make`, or `make` on Linux.
  *
- * Binaries are created into *Binaries/Output/Release* folder.
- * 
+ * Binaries are created into *Binaries/Output/Release_{OS}* folder, where {OS} can be Windows or Linux for example.
+ *
  * \subsection installAndUseCMake_use_cmd Using the command line
  *
  * Using the commandline with CMake is also easy:
- * 
+ *
  * ~~~~~~~~~~~~~~~~~~~~~
  * cd SDKFolder/Binaries
  * mkdir .build
@@ -162,7 +162,7 @@
  * ninja
  * ~~~~~~~~~~~~~~~~~~~~~
  *
- * Binaries are of course also created into *Binaries/Output/Release* folder.<br>
+ * Binaries are of course also created into *Binaries/Output/Release_{OS}* folder.<br>
  * ( For linux, this is the directory where you put the files of Game Develop )
  */
 
@@ -193,8 +193,8 @@
  * If you didn't already downloaded Game Develop for Linux, do it now from [the official website](http://www.compilgames.net/) or
  * even directly from [this link](http://www.compilgames.net/dl/gdlinux.tar.bz2).<br>
  *
- * Then extract all the files inside the <b>GameDevelop</b> folder inside the *Binaries/Output/Release/ * folder
- * of the SDK. ( You should have files like libGDCore.so now present in Binaries/Output/Release )
+ * Then extract all the files inside the <b>GameDevelop</b> folder inside the *Binaries/Output/Release_Linux/ * folder
+ * of the SDK. ( You should have files like libGDCore.so now present in Binaries/Output/Release_Linux )
  *
  * \section download Download, (build) and install libraries
  *

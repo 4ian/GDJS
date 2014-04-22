@@ -92,7 +92,7 @@ void JsPlatform::OnIDEInitialized()
 {
     //Initializing the tiny web server used to preview the games
     #if !defined(GD_NO_WX_GUI)
-    std::cout << "Starting web server..." << std::endl;
+    std::cout << " * Starting web server..." << std::endl;
     std::string exportDir = gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSPreview/");
     httpServer.Run(exportDir);
     #endif
@@ -103,38 +103,42 @@ boost::shared_ptr<gd::LayoutEditorPreviewer> JsPlatform::GetLayoutPreviewer(gd::
 {
     return boost::shared_ptr<gd::LayoutEditorPreviewer>(new Previewer(editor.GetProject(), editor.GetLayout()));
 }
-#endif
 
 boost::shared_ptr<gd::ProjectExporter> JsPlatform::GetProjectExporter() const
 {
     return boost::shared_ptr<gd::ProjectExporter>(new Exporter);
 }
+#endif
 
 JsPlatform::JsPlatform() :
     gd::Platform()
 {
     //Adding built-in extensions.
-    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new BaseObjectExtension));
-    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new SpriteExtension));
-    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new CommonInstructionsExtension));
-    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new CommonConversionsExtension));
-    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new VariablesExtension));
-    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new MouseExtension));
-    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new KeyboardExtension));
-    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new JoystickExtension));
-    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new SceneExtension));
-    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new TimeExtension));
-    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new MathematicalToolsExtension));
-    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new CameraExtension));
-    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new AudioExtension));
-    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new FileExtension));
-    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new NetworkExtension));
-    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new WindowExtension));
-    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new StringInstructionsExtension));
-    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new AdvancedExtension));
-    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new ExternalLayoutsExtension));
+    std::cout << "* Loading builtin extensions... "; std::cout.flush();
+    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new BaseObjectExtension)); std::cout.flush();
+    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new SpriteExtension)); std::cout.flush();
+    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new CommonInstructionsExtension)); std::cout.flush();
+    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new CommonConversionsExtension)); std::cout.flush();
+    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new VariablesExtension)); std::cout.flush();
+    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new MouseExtension)); std::cout.flush();
+    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new KeyboardExtension)); std::cout.flush();
+    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new JoystickExtension)); std::cout.flush();
+    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new SceneExtension)); std::cout.flush();
+    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new TimeExtension)); std::cout.flush();
+    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new MathematicalToolsExtension)); std::cout.flush();
+    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new CameraExtension)); std::cout.flush();
+    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new AudioExtension)); std::cout.flush();
+    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new FileExtension)); std::cout.flush();
+    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new NetworkExtension)); std::cout.flush();
+    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new WindowExtension)); std::cout.flush();
+    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new StringInstructionsExtension)); std::cout.flush();
+    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new AdvancedExtension)); std::cout.flush();
+    AddExtension(boost::shared_ptr<gd::PlatformExtension>(new ExternalLayoutsExtension)); std::cout.flush();
+    std::cout << "done." << std::endl;
 
     //Add extensions adapted from GD C++ Platform:
+    #if !defined(EMSCRIPTEN) //except when compiling with emscripten
+    std::cout << "* Loading extensions based on GD C++ Platform... "; std::cout.flush();
     #if defined(WINDOWS)
     std::string extension = "xgdwe";
     #elif defined(LINUX)
@@ -142,14 +146,16 @@ JsPlatform::JsPlatform() :
     #else
     std::string extension = "xgde";
     #endif
-    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/TextObject."+extension, *this);
-    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/DraggableAutomatism."+extension, *this);
-    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/DestroyOutsideAutomatism."+extension, *this);
-    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/PhysicsAutomatism."+extension, *this);
-    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/LinkedObjects."+extension, *this);
-    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/TiledSpriteObject."+extension, *this);
-    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/PlatformAutomatism."+extension, *this);
-    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/PathfindingAutomatism."+extension, *this);
+    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/TextObject."+extension, *this); std::cout.flush();
+    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/DraggableAutomatism."+extension, *this); std::cout.flush();
+    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/DestroyOutsideAutomatism."+extension, *this); std::cout.flush();
+    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/PhysicsAutomatism."+extension, *this); std::cout.flush();
+    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/LinkedObjects."+extension, *this); std::cout.flush();
+    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/TiledSpriteObject."+extension, *this); std::cout.flush();
+    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/PlatformAutomatism."+extension, *this); std::cout.flush();
+    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/PathfindingAutomatism."+extension, *this); std::cout.flush();
+    std::cout << "done." << std::endl;
+    #endif
 };
 
 JsPlatform & JsPlatform::Get()

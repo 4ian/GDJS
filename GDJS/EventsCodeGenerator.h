@@ -39,7 +39,7 @@ public:
      */
     static std::string GenerateSceneEventsCompleteCode(gd::Project & project,
                                                        gd::Layout & scene,
-                                                       std::vector < gd::BaseEventSPtr > & events,
+                                                       gd::EventsList & events,
                                                        std::set < std::string > & includeFiles,
                                                        bool compilationForRuntime = false);
 

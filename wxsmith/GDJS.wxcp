@@ -729,7 +729,7 @@
 										}, {
 											"type":	"bitmapPicker",
 											"m_label":	"Bitmap File:",
-											"m_path":	"../../Binaries/Output/Release/res/helpicon.png"
+											"m_path":	"../../Binaries/Output/Release_Windows/res/helpicon.png"
 										}],
 									"m_events":	[],
 									"m_children":	[]
@@ -1497,7 +1497,7 @@
 																		}, {
 																			"type":	"bitmapPicker",
 																			"m_label":	"Bitmap File:",
-																			"m_path":	"../../Binaries/Output/Release/res/gdsharelogo.png"
+																			"m_path":	"../../Binaries/Output/Release_Windows/res/gdsharelogo.png"
 																		}],
 																	"m_events":	[],
 																	"m_children":	[]
@@ -2990,7 +2990,7 @@
 																		}, {
 																			"type":	"bitmapPicker",
 																			"m_label":	"Bitmap File:",
-																			"m_path":	"../../Binaries/Output/Release/res/intelxdklogo.png"
+																			"m_path":	"../../Binaries/Output/Release_Windows/res/intelxdklogo.png"
 																		}],
 																	"m_events":	[],
 																	"m_children":	[]
@@ -3514,7 +3514,7 @@
 																		}, {
 																			"type":	"bitmapPicker",
 																			"m_label":	"Bitmap File:",
-																			"m_path":	"../../Binaries/Output/Release/res/cocoonjslogo.png"
+																			"m_path":	"../../Binaries/Output/Release_Windows/res/cocoonjslogo.png"
 																		}],
 																	"m_events":	[],
 																	"m_children":	[]
@@ -3895,7 +3895,7 @@
 												}, {
 													"type":	"bitmapPicker",
 													"m_label":	"Bitmap File:",
-													"m_path":	"../../Binaries/Output/Release/res/helpicon.png"
+													"m_path":	"../../Binaries/Output/Release_Windows/res/helpicon.png"
 												}],
 											"m_events":	[],
 											"m_children":	[]
@@ -4492,7 +4492,7 @@
 												}, {
 													"type":	"bitmapPicker",
 													"m_label":	"Bitmap File:",
-													"m_path":	"../../Binaries/Output/Release/res/cocoonjslogo.png"
+													"m_path":	"../../Binaries/Output/Release_Windows/res/cocoonjslogo.png"
 												}],
 											"m_events":	[],
 											"m_children":	[]

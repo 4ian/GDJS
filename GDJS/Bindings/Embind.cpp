@@ -10,9 +10,11 @@
  */
 #if defined(EMSCRIPTEN)
 #include <emscripten/bind.h>
+#include "GDCore/PlatformDefinition/Layout.h"
+#include "GDCore/PlatformDefinition/Project.h"
 #include "GDCore/PlatformDefinition/Platform.h"
+#include "GDJS/EventsCodeGenerator.h"
 #include "GDJS/JsPlatform.h"
-#include "GDJS/Exporter.h"
 
 using namespace emscripten;
 using namespace gdjs;
@@ -27,10 +29,7 @@ JsPlatform & AsJSPlatform(gd::Platform & platform)
 
 }
 
-EMSCRIPTEN_BINDINGS(JsPlatform) {
-    class_<Exporter, base<gd::ProjectExporter>>("JsExporter")
-    	.function("exportLayoutForPreview", &Exporter::ExportLayoutForPreview)
-        ;
+EMSCRIPTEN_BINDINGS(gdjs_JsPlatform) {
 
     class_<JsPlatform, base<gd::Platform>>("JsPlatform")
         .constructor<>()
@@ -38,5 +37,11 @@ EMSCRIPTEN_BINDINGS(JsPlatform) {
         ;
 
     function("asJSPlatform", &gdjs::AsJSPlatform);
+}
+
+EMSCRIPTEN_BINDINGS(gdjs_EventsCodeGenerator) {
+        function("GenerateSceneEventsCompleteCode", &EventsCodeGenerator::GenerateSceneEventsCompleteCode)
+        ;
+
 }
 #endif
