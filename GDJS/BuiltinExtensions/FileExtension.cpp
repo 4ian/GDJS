@@ -4,6 +4,7 @@
  * This project is released under the GNU Lesser General Public License.
  */
 #include "FileExtension.h"
+#include "GDCore/BuiltinExtensions/AllBuiltinExtensions.h"
 #include "GDCore/IDE/ArbitraryResourceWorker.h"
 #include "GDCore/Events/EventsCodeGenerator.h"
 #include "GDCore/CommonTools.h"
@@ -14,13 +15,13 @@ namespace gdjs
 
 FileExtension::FileExtension()
 {
+    gd::BuiltinExtensionsImplementer::ImplementsFileExtension(*this);
+
     SetExtensionInformation("BuiltinFile",
                           _("Files"),
                           _("Built-in extension providing functions for storing data."),
                           "Florian Rival",
                           "Open source ( LGPL )");
-
-    CloneExtension("Game Develop C++ platform", "BuiltinFile");
 
     GetAllActions()["LoadFile"]
         .codeExtraInformation.SetFunctionName("gdjs.evtTools.storage.loadJSONFileFromStorage");

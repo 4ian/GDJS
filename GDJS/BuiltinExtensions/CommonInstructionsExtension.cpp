@@ -4,6 +4,7 @@
  * This project is released under the GNU Lesser General Public License.
  */
 #include "CommonInstructionsExtension.h"
+#include "GDCore/BuiltinExtensions/AllBuiltinExtensions.h"
 #include "GDCore/PlatformDefinition/Platform.h"
 #include "GDCore/PlatformDefinition/Project.h"
 #include "GDCore/PlatformDefinition/Layout.h"
@@ -31,13 +32,13 @@ namespace gdjs
 
 CommonInstructionsExtension::CommonInstructionsExtension()
 {
+    gd::BuiltinExtensionsImplementer::ImplementsCommonInstructionsExtension(*this);
+
     SetExtensionInformation("BuiltinCommonInstructions",
                           _("Standard events"),
                           _("Built-in extension providing standard events."),
                           "Florian Rival",
                           "Open source ( LGPL )");
-
-    CloneExtension("Game Develop C++ platform", "BuiltinCommonInstructions");
 
     {
         class CodeGen : public gd::EventMetadata::CodeGenerator

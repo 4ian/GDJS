@@ -4,6 +4,7 @@
  * This project is released under the GNU Lesser General Public License.
  */
 #include "AudioExtension.h"
+#include "GDCore/BuiltinExtensions/AllBuiltinExtensions.h"
 #include "GDCore/IDE/ArbitraryResourceWorker.h"
 #include "GDCore/Events/EventsCodeGenerator.h"
 #include "GDCore/CommonTools.h"
@@ -14,13 +15,13 @@ namespace gdjs
 
 AudioExtension::AudioExtension()
 {
+    gd::BuiltinExtensionsImplementer::ImplementsAudioExtension(*this);
+
     SetExtensionInformation("BuiltinAudio",
                           _("Audio"),
                           _("Builtin audio extension"),
                           "Florian Rival",
                           "Open source ( LGPL )");
-
-    CloneExtension("Game Develop C++ platform", "BuiltinAudio");
 
     GetAllActions()["PlaySound"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.sound.playSound");

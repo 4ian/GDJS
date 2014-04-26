@@ -4,6 +4,7 @@
  * This project is released under the GNU Lesser General Public License.
  */
 #include "MouseExtension.h"
+#include "GDCore/BuiltinExtensions/AllBuiltinExtensions.h"
 #include "GDCore/Events/EventsCodeGenerator.h"
 #include "GDCore/Events/EventsCodeGenerationContext.h"
 #include "GDCore/Events/ExpressionsCodeGeneration.h"
@@ -16,12 +17,13 @@ namespace gdjs
 
 MouseExtension::MouseExtension()
 {
+    gd::BuiltinExtensionsImplementer::ImplementsMouseExtension(*this);
+
     SetExtensionInformation("BuiltinMouse",
                           _("Mouse features"),
                           _("Built-in extensions allowing to use the mouse"),
                           "Florian Rival",
                           "Open source ( LGPL )");
-    CloneExtension("Game Develop C++ platform", "BuiltinMouse");
 
     GetAllConditions()["SourisX"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.input.getMouseX").SetIncludeFile("inputtools.h");

@@ -4,6 +4,7 @@
  * This project is released under the GNU Lesser General Public License.
  */
 #include "NetworkExtension.h"
+#include "GDCore/BuiltinExtensions/AllBuiltinExtensions.h"
 #include "GDCore/IDE/ArbitraryResourceWorker.h"
 #include "GDCore/Events/EventsCodeGenerator.h"
 #include "GDCore/CommonTools.h"
@@ -14,13 +15,13 @@ namespace gdjs
 
 NetworkExtension::NetworkExtension()
 {
+    gd::BuiltinExtensionsImplementer::ImplementsNetworkExtension(*this);
+
     SetExtensionInformation("BuiltinNetwork",
                           _("Basic internet features"),
                           _("Built-in extension providing network features."),
                           "Florian Rival",
                           "Open source ( LGPL )");
-
-    CloneExtension("Game Develop C++ platform", "BuiltinNetwork");
 
     GetAllActions()["SendRequest"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.network.sendHttpRequest").SetIncludeFile("networktools.js");

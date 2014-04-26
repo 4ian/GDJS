@@ -4,6 +4,7 @@
  * This project is released under the GNU Lesser General Public License.
  */
 #include "SceneExtension.h"
+#include "GDCore/BuiltinExtensions/AllBuiltinExtensions.h"
 #include "GDCore/Events/EventsCodeGenerator.h"
 #include "GDCore/Events/EventsCodeGenerationContext.h"
 #include "GDCore/Events/ExpressionsCodeGeneration.h"
@@ -16,12 +17,13 @@ namespace gdjs
 
 SceneExtension::SceneExtension()
 {
+    gd::BuiltinExtensionsImplementer::ImplementsSceneExtension(*this);
+
     SetExtensionInformation("BuiltinScene",
                           _("Scene management features"),
                           _("Built-in extension allowing to manipulate scenes"),
                           "Florian Rival",
                           "Open source ( LGPL )");
-    CloneExtension("Game Develop C++ platform", "BuiltinScene");
 
     GetAllExpressions()["Random"].codeExtraInformation
         .SetFunctionName("gdjs.random");

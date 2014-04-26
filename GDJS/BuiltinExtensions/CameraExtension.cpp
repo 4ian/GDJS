@@ -4,6 +4,7 @@
  * This project is released under the GNU Lesser General Public License.
  */
 #include "CameraExtension.h"
+#include "GDCore/BuiltinExtensions/AllBuiltinExtensions.h"
 #include "GDCore/CommonTools.h"
 #include "GDCore/Tools/Localization.h"
 
@@ -12,13 +13,13 @@ namespace gdjs
 
 CameraExtension::CameraExtension()
 {
+    gd::BuiltinExtensionsImplementer::ImplementsCameraExtension(*this);
+
     SetExtensionInformation("BuiltinCamera",
                           _("Cameras and layers features"),
                           _("Builtin camera extension"),
                           "Florian Rival",
                           "Open source ( LGPL )");
-
-    CloneExtension("Game Develop C++ platform", "BuiltinCamera");
 
     GetAllActions()["CameraX"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.camera.setCameraX").SetAssociatedGetter("gdjs.evtTools.camera.getCameraX");

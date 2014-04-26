@@ -4,6 +4,7 @@
  * This project is released under the GNU Lesser General Public License.
  */
 #include "WindowExtension.h"
+#include "GDCore/BuiltinExtensions/AllBuiltinExtensions.h"
 #include "GDCore/IDE/ArbitraryResourceWorker.h"
 #include "GDCore/Events/EventsCodeGenerator.h"
 #include "GDCore/CommonTools.h"
@@ -14,13 +15,13 @@ namespace gdjs
 
 WindowExtension::WindowExtension()
 {
+    gd::BuiltinExtensionsImplementer::ImplementsWindowExtension(*this);
+
     SetExtensionInformation("BuiltinWindow",
                           _("Window features"),
                           _("Built-in extension allowing to manipulate the game's window"),
                           "Florian Rival",
                           "Open source ( LGPL )");
-
-    CloneExtension("Game Develop C++ platform", "BuiltinWindow");
 
     GetAllActions()["SetFullScreen"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.window.setFullScreen");

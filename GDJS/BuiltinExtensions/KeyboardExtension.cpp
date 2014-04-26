@@ -4,6 +4,7 @@
  * This project is released under the GNU Lesser General Public License.
  */
 #include "KeyboardExtension.h"
+#include "GDCore/BuiltinExtensions/AllBuiltinExtensions.h"
 #include "GDCore/Events/EventsCodeGenerator.h"
 #include "GDCore/Events/EventsCodeGenerationContext.h"
 #include "GDCore/Events/ExpressionsCodeGeneration.h"
@@ -16,13 +17,13 @@ namespace gdjs
 
 KeyboardExtension::KeyboardExtension()
 {
+    gd::BuiltinExtensionsImplementer::ImplementsKeyboardExtension(*this);
+
     SetExtensionInformation("BuiltinKeyboard",
                           _("Keyboard features"),
                           _("Built-in extensions allowing to use keyboard"),
                           "Florian Rival",
                           "Open source ( LGPL )");
-
-    CloneExtension("Game Develop C++ platform", "BuiltinKeyboard");
 
     GetAllConditions()["KeyPressed"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.input.isKeyPressed").SetIncludeFile("inputtools.h");

@@ -4,6 +4,7 @@
  * This project is released under the GNU Lesser General Public License.
  */
 #include "GDJS/BuiltinExtensions/VariablesExtension.h"
+#include "GDCore/BuiltinExtensions/AllBuiltinExtensions.h"
 #include "GDJS/VariableParserCallbacks.h"
 #include "GDCore/Events/EventsCodeGenerator.h"
 #include "GDCore/Events/EventsCodeGenerationContext.h"
@@ -21,13 +22,13 @@ namespace gdjs
 
 VariablesExtension::VariablesExtension()
 {
+    gd::BuiltinExtensionsImplementer::ImplementsVariablesExtension(*this);
+
     SetExtensionInformation("BuiltinVariables",
                           _("Variable features"),
                           _("Built-in extension allowing to manipulate variables"),
                           "Florian Rival",
                           "Open source ( LGPL )");
-
-    CloneExtension("Game Develop C++ platform", "BuiltinVariables");
 
     GetAllConditions()["VarScene"].codeExtraInformation.SetFunctionName("gdjs.evtTools.common.getVariableNumber");
     GetAllConditions()["VarSceneTxt"].codeExtraInformation.SetFunctionName("gdjs.evtTools.common.getVariableString");
