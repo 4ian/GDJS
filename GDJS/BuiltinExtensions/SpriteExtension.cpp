@@ -4,6 +4,7 @@
  * This project is released under the GNU Lesser General Public License.
  */
 #include "GDJS/BuiltinExtensions/SpriteExtension.h"
+#include "GDCore/BuiltinExtensions/AllBuiltinExtensions.h"
 #include "GDCore/Events/InstructionMetadata.h"
 #include "GDCore/Tools/Localization.h"
 
@@ -12,12 +13,13 @@ namespace gdjs
 
 SpriteExtension::SpriteExtension()
 {
+    gd::BuiltinExtensionsImplementer::ImplementsSpriteExtension(*this);
+
     SetExtensionInformation("Sprite",
                           _("Sprite"),
                           _("Extension for adding animated objects in the scene, which can contain animations with directions within each."),
                           "Florian Rival",
                           "Open source ( LGPL )");
-    CloneExtension("Game Develop C++ platform", "Sprite");
 
     std::map<std::string, gd::InstructionMetadata > & spriteActions = GetAllActionsForObject("Sprite");
     std::map<std::string, gd::InstructionMetadata > & spriteConditions = GetAllConditionsForObject("Sprite");
@@ -118,7 +120,7 @@ SpriteExtension::SpriteExtension()
             .AddParameter("object", _("Object"), "Sprite", false)
             .AddParameter("relationalOperator", _("Sign of the test"), "",false)
             .AddParameter("expression", _("Value to test  ( 0 : Alpha, 1 : Add, 2 : Multiply, 3 : None )"), "",false)
-            .codeExtraInformation.SetFunctionName("GetBlendMode").SetManipulatedType("number").SetIncludeFile("GDCpp/SpriteObject.h");
+            .codeExtraInformation.SetFunctionName("GetBlendMode").SetManipulatedType("number").SetIncludeFile("GDCpp/RuntimeSpriteObject.h");
 
         obj.AddAction("CopyImageOnImageOfSprite",
                        _("Copy an image on the current one of an object"),
@@ -134,7 +136,7 @@ SpriteExtension::SpriteExtension()
             .AddParameter("expression", _("X position"), "",false)
             .AddParameter("expression", _("Y position"), "",false)
             .AddParameter("yesorno", _("Should the copy take in account the source transparency\?"), "",false)
-            .codeExtraInformation.SetFunctionName("CopyImageOnImageOfCurrentSprite").SetIncludeFile("GDCpp/SpriteObject.h");
+            .codeExtraInformation.SetFunctionName("CopyImageOnImageOfCurrentSprite").SetIncludeFile("GDCpp/RuntimeSpriteObject.h");
 
 
 
@@ -148,7 +150,7 @@ SpriteExtension::SpriteExtension()
 
             .AddParameter("object", _("Object"), "Sprite", false)
             .AddParameter("color", _("Color to make transparent"), "",false)
-            .codeExtraInformation.SetFunctionName("MakeColorTransparent").SetIncludeFile("GDCpp/SpriteObject.h");
+            .codeExtraInformation.SetFunctionName("MakeColorTransparent").SetIncludeFile("GDCpp/RuntimeSpriteObject.h");
 
 
         obj.AddAction("ChangeColor",
@@ -161,7 +163,7 @@ SpriteExtension::SpriteExtension()
 
             .AddParameter("object", _("Object"), "Sprite", false)
             .AddParameter("color", _("Color"), "",false)
-            .codeExtraInformation.SetFunctionName("SetColor").SetIncludeFile("GDCpp/SpriteObject.h");
+            .codeExtraInformation.SetFunctionName("SetColor").SetIncludeFile("GDCpp/RuntimeSpriteObject.h");
 
 
         obj.AddAction("ChangeBlendMode",
@@ -174,7 +176,7 @@ SpriteExtension::SpriteExtension()
 
             .AddParameter("object", _("Object"), "Sprite", false)
             .AddParameter("expression", _("Mode ( 0 : Alpha, 1 : Add, 2 : Multiply, 3 : None )"), "",false)
-            .codeExtraInformation.SetFunctionName("SetBlendMode").SetIncludeFile("GDCpp/SpriteObject.h");
+            .codeExtraInformation.SetFunctionName("SetBlendMode").SetIncludeFile("GDCpp/RuntimeSpriteObject.h");
         #endif
 
     }

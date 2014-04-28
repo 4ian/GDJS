@@ -4,6 +4,7 @@
  * This project is released under the GNU Lesser General Public License.
  */
 #include "JoystickExtension.h"
+#include "GDCore/BuiltinExtensions/AllBuiltinExtensions.h"
 #include "GDCore/Events/EventsCodeGenerator.h"
 #include "GDCore/Events/EventsCodeGenerationContext.h"
 #include "GDCore/Events/ExpressionsCodeGeneration.h"
@@ -16,13 +17,13 @@ namespace gdjs
 
 JoystickExtension::JoystickExtension()
 {
+    gd::BuiltinExtensionsImplementer::ImplementsJoystickExtension(*this);
+
     SetExtensionInformation("BuiltinJoystick",
                           _("Joysticks features"),
                           _("Built-in extension allowing to use joysticks"),
                           "Florian Rival",
                           "Open source ( LGPL )");
-
-    CloneExtension("Game Develop C++ platform", "BuiltinJoystick");
 
     //Nothing is available for now.
     StripUnimplementedInstructionsAndExpressions(); //Unimplemented things are listed here:

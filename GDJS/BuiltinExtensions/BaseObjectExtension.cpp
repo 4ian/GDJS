@@ -4,6 +4,7 @@
  * This project is released under the GNU Lesser General Public License.
  */
 #include "BaseObjectExtension.h"
+#include "GDCore/BuiltinExtensions/AllBuiltinExtensions.h"
 #include "GDCore/Events/EventsCodeGenerator.h"
 #include "GDCore/Events/EventsCodeGenerationContext.h"
 #include "GDCore/Events/ExpressionsCodeGeneration.h"
@@ -16,12 +17,13 @@ namespace gdjs
 
 BaseObjectExtension::BaseObjectExtension()
 {
+    gd::BuiltinExtensionsImplementer::ImplementsBaseObjectExtension(*this);
+
     SetExtensionInformation("BuiltinObject",
                           _("Base object"),
                           _("Base object"),
                           "Florian Rival",
                           "Open source ( LGPL )");
-    CloneExtension("Game Develop C++ platform", "BuiltinObject");
 
     std::map<std::string, gd::InstructionMetadata > & objectActions = GetAllActionsForObject("");
     std::map<std::string, gd::InstructionMetadata > & objectConditions = GetAllConditionsForObject("");

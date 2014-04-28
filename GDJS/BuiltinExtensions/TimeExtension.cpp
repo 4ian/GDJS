@@ -4,6 +4,7 @@
  * This project is released under the GNU Lesser General Public License.
  */
 #include "TimeExtension.h"
+#include "GDCore/BuiltinExtensions/AllBuiltinExtensions.h"
 #include "GDCore/Events/EventsCodeGenerator.h"
 #include "GDCore/Events/EventsCodeGenerationContext.h"
 #include "GDCore/Events/ExpressionsCodeGeneration.h"
@@ -16,12 +17,13 @@ namespace gdjs
 
 TimeExtension::TimeExtension()
 {
+    gd::BuiltinExtensionsImplementer::ImplementsTimeExtension(*this);
+
     SetExtensionInformation("BuiltinTime",
                           _("Time"),
                           _("Built-in extension providing actions and conditions about the time."),
                           "Florian Rival",
                           "Open source ( LGPL )");
-    CloneExtension("Game Develop C++ platform", "BuiltinTime");
 
     GetAllConditions()["Timer"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.runtimeScene.timerElapsedTime");

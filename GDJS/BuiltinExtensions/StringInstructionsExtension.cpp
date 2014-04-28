@@ -4,6 +4,7 @@
  * This project is released under the GNU Lesser General Public License.
  */
 #include "StringInstructionsExtension.h"
+#include "GDCore/BuiltinExtensions/AllBuiltinExtensions.h"
 #include "GDCore/IDE/ArbitraryResourceWorker.h"
 #include "GDCore/Events/EventsCodeGenerator.h"
 #include "GDCore/CommonTools.h"
@@ -14,14 +15,13 @@ namespace gdjs
 
 StringInstructionsExtension::StringInstructionsExtension()
 {
+    gd::BuiltinExtensionsImplementer::ImplementsStringInstructionsExtension(*this);
+
     SetExtensionInformation("BuiltinStringInstructions",
                           _("Text manipulation"),
                           _("Built-in extension providing expressions related to strings."),
                           "Florian Rival",
                           "Open source ( LGPL )");
-
-
-    CloneExtension("Game Develop C++ platform", "BuiltinStringInstructions");
 
     GetAllStrExpressions()["NewLine"]
         .codeExtraInformation.SetFunctionName("gdjs.evtTools.string.newLine");

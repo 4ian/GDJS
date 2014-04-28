@@ -4,6 +4,7 @@
  * This project is released under the GNU Lesser General Public License.
  */
 #include "MathematicalToolsExtension.h"
+#include "GDCore/BuiltinExtensions/AllBuiltinExtensions.h"
 #include "GDCore/Events/EventsCodeGenerator.h"
 #include "GDCore/Events/EventsCodeGenerationContext.h"
 #include "GDCore/Events/ExpressionsCodeGeneration.h"
@@ -16,12 +17,13 @@ namespace gdjs
 
 MathematicalToolsExtension::MathematicalToolsExtension()
 {
+    gd::BuiltinExtensionsImplementer::ImplementsMathematicalToolsExtension(*this);
+
     SetExtensionInformation("BuiltinMathematicalTools",
                           _("Mathematical tools"),
                           _("Built-in extension providing mathematical tools"),
                           "Florian Rival",
                           "Open source ( LGPL )");
-    CloneExtension("Game Develop C++ platform", "BuiltinMathematicalTools");
 
     GetAllExpressions()["cos"]
         .codeExtraInformation.SetFunctionName("Math.cos");

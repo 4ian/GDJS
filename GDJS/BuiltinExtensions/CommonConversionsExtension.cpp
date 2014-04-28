@@ -4,6 +4,7 @@
  * This project is released under the GNU Lesser General Public License.
  */
 #include "CommonConversionsExtension.h"
+#include "GDCore/BuiltinExtensions/AllBuiltinExtensions.h"
 #include "GDCore/IDE/ArbitraryResourceWorker.h"
 #include "GDCore/Events/EventsCodeGenerator.h"
 #include "GDCore/CommonTools.h"
@@ -14,13 +15,13 @@ namespace gdjs
 
 CommonConversionsExtension::CommonConversionsExtension()
 {
+    gd::BuiltinExtensionsImplementer::ImplementsCommonConversionsExtension(*this);
+
     SetExtensionInformation("BuiltinCommonConversions",
                           _("Standard Conversions"),
                           _("Built-in extension providing standard conversions expressions."),
                           "Florian Rival",
                           "Open source ( LGPL )");
-
-    CloneExtension("Game Develop C++ platform", "BuiltinCommonConversions");
 
     GetAllExpressions()["ToNumber"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.common.toNumber").SetIncludeFile("commontools.js");
