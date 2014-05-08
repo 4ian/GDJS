@@ -8,15 +8,15 @@
  * RuntimeAutomatism represents an automatism being used by a RuntimeObject.
  *
  * @class RuntimeAutomatism
- * @constructor 
+ * @constructor
  * @param runtimeScene The scene owning the object of the automatism
- * @param automatismData The data to setup the automatism
+ * @param automatismData The object used to setup the automatism
  * @param owner The object owning the automatism
  */
 gdjs.RuntimeAutomatism = function(runtimeScene, automatismData, owner)
 {
-    this.name = automatismData.attr.Name || "";
-    this.type = automatismData.attr.Type || "";
+    this.name = automatismData.name || "";
+    this.type = automatismData.type || "";
     this._nameId = gdjs.RuntimeObject.getNameIdentifier(this.name);
     this._activated = true;
     this.owner = owner;
@@ -63,16 +63,16 @@ gdjs.RuntimeAutomatism.prototype.stepPostEvents = function(runtimeScene) {
  * De/Activate the automatism
  * @method activate
  */
-gdjs.RuntimeAutomatism.prototype.activate = function(enable) { 
+gdjs.RuntimeAutomatism.prototype.activate = function(enable) {
 	if ( enable === undefined ) enable = true;
 	if ( !this._activated && enable ) {
 		this._activated = true;
 		this.onActivate();
 	}
 	else if ( this.activated && !enable ) {
-		this._activated = false; 
-		this.onDeActivate(); 
-	} 
+		this._activated = false;
+		this.onDeActivate();
+	}
 };
 
 /**
@@ -84,7 +84,7 @@ gdjs.RuntimeAutomatism.prototype.activated = function() {
 };
 
 /**
- * Automatisms writers: Reimplement this method to do extra work 
+ * Automatisms writers: Reimplement this method to do extra work
  * when the automatism is activated
  * @method onActivate
  */

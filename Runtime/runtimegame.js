@@ -10,7 +10,7 @@
  * @constructor
  * @namespace gdjs
  * @class RuntimeGame
- * @param data The object ( usually stored in data.json ) containing the full project data
+ * @param data The object (usually stored in data.json) containing the full project data
  * @param spec Optional object for specifiying additional options: {forceFullscreen: ...}
  */
 gdjs.RuntimeGame = function(data, spec)
@@ -25,12 +25,12 @@ gdjs.RuntimeGame = function(data, spec)
          gdjs.callbacksObjectDeletedFromScene.length === 0)
         gdjs.registerGlobalCallbacks();
 
-    this._variables = new gdjs.VariablesContainer(data.Variables);
+    this._variables = new gdjs.VariablesContainer(data.variables);
     this._data = data;
     this._imageManager = new gdjs.ImageManager(this);
-    this._minFPS = data ? parseInt(data.Info.FPSmin.attr.value, 10) : 15;
+    this._minFPS = data ? parseInt(data.properties.minFPS, 10) : 15;
 
-    //Game loop management ( see startStandardGameLoop method)
+    //Game loop management (see startStandardGameLoop method)
     this._notifySceneForResize = false; //When set to true, the current scene is notified that canvas size changed.
 
     //Rendering (see createStandardCanvas method)
@@ -38,10 +38,10 @@ gdjs.RuntimeGame = function(data, spec)
     this._forceFullscreen = spec.forceFullscreen || false; //If set to true, the canvas will always be displayed as fullscreen, even if _isFullscreen == false.
     this._renderer = null;
     this._canvasArea = null;
-    this._defaultWidth = parseInt(gdjs.projectData.Project.Info.WindowW.attr.value, 10); //Default size for scenes cameras
-    this._defaultHeight = parseInt(gdjs.projectData.Project.Info.WindowH.attr.value, 10);
-    this._currentWidth = parseInt(gdjs.projectData.Project.Info.WindowW.attr.value, 10); //Current size of the canvas
-    this._currentHeight = parseInt(gdjs.projectData.Project.Info.WindowH.attr.value, 10);
+    this._defaultWidth = gdjs.projectData.properties.windowWidth; //Default size for scenes cameras
+    this._defaultHeight = gdjs.projectData.properties.windowHeight;
+    this._currentWidth = gdjs.projectData.properties.windowWidth; //Current size of the canvas
+    this._currentHeight = gdjs.projectData.properties.windowHeight;
 
     if (navigator.isCocoonJS && !this._forceFullscreen) {
         this._forceFullscreen = true;
@@ -91,8 +91,8 @@ gdjs.RuntimeGame.prototype.getGameData = function() {
  */
 gdjs.RuntimeGame.prototype.getSceneData = function(sceneName) {
 	var scene = undefined;
-	gdjs.iterateOver(this._data.Scenes, "Scene", function(sceneData) {
-		if ( sceneName === undefined || sceneData.attr.nom === sceneName ) {
+	gdjs.iterateOverArray(this._data.layouts, function(sceneData) {
+		if ( sceneName === undefined || sceneData.name === sceneName ) {
 			scene = sceneData;
 			return false;
 		}
@@ -113,8 +113,8 @@ gdjs.RuntimeGame.prototype.getSceneData = function(sceneName) {
  */
 gdjs.RuntimeGame.prototype.hasScene = function(sceneName) {
 	var isTrue = false;
-	gdjs.iterateOver(this._data.Scenes, "Scene", function(sceneData) {
-		if ( sceneName === undefined || sceneData.attr.nom == sceneName ) {
+	gdjs.iterateOverArray(this._data.layouts, function(sceneData) {
+		if ( sceneName === undefined || sceneData.name == sceneName ) {
 			isTrue = true;
 			return false;
 		}
@@ -132,8 +132,8 @@ gdjs.RuntimeGame.prototype.hasScene = function(sceneName) {
  */
 gdjs.RuntimeGame.prototype.getExternalLayoutData = function(name) {
     var externalLayout = null;
-    gdjs.iterateOver(this._data.ExternalLayouts, "ExternalLayout", function(layoutData) {
-        if ( layoutData.attr.Name === name ) {
+    gdjs.iterateOverArray(this._data.externalLayouts, function(layoutData) {
+        if ( layoutData.name === name ) {
             externalLayout = layoutData;
             return false;
         }
@@ -143,12 +143,12 @@ gdjs.RuntimeGame.prototype.getExternalLayoutData = function(name) {
 };
 
 /**
- * Get the data representing all the initial objects of the game.
+ * Get the data representing all the global objects of the game.
  * @method getInitialObjectsData
- * @return The data associated to the initial objects.
+ * @return The data associated to the global objects.
  */
 gdjs.RuntimeGame.prototype.getInitialObjectsData = function() {
-	return this._data.Objects;
+	return this._data.objects;
 };
 
 /**
@@ -585,10 +585,8 @@ gdjs.RuntimeGame.prototype.loadAllAssets = function(callback) {
     var loadingCount = 0;
 
     var assets = [];
-    gdjs.iterateOver(gdjs.projectData.Project.Resources.Resources, "Resource", function(res) {
-        if ( res.attr.file ) {
-            assets.push(res.attr.file);
-        }
+    gdjs.iterateOverArray(gdjs.projectData.resources.resources, function(res) {
+        if ( res.file ) assets.push(res.file);
     });
 
     var game = this;
@@ -627,7 +625,7 @@ gdjs.RuntimeGame.prototype.startStandardGameLoop = function() {
 
     //Create the scene to be played
     var currentScene = new gdjs.RuntimeScene(this, this._renderer);
-    var firstSceneName = gdjs.projectData.Project.Scenes.attr.firstScene;
+    var firstSceneName = gdjs.projectData.firstLayout;
     var firstsceneData = this.hasScene(firstSceneName) ? this.getSceneData(firstSceneName) : this.getSceneData();
 
     currentScene.loadFromScene(firstsceneData);

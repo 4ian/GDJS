@@ -126,5 +126,5 @@ gdjs.evtTools.runtimeScene.createObjectsFromExternalLayout = function(scene, ext
     var externalLayoutData = scene.getGame().getExternalLayoutData(externalLayout);
     if ( externalLayoutData === null ) return;
 
-    scene.createObjectsFrom(externalLayoutData.Instances, xPos, yPos);
+    scene.createObjectsFrom(externalLayoutData.instances, xPos, yPos);
 };

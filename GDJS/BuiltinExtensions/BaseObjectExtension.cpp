@@ -31,13 +31,13 @@ BaseObjectExtension::BaseObjectExtension()
     std::map<std::string, gd::StrExpressionMetadata > & objectStrExpressions = GetAllStrExpressionsForObject("");
 
     objectActions["MettreX"].codeExtraInformation
-        .SetFunctionName("setX").SetAssociatedGetter("getX").SetIncludeFile("runtimeobject.js");
+        .SetFunctionName("setX").SetManipulatedType("number").SetAssociatedGetter("getX").SetIncludeFile("runtimeobject.js");
     objectActions["MettreY"].codeExtraInformation
-        .SetFunctionName("setY").SetAssociatedGetter("getY").SetIncludeFile("runtimeobject.js");
+        .SetFunctionName("setY").SetManipulatedType("number").SetAssociatedGetter("getY").SetIncludeFile("runtimeobject.js");
     objectConditions["PosX"].codeExtraInformation
-        .SetFunctionName("getX").SetIncludeFile("runtimeobject.js");
+        .SetFunctionName("getX").SetManipulatedType("number").SetIncludeFile("runtimeobject.js");
     objectConditions["PosY"].codeExtraInformation
-        .SetFunctionName("getY").SetIncludeFile("runtimeobject.js");
+        .SetFunctionName("getY").SetManipulatedType("number").SetIncludeFile("runtimeobject.js");
     objectActions["ChangeLayer"].codeExtraInformation
         .SetFunctionName("setLayer").SetIncludeFile("runtimeobject.js");
     objectConditions["Layer"].codeExtraInformation
@@ -45,7 +45,7 @@ BaseObjectExtension::BaseObjectExtension()
     objectActions["ChangePlan"].codeExtraInformation
         .SetFunctionName("setZOrder").SetAssociatedGetter("getZOrder").SetIncludeFile("runtimeobject.js");
     objectConditions["Plan"].codeExtraInformation
-        .SetFunctionName("getZOrder").SetIncludeFile("runtimeobject.js");
+        .SetFunctionName("getZOrder").SetManipulatedType("number").SetIncludeFile("runtimeobject.js");
     objectActions["Cache"].codeExtraInformation
         .SetFunctionName("hide").SetIncludeFile("runtimeobject.js");
     objectActions["Montre"].codeExtraInformation
@@ -67,9 +67,9 @@ BaseObjectExtension::BaseObjectExtension()
     objectConditions["VarObjetDef"].codeExtraInformation
         .SetFunctionName("hasVariable").SetIncludeFile("runtimeobject.js");
     objectActions["ModVarObjet"].codeExtraInformation
-        .SetFunctionName("setVariableNumber").SetAssociatedGetter("getVariableNumber").SetIncludeFile("runtimeobject.js");
+        .SetFunctionName("setVariableNumber").SetManipulatedType("number").SetAssociatedGetter("getVariableNumber").SetIncludeFile("runtimeobject.js");
     objectActions["ModVarObjetTxt"].codeExtraInformation
-        .SetFunctionName("setVariableString").SetAssociatedGetter("getVariableString").SetIncludeFile("runtimeobject.js");
+        .SetFunctionName("setVariableString").SetManipulatedType("number").SetAssociatedGetter("getVariableString").SetIncludeFile("runtimeobject.js");
     objectActions["AddForceXY"].codeExtraInformation
         .SetFunctionName("addForce").SetIncludeFile("runtimeobject.js");
     objectActions["AddForceAL"].codeExtraInformation

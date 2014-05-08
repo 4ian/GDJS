@@ -69,35 +69,34 @@ gdjs.RuntimeScene.prototype.loadFromScene = function(sceneData) {
 	if ( this._isLoaded ) this.unloadScene();
 
 	//Setup main properties
-	document.title = sceneData.attr.titre;
-	this._name = sceneData.attr.nom;
+	document.title = sceneData.title;
+	this._name = sceneData.name;
 	this._firstFrame = true;
-	this.setBackgroundColor(parseInt(sceneData.attr.r, 10),
-			parseInt(sceneData.attr.v, 10),
-			parseInt(sceneData.attr.b, 10));
+	this.setBackgroundColor(parseInt(sceneData.r, 10),
+			parseInt(sceneData.v, 10),
+			parseInt(sceneData.b, 10));
 
 	//Load layers
     var that = this;
-	gdjs.iterateOver(sceneData.Layers, "Layer", function(layerData) {
-		var name = layerData.attr.Name;
-
+	gdjs.iterateOverArray(sceneData.layers, function(layerData) {
+		var name = layerData.name;
 		that._layers.put(name, new gdjs.Layer(name, that));
 		//console.log("Created layer : \""+name+"\".");
 	});
 
     //Load variables
-    this._variables = new gdjs.VariablesContainer(sceneData.Variables);
+    this._variables = new gdjs.VariablesContainer(sceneData.variables);
 
 	//Cache the initial shared data of the automatisms
-    gdjs.iterateOver(sceneData.AutomatismsSharedDatas, "AutomatismSharedDatas", function(data) {
-		//console.log("Initializing shared data for "+data.attr.Name);
-		that._initialAutomatismSharedData.put(data.attr.Name, data);
+    gdjs.iterateOverArray(sceneData.automatismsSharedData, function(data) {
+		//console.log("Initializing shared data for "+data.name);
+		that._initialAutomatismSharedData.put(data.name, data);
 	});
 
     //Load objects: Global objects first...
-	gdjs.iterateOver(this.getGame().getInitialObjectsData(), "Objet", function(objData){
-        var objectName = objData.attr.nom;
-        var objectType = objData.attr.type;
+	gdjs.iterateOverArray(this.getGame().getInitialObjectsData(), function(objData){
+        var objectName = objData.name;
+        var objectType = objData.type;
 
         that._objects.put(objectName, objData);
         that._instances.put(objectName, []); //Also reserve an array for the instances
@@ -105,13 +104,13 @@ gdjs.RuntimeScene.prototype.loadFromScene = function(sceneData) {
 		//And cache the constructor for the performance sake:
 		that._objectsCtor.put(objectName, gdjs.getObjectConstructor(objectType));
 
-        //console.log("Loaded "+objectName+" in memory ( Global object )");
+        //console.log("Loaded "+objectName+" in memory (Global object)");
 	});
 	//...then the scene objects
-    this._initialObjectsData = sceneData.Objets;
-    gdjs.iterateOver(this._initialObjectsData, "Objet", function(objData) {
-        var objectName = objData.attr.nom;
-        var objectType = objData.attr.type;
+    this._initialObjectsData = sceneData.objects;
+    gdjs.iterateOverArray(this._initialObjectsData, function(objData) {
+        var objectName = objData.name;
+        var objectType = objData.type;
 
         that._objects.put(objectName, objData);
         that._instances.put(objectName, []); //Also reserve an array for the instances
@@ -123,10 +122,10 @@ gdjs.RuntimeScene.prototype.loadFromScene = function(sceneData) {
     });
 
     //Create initial instances of objects
-    this.createObjectsFrom(sceneData.Positions, 0, 0);
+    this.createObjectsFrom(sceneData.instances, 0, 0);
 
     //Set up the function to be executed at each tick
-    var module = gdjs[sceneData.attr.mangledName+"Code"];
+    var module = gdjs[sceneData.mangledName+"Code"];
     if ( module && module.func ) this._eventsFunction = module.func;
     this._eventsContext = new gdjs.EventsContext();
 
@@ -158,16 +157,16 @@ gdjs.RuntimeScene.prototype.unloadScene = function() {
  */
 gdjs.RuntimeScene.prototype.createObjectsFrom = function(data, xPos, yPos) {
 	var that = this;
-    gdjs.iterateOver(data, "Objet", function(instanceData) {
-        var objectName = instanceData.attr.nom;
+    gdjs.iterateOverArray(data, function(instanceData) {
+        var objectName = instanceData.name;
 		var newObject = that.createObject(objectName);
 
 		if ( newObject !== null ) {
-            newObject.setPosition(parseFloat(instanceData.attr.x)+xPos, parseFloat(instanceData.attr.y)+yPos);
-            newObject.setZOrder(parseFloat(instanceData.attr.plan));
-            newObject.setAngle(parseFloat(instanceData.attr.angle));
-            newObject.setLayer(instanceData.attr.layer);
-            newObject.getVariables().initFrom(instanceData.InitialVariables, true);
+            newObject.setPosition(parseFloat(instanceData.x)+xPos, parseFloat(instanceData.y)+yPos);
+            newObject.setZOrder(parseFloat(instanceData.zOrder));
+            newObject.setAngle(parseFloat(instanceData.angle));
+            newObject.setLayer(instanceData.layer);
+            newObject.getVariables().initFrom(instanceData.initialVariables, true);
             newObject.extraInitializationFromInitialInstance(instanceData);
 		}
     });
@@ -281,7 +280,7 @@ gdjs.RuntimeScene.prototype._constructListOfAllInstances= function() {
 
 	if ( this._allInstancesList.length !== currentListSize )
 		this._allInstancesList.length = currentListSize;
-}
+};
 
 /**
  * Update the objects before launching the events.
@@ -320,7 +319,7 @@ gdjs.RuntimeScene.prototype._updateObjects = function() {
 	}
 
 	this._cacheOrClearRemovedInstances(); //Some automatisms may have request objects to be deleted.
-}
+};
 
 /**
  * Change the background color
@@ -396,7 +395,7 @@ gdjs.RuntimeScene.prototype.getObjects = function(name){
 gdjs.RuntimeScene.prototype.createObject = function(objectName){
 
 	if ( !this._objectsCtor.containsKey(objectName) ||
-	     !this._objects.containsKey(objectName) )
+		!this._objects.containsKey(objectName) )
 		return null; //There is no such object in this scene.
 
 	//Create a new object using the object constructor ( cached during loading )
@@ -500,7 +499,7 @@ gdjs.RuntimeScene.prototype.getPIXIContainer = function() {
  */
 gdjs.RuntimeScene.prototype.getGame = function() {
 	return this._runtimeGame;
-}
+};
 
 /**
  * Get the variables of the runtimeScene.
@@ -509,7 +508,7 @@ gdjs.RuntimeScene.prototype.getGame = function() {
  */
 gdjs.RuntimeScene.prototype.getVariables = function() {
 	return this._variables;
-}
+};
 
 /**
  * Get the data representing the initial shared data of the scene for the specified automatism.

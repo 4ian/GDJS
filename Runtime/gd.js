@@ -82,30 +82,27 @@ gdjs.getDocWidth = function() {
     );
 };
 
-
 /**
- * Iterate over a property of an object:<br>
- * - If the property does not exist, do nothing.<br>
- * - If it exists and is an array, call func on each member of the array.<br>
- * - If it exists and is not array, call func directly on the property.<br>
+ * Iterate over an array: func is called on each member of the array.<br>
  * <br>
- * Note that func must not remove elements from the array in the second case. If func
+ * Note that func must not remove elements from the array. If func
  * return false, the iteration will stop.
- * @method iterateOver
+ * @method iterateOverArray
  * @static
  */
-gdjs.iterateOver = function(object, propertyName, func) {
-    if ( !object.hasOwnProperty(propertyName) ) return;
-    if ( Array.isArray(object[propertyName]) ) {
-        for(var i = 0, len = object[propertyName].length;i<len;++i) {
-            if (func(object[propertyName][i]) === false) return;
-        }
+gdjs.iterateOverArray = function(array, func) {
+    if ( array.length === undefined || array.length === null ) {
+        console.error("gdjs.iterateOverArray called with something which is not an array.");
+        return;
     }
-    else func(object[propertyName]);
+
+    for(var i = 0, len = array.length;i<len;++i) {
+        if (func(array[i]) === false) return;
+    }
 };
 
 /**
- * Register the runtime objects this.can be used in runtimeScene.<br>
+ * Register the runtime objects that can be used in runtimeScene.<br>
  * Objects must be part of gdjs and have their property "thisIsARuntimeObjectConstructor"
  * defined and set to the name of the type of the object so as to be recognized.
  * The name of the type of the object must be complete, with the namespace if any. For
@@ -194,7 +191,7 @@ gdjs.registerGlobalCallbacks = function() {
  * @param name {String} The name of the type of the object.
  */
 gdjs.getObjectConstructor = function(name) {
-    if ( name != undefined && gdjs.objectsTypes.containsKey(name) )
+    if ( name !== undefined && gdjs.objectsTypes.containsKey(name) )
         return gdjs.objectsTypes.get(name);
 
     console.warn("Object type \""+name+"\" was not found.");
@@ -209,7 +206,7 @@ gdjs.getObjectConstructor = function(name) {
  * @param name {String} The name of the type of the automatism.
  */
 gdjs.getAutomatismConstructor = function(name) {
-    if ( name != undefined && gdjs.automatismsTypes.containsKey(name) )
+    if ( name !== undefined && gdjs.automatismsTypes.containsKey(name) )
         return gdjs.automatismsTypes.get(name);
 
     console.warn("Automatism type \""+name+"\" was not found.");
@@ -227,7 +224,7 @@ Array.prototype.remove = function(from) {
 
 Array.prototype.createFrom = function(arr) {
     var len = arr.length;
-    if ( len != undefined ) {
+    if ( len !== undefined ) {
         this.length = len;
         for (var i = 0; i < len;++i) {
             this[i] = arr[i];

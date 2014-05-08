@@ -17,7 +17,7 @@ gdjs.VariablesContainer = function(initialVariablesData)
 {
     if ( this._variables == undefined ) this._variables = new Hashtable();
     if ( this._variablesArray == undefined ) this._variablesArray = [];
-    
+
     if ( initialVariablesData != undefined ) this.initFrom(initialVariablesData);
 };
 
@@ -35,34 +35,34 @@ gdjs.VariablesContainer = function(initialVariablesData)
 gdjs.VariablesContainer.prototype.initFrom = function(data, keepOldVariables) {
     if ( keepOldVariables == undefined ) keepOldVariables = false;
     if ( !keepOldVariables ) var deletedVars = this._variables.keys();
-    
+
     var that = this;
     var i = 0;
-	gdjs.iterateOver(data, "Variable", function(varData) {
-		
+	gdjs.iterateOverArray(data, function(varData) {
+
         //Get the variable:
-        var variable = that.get(varData.attr.Name); 
+        var variable = that.get(varData.name);
         gdjs.Variable.call(variable, varData);
-        
+
         if ( !keepOldVariables ) {
             //Register the variable in the extra array to ensure a fast lookup using getFromIndex.
             if ( i < that._variablesArray.length )
                 that._variablesArray[i] = variable;
             else
                 that._variablesArray.push(variable);
-            
+
             ++i;
-        
+
             //Remove the variable from the list of variables to be deleted.
-            var idx = deletedVars.indexOf(varData.attr.Name)
+            var idx = deletedVars.indexOf(varData.name)
             if (idx !== -1) deletedVars[idx] = undefined;
         }
 	});
-    
+
     if ( !keepOldVariables ) {
         this._variablesArray.length = i;
-    
-        //If we do not want to keep the already existing variables, 
+
+        //If we do not want to keep the already existing variables,
         //remove all the variables not assigned above.
         //(Here, remove means flag the variable as not existing, to avoid garbage creation ).
         for(var i =0, len = deletedVars.length;i<len;++i) {

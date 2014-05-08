@@ -154,6 +154,7 @@ JsPlatform::JsPlatform() :
     gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/TiledSpriteObject."+extension, *this); std::cout.flush();
     gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/PlatformAutomatism."+extension, *this); std::cout.flush();
     gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/PathfindingAutomatism."+extension, *this); std::cout.flush();
+    gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/TopDownMovementAutomatism."+extension, *this); std::cout.flush();
     std::cout << "done." << std::endl;
     #endif
 };

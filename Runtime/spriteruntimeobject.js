@@ -16,7 +16,7 @@
  */
 gdjs.SpriteAnimationFrame = function(imageManager, frameData)
 {
-    this.image = frameData ? frameData.attr.image : "";
+    this.image = frameData ? frameData.image : "";
     this.pixiTexture = imageManager.getPIXITexture(this.image);
 
     if ( this.center === undefined ) this.center = { x:0, y:0 };
@@ -28,18 +28,18 @@ gdjs.SpriteAnimationFrame = function(imageManager, frameData)
 
     //Initialize points:
     var that = this;
-    gdjs.iterateOver(frameData.Points, "Point", function(ptData) {
-        var point = {x:parseFloat(ptData.attr.X), y:parseFloat(ptData.attr.Y)};
-        that.points.put(ptData.attr.nom, point);
+    gdjs.iterateOverArray(frameData.points, function(ptData) {
+        var point = {x:parseFloat(ptData.x), y:parseFloat(ptData.y)};
+        that.points.put(ptData.name, point);
     });
-    var origin = frameData.PointOrigine;
-    this.origin.x = parseFloat(origin.attr.X);
-    this.origin.y = parseFloat(origin.attr.Y);
+    var origin = frameData.originPoint;
+    this.origin.x = parseFloat(origin.x);
+    this.origin.y = parseFloat(origin.y);
 
-    var center = frameData.PointCentre;
-    if ( center.attr.automatic !== "true" ) {
-        this.center.x = parseFloat(center.attr.X);
-        this.center.y = parseFloat(center.attr.Y);
+    var center = frameData.centerPoint;
+    if ( center.automatic !== true ) {
+        this.center.x = parseFloat(center.x);
+        this.center.y = parseFloat(center.y);
     }
     else  {
         this.center.x = this.pixiTexture.width/2;
@@ -47,23 +47,23 @@ gdjs.SpriteAnimationFrame = function(imageManager, frameData)
     }
 
     //Load the custom collision mask, if any:
-    if ( frameData.CustomCollisionMask.attr.custom !== "false" ) {
+    if ( frameData.hasCustomCollisionMask ) {
         this.hasCustomHitBoxes = true;
         var polygonIndex = 0;
-        gdjs.iterateOver(frameData.CustomCollisionMask, "Polygon", function(polygonData) {
+        gdjs.iterateOverArray(frameData.customCollisionMask, function(polygonData) {
 
             //Add a polygon, if necessary (Avoid recreating a polygon if it already exists).
             if ( polygonIndex >= that.customHitBoxes.length ) that.customHitBoxes.push(new gdjs.Polygon());
 
             var vertIndex = 0;
-            gdjs.iterateOver(polygonData, "Point", function(pointData) {
+            gdjs.iterateOverArray(polygonData, function(pointData) {
 
                 //Add a point, if necessary (Avoid recreating a point if it already exists).
                 if ( vertIndex >= that.customHitBoxes[polygonIndex].vertices.length )
                     that.customHitBoxes[polygonIndex].vertices.push([0,0]);
 
-                that.customHitBoxes[polygonIndex].vertices[vertIndex][0] = parseFloat(pointData.attr.x, 10);
-                that.customHitBoxes[polygonIndex].vertices[vertIndex][1] = parseFloat(pointData.attr.y, 10);
+                that.customHitBoxes[polygonIndex].vertices[vertIndex][0] = parseFloat(pointData.x, 10);
+                that.customHitBoxes[polygonIndex].vertices[vertIndex][1] = parseFloat(pointData.y, 10);
 
                 vertIndex++;
             });
@@ -104,14 +104,14 @@ gdjs.SpriteAnimation = function(imageManager, animData)
 {
 	//Constructor of internal object representing a direction of an animation.
     var Direction = function(imageManager, directionData) {
-        this.timeBetweenFrames = directionData ? parseFloat(directionData.attr.tempsEntre) :
+        this.timeBetweenFrames = directionData ? parseFloat(directionData.timeBetweenFrames) :
                                  1.0;
-        this.loop = directionData ? directionData.attr.boucle === "true" : false;
+        this.loop = !!directionData.looping;
 
         var that = this;
         var i = 0;
         if ( this.frames === undefined ) this.frames = [];
-        gdjs.iterateOver(directionData.Sprites, "Sprite", function(frameData) {
+        gdjs.iterateOverArray(directionData.sprites, function(frameData) {
             if ( i < that.frames.length )
                 gdjs.SpriteAnimationFrame.call(that.frames[i], imageManager, frameData);
             else
@@ -122,12 +122,12 @@ gdjs.SpriteAnimation = function(imageManager, animData)
         this.frames.length = i;
     };
 
-    this.hasMultipleDirections = animData ? animData.attr.typeNormal === "true" : false;
+    this.hasMultipleDirections = animData.useMultipleDirections;
 
     var that = this;
     var i = 0;
     if ( this.directions === undefined ) this.directions = [];
-    gdjs.iterateOver(animData, "Direction", function(directionData) {
+    gdjs.iterateOverArray(animData.directions, function(directionData) {
         if ( i < that.directions.length )
             Direction.call(that.directions[i], imageManager, directionData);
         else
@@ -168,7 +168,7 @@ gdjs.SpriteRuntimeObject = function(runtimeScene, objectData)
     var that = this;
     var i = 0;
     if ( this._animations === undefined ) this._animations = [];
-    gdjs.iterateOver(objectData.Animations, "Animation", function(animData) {
+    gdjs.iterateOverArray(objectData.animations, function(animData) {
         if ( i < that._animations.length )
             gdjs.SpriteAnimation.call(that._animations[i], runtimeScene.getGame().getImageManager(), animData);
         else
@@ -192,7 +192,7 @@ gdjs.SpriteRuntimeObject = function(runtimeScene, objectData)
 };
 
 gdjs.SpriteRuntimeObject.prototype = Object.create( gdjs.RuntimeObject.prototype );
-gdjs.SpriteRuntimeObject.thisIsARuntimeObjectConstructor = "Sprite"; //Notify gdjs of the obj existence.
+gdjs.SpriteRuntimeObject.thisIsARuntimeObjectConstructor = "Sprite"; //Notify gdjs of the object existence.
 
 //Others initialization and internal state management :
 
@@ -200,15 +200,15 @@ gdjs.SpriteRuntimeObject.thisIsARuntimeObjectConstructor = "Sprite"; //Notify gd
  * Initialize the extra parameters that could be set for an instance.
  */
 gdjs.SpriteRuntimeObject.prototype.extraInitializationFromInitialInstance = function(initialInstanceData) {
-    if ( initialInstanceData.attr.personalizedSize === "true" ) {
-        this.setWidth(parseFloat(initialInstanceData.attr.width));
-        this.setHeight(parseFloat(initialInstanceData.attr.height));
+    if ( initialInstanceData.customSize ) {
+        this.setWidth(initialInstanceData.width);
+        this.setHeight(initialInstanceData.height);
     }
-    if ( initialInstanceData.floatInfos ) {
+    if ( initialInstanceData.numberProperties ) {
         var that = this;
-        gdjs.iterateOver(initialInstanceData.floatInfos, "Info", function(extraData) {
-            if ( extraData.attr.name === "animation" )
-                that.setAnimation(parseFloat(extraData.attr.value));
+        gdjs.iterateOverArray(initialInstanceData.numberProperties, function(extraData) {
+            if ( extraData.name === "animation" )
+                that.setAnimation(extraData.value);
         });
     }
 };

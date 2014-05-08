@@ -20,9 +20,9 @@
  */
 gdjs.RuntimeObject = function(runtimeScene, objectData)
 {
-    this.name = objectData.attr.nom || "";
+    this.name = objectData.name || "";
     this._nameId = gdjs.RuntimeObject.getNameIdentifier(this.name);
-    this.type = objectData.attr.type || "";
+    this.type = objectData.type || "";
     this.x = 0;
     this.y = 0;
     this.angle = 0;
@@ -48,9 +48,9 @@ gdjs.RuntimeObject = function(runtimeScene, objectData)
 
     //Variables:
     if ( !this._variables )
-        this._variables = new gdjs.VariablesContainer(objectData ? objectData.Variables : undefined);
+        this._variables = new gdjs.VariablesContainer(objectData ? objectData.variables : undefined);
     else
-        gdjs.VariablesContainer.call(this._variables, objectData ? objectData.Variables : undefined);
+        gdjs.VariablesContainer.call(this._variables, objectData ? objectData.variables : undefined);
 
     //Forces:
     if ( this._forces === undefined )
@@ -72,8 +72,8 @@ gdjs.RuntimeObject = function(runtimeScene, objectData)
 
     var that = this;
     var i = 0;
-    gdjs.iterateOver(objectData, "Automatism", function(autoData) {
-        var ctor = gdjs.getAutomatismConstructor(autoData.attr.Type);
+    gdjs.iterateOverArray(objectData.automatisms, function(autoData) {
+        var ctor = gdjs.getAutomatismConstructor(autoData.type);
 
         //Try to reuse already existing automatisms.
         if ( i < that._automatisms.length ) {
@@ -84,7 +84,7 @@ gdjs.RuntimeObject = function(runtimeScene, objectData)
         }
         else that._automatisms.push(new ctor(runtimeScene, autoData, that));
 
-        that._automatismsTable.put(autoData.attr.Name, that._automatisms[i]);
+        that._automatismsTable.put(autoData.name, that._automatisms[i]);
 
         i++;
     });
@@ -826,7 +826,7 @@ gdjs.RuntimeObject.prototype.getSqDistanceFrom = function(otherObject) {
     var y = this.getY()+this.getCenterY() - (otherObject.getY()+otherObject.getCenterY());
 
     return x*x+y*y;
-}
+};
 
 /**
  * Put the object around a position, with a specific distance and angle.<br>
@@ -843,7 +843,7 @@ gdjs.RuntimeObject.prototype.putAround = function(x,y,distance,angleInDegrees) {
 
     this.setX( x + Math.cos(angle)*distance - this.getCenterX() );
     this.setY( y + Math.sin(angle)*distance - this.getCenterY() );
-}
+};
 
 /**
  * Put the object around another object, with a specific distance and angle.<br>
@@ -857,7 +857,7 @@ gdjs.RuntimeObject.prototype.putAround = function(x,y,distance,angleInDegrees) {
 gdjs.RuntimeObject.prototype.putAroundObject = function(obj,distance,angleInDegrees) {
     this.putAround(obj.getX()+obj.getCenterX(), obj.getY()+obj.getCenterY(),
                    distance, angleInDegrees);
-}
+};
 
 /**
  * @method separateObjectsWithoutForces
@@ -890,7 +890,7 @@ gdjs.RuntimeObject.prototype.separateObjectsWithoutForces = function(objectsList
             }
         }
     }
-}
+};
 
 /**
  * @method SeparateObjectsWithForces
@@ -940,7 +940,7 @@ gdjs.RuntimeObject.prototype.separateObjectsWithForces = function(objectsLists, 
             this.addForceTowardObject(objects[i], -len, false);
         }
     }*/
-}
+};
 
 /**
  * Return true if the hitboxes of two objects are overlapping
@@ -984,7 +984,7 @@ gdjs.RuntimeObject.collisionTest = function(obj1, obj2) {
     }
 
     return false;
-}
+};
 
 /**
  * Check the distance between two objects.
@@ -996,7 +996,7 @@ gdjs.RuntimeObject.distanceTest = function(obj1, obj2, distance) {
     var y = obj1.getDrawableY()+obj1.getCenterY()-(obj2.getDrawableY()+obj2.getCenterY());
 
     return x*x+y*y <= distance;
-}
+};
 
 /**
  * Get the identifier associated to an object name :<br>
@@ -1017,7 +1017,7 @@ gdjs.RuntimeObject.getNameIdentifier = function(name) {
 
     gdjs.RuntimeObject.getNameIdentifier.identifiers.put(name, newKey);
     return newKey;
-}
+};
 
 //Notify gdjs the RuntimeObject exists.
 gdjs.RuntimeObject.thisIsARuntimeObjectConstructor = "";

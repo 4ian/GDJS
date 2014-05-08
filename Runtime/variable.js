@@ -23,8 +23,8 @@ gdjs.Variable = function(varData)
     this._undefinedInContainer = false;
 
 	if ( varData !== undefined ) {
-		if ( varData.attr.Value !== undefined ) { //Variable is a string or a number
-			var initialValue = varData.attr.Value;
+		if ( varData.value !== undefined ) { //Variable is a string or a number
+			var initialValue = varData.value;
 
 			//Try to guess the type of the value, as GD has no way ( for now ) to specify
 			//the type of a variable.
@@ -45,17 +45,18 @@ gdjs.Variable = function(varData)
 		else { //Variable is a structure
 			this._isStructure = true;
 
-			var that = this;
-			gdjs.iterateOver(varData.Children, "Variable", function(childData) {
-				that._children[childData.attr.Name] = new gdjs.Variable(childData);
-			});
-
+			if (varData.children !== undefined) {
+				var that = this;
+				gdjs.iterateOverArray(varData.children, function(childData) {
+					that._children[childData.name] = new gdjs.Variable(childData);
+				});
+			}
 		}
 	}
 };
 
 
-/** 
+/**
  * Used ( usually by VariablesContainer ) to set that the variable must be
  * considered as not existing in the container.
  * @method setUndefinedInContainer
@@ -64,7 +65,7 @@ gdjs.Variable.prototype.setUndefinedInContainer = function() {
     this._undefinedInContainer = true;
 };
 
-/** 
+/**
  * Check if the variable must be considered as not existing in its container
  * ( Usually a VariablesContainer ).
  * @method isUndefinedInContainer
@@ -75,9 +76,9 @@ gdjs.Variable.prototype.isUndefinedInContainer = function() {
 };
 
 /**
- * Get the child with the specified name. 
- * 
- * If the variable has not the specified child, an empty variable with the specified name 
+ * Get the child with the specified name.
+ *
+ * If the variable has not the specified child, an empty variable with the specified name
  * is added as child.
  * @method getChild
  */
@@ -92,9 +93,9 @@ gdjs.Variable.prototype.getChild = function(childName) {
 };
 
 /**
- * Get the child with the specified name. 
- * 
- * If the variable has not the specified child, an empty variable with the specified name 
+ * Get the child with the specified name.
+ *
+ * If the variable has not the specified child, an empty variable with the specified name
  * is added as child.
  * @method getChild
  */
@@ -103,8 +104,8 @@ gdjs.Variable.prototype.hasChild = function(childName) {
 };
 
 /**
- * Remove the child with the specified name. 
- * 
+ * Remove the child with the specified name.
+ *
  * If the variable has not the specified child, nothing is done.
  * @method removeChild
  * @param childName The name of the child to be removed
@@ -168,7 +169,7 @@ gdjs.Variable.prototype.setString = function(newValue) {
 /**
  * Return true if the variable is a structure.
  * @method isStructure
- */ 
+ */
 gdjs.Variable.prototype.isStructure = function() {
 	return this._isStructure;
 };

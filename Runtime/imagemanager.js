@@ -33,19 +33,19 @@ gdjs.ImageManager.prototype.getPIXITexture = function(name) {
 		return this._invalidTexture;
 	}
 
-	var resources = this._game.getGameData().Resources.Resources;
+	var resources = this._game.getGameData().resources.resources;
 	if ( resources ) {
 		var texture = null;
-		gdjs.iterateOver(resources, "Resource", function(res) {
-			if ( res.attr.name === name &&
-				res.attr.kind === "image" ) {
+		gdjs.iterateOverArray(resources, function(res) {
+			if ( res.name === name &&
+				res.kind === "image" ) {
 
-				texture = PIXI.Texture.fromImage(res.attr.file);
+				texture = PIXI.Texture.fromImage(res.file);
 				return false;
 			}
 		});
 
-		if ( texture != null ) {
+		if ( texture !== null ) {
 			//console.log("Loaded texture \""+name+"\".");
 			this._loadedTextures.put(name, texture);
 			return texture;
@@ -75,6 +75,9 @@ gdjs.ImageManager.prototype.getPowerOf2PIXITexture = function(name) {
 		//No cached version: Use a render texture to resize the texture to a power of 2.
 		var newWidth = nearestPowerOf2(pixiTexture.baseTexture.width);
 		var newHeight = nearestPowerOf2(pixiTexture.baseTexture.height);
+		newWidth = Math.max(newWidth, newHeight);
+		newHeight = Math.max(newWidth, newHeight);
+		console.log("taille:", newWidth, newHeight)
 
 		var renderTexture = new PIXI.RenderTexture(newWidth, newHeight);
 		var sprite = new PIXI.Sprite(pixiTexture);
@@ -92,7 +95,7 @@ gdjs.ImageManager.prototype.getPowerOf2PIXITexture = function(name) {
 };
 
 function isPowerOfTwo(x) {
-    return (x & (x - 1)) == 0;
+    return (x & (x - 1)) === 0;
 }
 
 function nearestPowerOf2(x) {

@@ -5,12 +5,13 @@
  */
 
 /**
- * The polygon represents a polygon which can be used to create collisions masks for runtimeObject.
+ * Polygon represents a polygon which can be used to create collisions masks for RuntimeObject.
  *
+ * @constructor
  * @namespace gdjs
  * @class Polygon
  */
-gdjs.Polygon = function(runtimeGame, pixiRenderer)
+gdjs.Polygon = function()
 {
     /**
      * The vertices of the polygon
@@ -24,14 +25,14 @@ gdjs.Polygon = function(runtimeGame, pixiRenderer)
      * @property edges
      */
     this.edges = [];
-    
+
     /**
      * The center of the polygon. This property is only valid after calling
      * computeCenter, and remains valid until vertices are modified.
      * @property center
      */
     this.center = [0,0];
-}
+};
 
 gdjs.Polygon.prototype.move = function(x,y) {
 	for(var i = 0, len = this.vertices.length;i<len;++i) {
@@ -39,7 +40,7 @@ gdjs.Polygon.prototype.move = function(x,y) {
 		this.vertices[i][0] += x;
 		this.vertices[i][1] += y;
 	}
-}
+};
 
 gdjs.Polygon.prototype.rotate = function(angle) {
 	var t, cosa = Math.cos(-angle),
@@ -50,7 +51,7 @@ gdjs.Polygon.prototype.rotate = function(angle) {
 		this.vertices[i][0] = t*cosa + this.vertices[i][1]*sina;
 		this.vertices[i][1] = -t*sina + this.vertices[i][1]*cosa;
 	}
-}
+};
 
 gdjs.Polygon.prototype.computeEdges = function() {
 	var v1, v2;
@@ -69,7 +70,7 @@ gdjs.Polygon.prototype.computeEdges = function() {
 		this.edges[i][0] = v2[0] - v1[0];
         this.edges[i][1] = v2[1] - v1[1];
 	}
-}
+};
 
 gdjs.Polygon.prototype.isConvex = function() {
 	this.computeEdges();
@@ -90,7 +91,7 @@ gdjs.Polygon.prototype.isConvex = function() {
 	if ( (lastZCrossProduct > 0) !== zProductIsPositive ) return false;
 
 	return true;
-}
+};
 
 gdjs.Polygon.prototype.computeCenter = function() {
 	this.center[0] = 0;
@@ -105,7 +106,7 @@ gdjs.Polygon.prototype.computeCenter = function() {
 	this.center[1] /= len;
 
 	return this.center;
-}
+};
 
 gdjs.Polygon.createRectangle = function(width, height) {
     var rect = new gdjs.Polygon();
@@ -115,11 +116,11 @@ gdjs.Polygon.createRectangle = function(width, height) {
     rect.vertices.push([-width/2.0, +height/2.0]);
 
     return rect;
-}
+};
 
 /**
  * Do a collision test between two polygons.<br>
- * Please note this.polygons must <b>convexes</b>!
+ * Please note that polygons must <b>convexes</b>!
  *
  * Uses <a href="http://en.wikipedia.org/wiki/Hyperplane_separation_theorem">Separating Axis Theorem </a>.<br>
  * Based on <a href="http://www.codeproject.com/Articles/15573/2D-Polygon-Collision-Detection">this</a>
@@ -236,4 +237,4 @@ gdjs.Polygon.collisionTest = function(p1,p2) {
     result.move_axis[1] = move_axis[1] * min_dist;
 
     return result;
-}
+};
