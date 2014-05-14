@@ -662,6 +662,14 @@ gdjs.SpriteRuntimeObject.prototype.flipY = function(enable) {
     }
 };
 
+gdjs.SpriteRuntimeObject.prototype.isFlippedX = function() {
+    return this._flippedX;
+};
+
+gdjs.SpriteRuntimeObject.prototype.isFlippedY = function() {
+    return this._flippedY;
+};
+
 //Scale and size :
 
 gdjs.SpriteRuntimeObject.prototype.getWidth = function() {

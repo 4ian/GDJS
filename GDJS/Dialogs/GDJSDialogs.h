@@ -82,6 +82,7 @@ protected:
     wxButton* exportBt;
 
 protected:
+    virtual void OnBrowseBtClick(wxCommandEvent& event) { event.Skip(); }
     virtual void OnCloseBtClicked(wxCommandEvent& event) { event.Skip(); }
     virtual void OnExportBtClicked(wxCommandEvent& event) { event.Skip(); }
 

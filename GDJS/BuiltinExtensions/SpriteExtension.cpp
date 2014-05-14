@@ -72,6 +72,10 @@ SpriteExtension::SpriteExtension()
         SetFunctionName("flipX");
     spriteActions["FlipY"].codeExtraInformation.
         SetFunctionName("flipY");
+    spriteConditions["FlippedX"].codeExtraInformation.
+        SetFunctionName("isFlippedX");
+    spriteConditions["FlippedY"].codeExtraInformation.
+        SetFunctionName("isFlippedY");
 
     spriteConditions["SourisSurObjet"].codeExtraInformation.
         SetFunctionName("cursorOnObject");

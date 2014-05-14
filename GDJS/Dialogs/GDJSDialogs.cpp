@@ -378,6 +378,7 @@ BaseProjectExportDialog::BaseProjectExportDialog(wxWindow* parent, wxWindowID id
     }
     Centre(wxBOTH);
     // Connect events
+    browseBt->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(BaseProjectExportDialog::OnBrowseBtClick), NULL, this);
     closeBt->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(BaseProjectExportDialog::OnCloseBtClicked), NULL, this);
     exportBt->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(BaseProjectExportDialog::OnExportBtClicked), NULL, this);
     
@@ -385,6 +386,7 @@ BaseProjectExportDialog::BaseProjectExportDialog(wxWindow* parent, wxWindowID id
 
 BaseProjectExportDialog::~BaseProjectExportDialog()
 {
+    browseBt->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(BaseProjectExportDialog::OnBrowseBtClick), NULL, this);
     closeBt->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(BaseProjectExportDialog::OnCloseBtClicked), NULL, this);
     exportBt->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(BaseProjectExportDialog::OnExportBtClicked), NULL, this);
     
