@@ -23,7 +23,7 @@ MathematicalToolsExtension::MathematicalToolsExtension()
                           _("Mathematical tools"),
                           _("Built-in extension providing mathematical tools"),
                           "Florian Rival",
-                          "Open source ( LGPL )");
+                          "Open source (LGPL)");
 
     GetAllExpressions()["cos"]
         .codeExtraInformation.SetFunctionName("Math.cos");

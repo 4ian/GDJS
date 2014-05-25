@@ -23,7 +23,7 @@ KeyboardExtension::KeyboardExtension()
                           _("Keyboard features"),
                           _("Built-in extensions allowing to use keyboard"),
                           "Florian Rival",
-                          "Open source ( LGPL )");
+                          "Open source (LGPL)");
 
     GetAllConditions()["KeyPressed"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.input.isKeyPressed").SetIncludeFile("inputtools.h");

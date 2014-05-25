@@ -21,7 +21,7 @@ StringInstructionsExtension::StringInstructionsExtension()
                           _("Text manipulation"),
                           _("Built-in extension providing expressions related to strings."),
                           "Florian Rival",
-                          "Open source ( LGPL )");
+                          "Open source (LGPL)");
 
     GetAllStrExpressions()["NewLine"]
         .codeExtraInformation.SetFunctionName("gdjs.evtTools.string.newLine");

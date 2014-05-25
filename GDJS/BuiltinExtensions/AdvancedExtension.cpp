@@ -20,7 +20,7 @@ AdvancedExtension::AdvancedExtension()
                           _("Advanced control features"),
                           _("Built-in extension providing advanced control features."),
                           "Florian Rival",
-                          "Open source ( LGPL )");
+                          "Open source (LGPL)");
 
     GetAllConditions()["Toujours"].codeExtraInformation.SetFunctionName("gdjs.evtTools.common.returnFalse").SetIncludeFile("commontools.js");
 }

@@ -19,7 +19,7 @@ CameraExtension::CameraExtension()
                           _("Cameras and layers features"),
                           _("Builtin camera extension"),
                           "Florian Rival",
-                          "Open source ( LGPL )");
+                          "Open source (LGPL)");
 
     GetAllActions()["CameraX"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.camera.setCameraX").SetAssociatedGetter("gdjs.evtTools.camera.getCameraX");

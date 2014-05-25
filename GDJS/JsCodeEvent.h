@@ -3,8 +3,8 @@
  *  2008-2014 Florian Rival (Florian.Rival@gmail.com)
  */
 
-#ifndef CPPCODEEVENT_H
-#define CPPCODEEVENT_H
+#ifndef JSCODEEVENT_H
+#define JSCODEEVENT_H
 #include "GDCore/Events/Event.h"
 namespace gd { class Instruction; }
 namespace gd { class MainFrameWrapper; }
@@ -101,4 +101,4 @@ private:
 
 }
 
-#endif // CPPCODEEVENT_H
+#endif // JSCODEEVENT_H

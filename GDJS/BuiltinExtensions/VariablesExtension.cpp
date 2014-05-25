@@ -28,7 +28,7 @@ VariablesExtension::VariablesExtension()
                           _("Variable features"),
                           _("Built-in extension allowing to manipulate variables"),
                           "Florian Rival",
-                          "Open source ( LGPL )");
+                          "Open source (LGPL)");
 
     GetAllConditions()["VarScene"].codeExtraInformation.SetFunctionName("gdjs.evtTools.common.getVariableNumber");
     GetAllConditions()["VarSceneTxt"].codeExtraInformation.SetFunctionName("gdjs.evtTools.common.getVariableString");

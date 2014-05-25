@@ -21,7 +21,7 @@ CommonConversionsExtension::CommonConversionsExtension()
                           _("Standard Conversions"),
                           _("Built-in extension providing standard conversions expressions."),
                           "Florian Rival",
-                          "Open source ( LGPL )");
+                          "Open source (LGPL)");
 
     GetAllExpressions()["ToNumber"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.common.toNumber").SetIncludeFile("commontools.js");

@@ -19,7 +19,7 @@ SpriteExtension::SpriteExtension()
                           _("Sprite"),
                           _("Extension for adding animated objects in the scene, which can contain animations with directions within each."),
                           "Florian Rival",
-                          "Open source ( LGPL )");
+                          "Open source (LGPL)");
 
     std::map<std::string, gd::InstructionMetadata > & spriteActions = GetAllActionsForObject("Sprite");
     std::map<std::string, gd::InstructionMetadata > & spriteConditions = GetAllConditionsForObject("Sprite");
@@ -65,7 +65,7 @@ SpriteExtension::SpriteExtension()
     spriteConditions["ScaleHeight"].codeExtraInformation
         .SetFunctionName("getScaleY");
     spriteActions["TourneVersPos"].codeExtraInformation.
-        SetFunctionName("turnTowardPosition");
+        SetFunctionName("rotateTowardPosition");
     spriteActions["TourneVers"].codeExtraInformation.
         SetFunctionName("turnTowardObject");
     spriteActions["FlipX"].codeExtraInformation.

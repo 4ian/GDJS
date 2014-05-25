@@ -23,7 +23,7 @@ JoystickExtension::JoystickExtension()
                           _("Joysticks features"),
                           _("Built-in extension allowing to use joysticks"),
                           "Florian Rival",
-                          "Open source ( LGPL )");
+                          "Open source (LGPL)");
 
     //Nothing is available for now.
     StripUnimplementedInstructionsAndExpressions(); //Unimplemented things are listed here:

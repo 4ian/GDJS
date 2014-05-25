@@ -21,7 +21,7 @@ NetworkExtension::NetworkExtension()
                           _("Basic internet features"),
                           _("Built-in extension providing network features."),
                           "Florian Rival",
-                          "Open source ( LGPL )");
+                          "Open source (LGPL)");
 
     GetAllActions()["SendRequest"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.network.sendHttpRequest").SetIncludeFile("networktools.js");

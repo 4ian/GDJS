@@ -255,6 +255,34 @@ gdjs.RuntimeObject.prototype.getDrawableY = function() {
     return this.getY();
 };
 
+
+gdjs.RuntimeObject.prototype.rotateTowardPosition = function(x, y, speed, scene) {
+    this.rotateTowardAngle(Math.atan2(y - (this.getDrawableY()+this.getCenterY()),
+        x - (this.getDrawableX()+this.getCenterX()))*180/Math.PI, speed, scene);
+};
+
+gdjs.RuntimeObject.prototype.rotateTowardAngle = function(angle, speed, runtimeScene) {
+    if (speed === 0) {
+        this.setAngle(angle);
+        return;
+    }
+
+    var angularDiff = gdjs.evtTools.common.angleDifference(this.getAngle(), angle);
+    var diffWasPositive = angularDiff >= 0;
+
+    var newAngle = this.getAngle()+(diffWasPositive ? -1.0 : 1.0)*speed*runtimeScene.getElapsedTime()/1000;
+    if (gdjs.evtTools.common.angleDifference(newAngle, angle) > 0 ^ diffWasPositive)
+        newAngle = angle;
+    this.setAngle(newAngle);
+
+    if (this.getAngle() != newAngle) //Objects like sprite in 8 directions does not handle small increments...
+        this.setAngle(angle); //...so force them to be in the path angle anyway.
+};
+
+gdjs.RuntimeObject.prototype.rotate = function(speed, runtimeScene) {
+    this.setAngle(this.getAngle()+speed*runtimeScene.getElapsedTime()/1000);
+};
+
 /**
  * Set the Z order of the object.
  *
@@ -547,7 +575,7 @@ gdjs.RuntimeObject.prototype.addForceTowardPosition = function(x,y, len, isPerma
 
 /**
  * Add a force oriented toward another object.<br>
- * ( Shortcut to addForceTowardPosition )
+ * (Shortcut for addForceTowardPosition)
  * @method addForceTowardObject
  * @param obj The target object
  * @param len {Number} The force length, in pixels.
@@ -576,7 +604,7 @@ gdjs.RuntimeObject.prototype.clearForces = function() {
  * @return {Boolean} true if no forces are applied on the object.
  */
 gdjs.RuntimeObject.prototype.hasNoForces = function() {
-    return this._forces.length == 0;
+    return this._forces.length === 0;
 };
 
 /**

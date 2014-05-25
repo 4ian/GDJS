@@ -21,7 +21,7 @@ ExternalLayoutsExtension::ExternalLayoutsExtension()
                           _("External layouts"),
                           _("Built-in extension providing actions and conditions related to external layouts"),
                           "Florian Rival",
-                          "Open source ( LGPL )");
+                          "Open source (LGPL)");
 
     GetAllActions()["BuiltinExternalLayouts::CreateObjectsFromExternalLayout"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.runtimeScene.createObjectsFromExternalLayout");

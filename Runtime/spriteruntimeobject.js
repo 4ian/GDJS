@@ -754,30 +754,16 @@ gdjs.SpriteRuntimeObject.prototype.setZOrder = function(z) {
 };
 
 /**
- * Change the object angle so that it is facing the specified position.
-
- * @method turnTowardPosition
- * @param x {Number} The target x position
- * @param y {Number} The target y position
- */
-gdjs.SpriteRuntimeObject.prototype.turnTowardPosition = function(x,y) {
-    var angle = Math.atan2(y - (this.getDrawableY()+this.getCenterY()),
-                           x - (this.getDrawableX()+this.getCenterX()));
-
-    this.setAngle(angle*180/3.14159);
-};
-
-/**
- * Change the object angle so that it is facing another object
-
  * @method turnTowardObject
  * @param obj The target object
+ * @param scene The scene containing the object
+ * @deprecated
  */
-gdjs.SpriteRuntimeObject.prototype.turnTowardObject = function(obj) {
+gdjs.SpriteRuntimeObject.prototype.turnTowardObject = function(obj, scene) {
     if ( obj === null ) return;
 
-    this.turnTowardPosition(obj.getDrawableX()+obj.getCenterX(),
-                            obj.getDrawableY()+obj.getCenterY());
+    this.rotateTowardPosition(obj.getDrawableX()+obj.getCenterX(),
+        obj.getDrawableY()+obj.getCenterY(), 0, scene);
 };
 
 

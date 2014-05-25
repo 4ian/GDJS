@@ -21,7 +21,7 @@ AudioExtension::AudioExtension()
                           _("Audio"),
                           _("Builtin audio extension"),
                           "Florian Rival",
-                          "Open source ( LGPL )");
+                          "Open source (LGPL)");
 
     GetAllActions()["PlaySound"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.sound.playSound");

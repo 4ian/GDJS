@@ -23,7 +23,7 @@ MouseExtension::MouseExtension()
                           _("Mouse features"),
                           _("Built-in extensions allowing to use the mouse"),
                           "Florian Rival",
-                          "Open source ( LGPL )");
+                          "Open source (LGPL)");
 
     GetAllConditions()["SourisX"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.input.getMouseX").SetIncludeFile("inputtools.h");

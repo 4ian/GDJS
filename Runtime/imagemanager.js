@@ -56,44 +56,6 @@ gdjs.ImageManager.prototype.getPIXITexture = function(name) {
 	return this._invalidTexture;
 };
 
-/**
- * Return the PIXI texture associated to the specified name, ensuring that this texture is a power of 2
- * ( If not a power of 2, a resized texture is returned )
- *
- * @param name The name of the texture to get.
- * @method getPowerOf2PIXITexture
- */
-gdjs.ImageManager.prototype.getPowerOf2PIXITexture = function(name) {
-	var pixiTexture = this.getPIXITexture(name);
-    if (!isPowerOfTwo(pixiTexture.baseTexture.width) || !isPowerOfTwo(pixiTexture.baseTexture.height)) {
-
-		//Return a cached version of the resized texture
-		if ( this._loadedPow2ConvertedTextures.containsKey(name) ) {
-			return this._loadedPow2ConvertedTextures.get(name);
-		}
-
-		//No cached version: Use a render texture to resize the texture to a power of 2.
-		var newWidth = nearestPowerOf2(pixiTexture.baseTexture.width);
-		var newHeight = nearestPowerOf2(pixiTexture.baseTexture.height);
-		newWidth = Math.max(newWidth, newHeight);
-		newHeight = Math.max(newWidth, newHeight);
-		console.log("taille:", newWidth, newHeight)
-
-		var renderTexture = new PIXI.RenderTexture(newWidth, newHeight);
-		var sprite = new PIXI.Sprite(pixiTexture);
-		var doc = new PIXI.DisplayObjectContainer();
-		doc.addChild(sprite);
-		sprite.scale.x = newWidth/pixiTexture.baseTexture.width;
-		sprite.scale.y = newHeight/pixiTexture.baseTexture.height;
-		renderTexture.render(doc);
-
-		this._loadedPow2ConvertedTextures.put(name, renderTexture);
-		return renderTexture;
-    }
-
-    return pixiTexture;
-};
-
 function isPowerOfTwo(x) {
     return (x & (x - 1)) === 0;
 }

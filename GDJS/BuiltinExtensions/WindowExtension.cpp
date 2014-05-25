@@ -21,7 +21,7 @@ WindowExtension::WindowExtension()
                           _("Window features"),
                           _("Built-in extension allowing to manipulate the game's window"),
                           "Florian Rival",
-                          "Open source ( LGPL )");
+                          "Open source (LGPL)");
 
     GetAllActions()["SetFullScreen"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.window.setFullScreen");

@@ -23,7 +23,7 @@ TimeExtension::TimeExtension()
                           _("Time"),
                           _("Built-in extension providing actions and conditions about the time."),
                           "Florian Rival",
-                          "Open source ( LGPL )");
+                          "Open source (LGPL)");
 
     GetAllConditions()["Timer"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.runtimeScene.timerElapsedTime");

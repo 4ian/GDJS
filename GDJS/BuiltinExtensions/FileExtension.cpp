@@ -21,7 +21,7 @@ FileExtension::FileExtension()
                           _("Files"),
                           _("Built-in extension providing functions for storing data."),
                           "Florian Rival",
-                          "Open source ( LGPL )");
+                          "Open source (LGPL)");
 
     GetAllActions()["LoadFile"]
         .codeExtraInformation.SetFunctionName("gdjs.evtTools.storage.loadJSONFileFromStorage");

@@ -23,7 +23,7 @@ SceneExtension::SceneExtension()
                           _("Scene management features"),
                           _("Built-in extension allowing to manipulate scenes"),
                           "Florian Rival",
-                          "Open source ( LGPL )");
+                          "Open source (LGPL)");
 
     GetAllExpressions()["Random"].codeExtraInformation
         .SetFunctionName("gdjs.random");

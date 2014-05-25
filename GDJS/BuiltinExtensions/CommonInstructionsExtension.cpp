@@ -39,7 +39,7 @@ CommonInstructionsExtension::CommonInstructionsExtension()
                           _("Standard events"),
                           _("Built-in extension providing standard events."),
                           "Florian Rival",
-                          "Open source ( LGPL )");
+                          "Open source (LGPL)");
 
     {
         class CodeGen : public gd::EventMetadata::CodeGenerator

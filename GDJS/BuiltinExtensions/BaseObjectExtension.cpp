@@ -23,7 +23,7 @@ BaseObjectExtension::BaseObjectExtension()
                           _("Base object"),
                           _("Base object"),
                           "Florian Rival",
-                          "Open source ( LGPL )");
+                          "Open source (LGPL)");
 
     std::map<std::string, gd::InstructionMetadata > & objectActions = GetAllActionsForObject("");
     std::map<std::string, gd::InstructionMetadata > & objectConditions = GetAllConditionsForObject("");
@@ -31,13 +31,23 @@ BaseObjectExtension::BaseObjectExtension()
     std::map<std::string, gd::StrExpressionMetadata > & objectStrExpressions = GetAllStrExpressionsForObject("");
 
     objectActions["MettreX"].codeExtraInformation
-        .SetFunctionName("setX").SetManipulatedType("number").SetAssociatedGetter("getX").SetIncludeFile("runtimeobject.js");
+        .SetFunctionName("setX").SetAssociatedGetter("getX").SetIncludeFile("runtimeobject.js");
     objectActions["MettreY"].codeExtraInformation
-        .SetFunctionName("setY").SetManipulatedType("number").SetAssociatedGetter("getY").SetIncludeFile("runtimeobject.js");
+        .SetFunctionName("setY").SetAssociatedGetter("getY").SetIncludeFile("runtimeobject.js");
     objectConditions["PosX"].codeExtraInformation
-        .SetFunctionName("getX").SetManipulatedType("number").SetIncludeFile("runtimeobject.js");
+        .SetFunctionName("getX").SetIncludeFile("runtimeobject.js");
     objectConditions["PosY"].codeExtraInformation
-        .SetFunctionName("getY").SetManipulatedType("number").SetIncludeFile("runtimeobject.js");
+        .SetFunctionName("getY").SetIncludeFile("runtimeobject.js");
+    objectActions["SetAngle"].codeExtraInformation
+        .SetFunctionName("setAngle").SetAssociatedGetter("getAngle").SetIncludeFile("runtimeobject.js");
+    objectConditions["Angle"].codeExtraInformation
+        .SetFunctionName("getAngle").SetIncludeFile("runtimeobject.js");
+    objectActions["Rotate"].codeExtraInformation
+        .SetFunctionName("rotate").SetIncludeFile("runtimeobject.js");
+    objectActions["RotateTowardAngle"].codeExtraInformation
+        .SetFunctionName("rotateTowardAngle").SetIncludeFile("runtimeobject.js");
+    objectActions["RotateTowardPosition"].codeExtraInformation
+        .SetFunctionName("rotateTowardPosition").SetIncludeFile("runtimeobject.js");
     objectActions["ChangeLayer"].codeExtraInformation
         .SetFunctionName("setLayer").SetIncludeFile("runtimeobject.js");
     objectConditions["Layer"].codeExtraInformation
@@ -45,7 +55,7 @@ BaseObjectExtension::BaseObjectExtension()
     objectActions["ChangePlan"].codeExtraInformation
         .SetFunctionName("setZOrder").SetAssociatedGetter("getZOrder").SetIncludeFile("runtimeobject.js");
     objectConditions["Plan"].codeExtraInformation
-        .SetFunctionName("getZOrder").SetManipulatedType("number").SetIncludeFile("runtimeobject.js");
+        .SetFunctionName("getZOrder").SetIncludeFile("runtimeobject.js");
     objectActions["Cache"].codeExtraInformation
         .SetFunctionName("hide").SetIncludeFile("runtimeobject.js");
     objectActions["Montre"].codeExtraInformation
@@ -104,7 +114,7 @@ BaseObjectExtension::BaseObjectExtension()
     objectExpressions["X"].codeExtraInformation.SetFunctionName("getX");
     objectExpressions["Y"].codeExtraInformation.SetFunctionName("getY");
     objectExpressions["ZOrder"].codeExtraInformation.SetFunctionName("getZOrder");
-    objectExpressions["Plan"].codeExtraInformation.SetFunctionName("getZOrder");
+    objectExpressions["Plan"].codeExtraInformation.SetFunctionName("getZOrder"); //Deprecated
     objectExpressions["Width"].codeExtraInformation.SetFunctionName("getWidth");
     objectExpressions["Height"].codeExtraInformation.SetFunctionName("getHeight");
     objectExpressions["Largeur"].codeExtraInformation.SetFunctionName("getWidth"); //Deprecated
@@ -114,7 +124,7 @@ BaseObjectExtension::BaseObjectExtension()
     objectExpressions["ForceX"].codeExtraInformation.SetFunctionName("getAverageForce().getX");
     objectExpressions["ForceY"].codeExtraInformation.SetFunctionName("getAverageForce().getY");
     objectExpressions["ForceAngle"].codeExtraInformation.SetFunctionName("getAverageForce().getAngle");
-    objectExpressions["Angle"].codeExtraInformation.SetFunctionName("getAverageForce().getAngle"); //Deprecated
+    objectExpressions["Angle"].codeExtraInformation.SetFunctionName("getAngle");
     objectExpressions["ForceLength"].codeExtraInformation.SetFunctionName("getAverageForce().getLength");
     objectExpressions["Longueur"].codeExtraInformation.SetFunctionName("getAverageForce().getLength"); //Deprecated
     objectExpressions["Distance"].codeExtraInformation.SetFunctionName("getDistanceFrom");
