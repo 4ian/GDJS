@@ -34,7 +34,7 @@ namespace gdjs
 void JsCodeEvent::EnsureAssociatedSourceFileIsUpToDate(gd::Project & project, std::string outputDir) const
 {
 #if !defined(GD_NO_WX_GUI)
-    std::string outputFile(CodeCompiler::Get()->GetOutputDirectory()+"GD"+ToString(this)+"SourceFile.cpp");
+    std::string outputFile("GD"+ToString(this)+"SourceFile.cpp"); //TODOTODOTODO
 
     vector< boost::shared_ptr<gd::SourceFile> >::const_iterator sourceFileIter =
         find_if(project.externalSourceFiles.begin(), project.externalSourceFiles.end(), bind2nd(gd::ExternalSourceFileHasName(), associatedGDManagedSourceFile));
@@ -158,11 +158,12 @@ unsigned int JsCodeEvent::GetRenderedHeight(unsigned int width, const gd::Platfo
 gd::BaseEvent::EditEventReturnType JsCodeEvent::EditEvent(wxWindow* parent_, gd::Project & game_, gd::Layout & scene_, gd::MainFrameWrapper & mainFrameWrapper_)
 {
 #if !defined(GD_NO_WX_GUI)
-    EditJsCodeEvent dialog(parent_, *this, game_, scene_);
+    //TODOTODOTODO
+    /*EditJsCodeEvent dialog(parent_, *this, game_, scene_);
     int returned = dialog.ShowModal();
 
     if ( returned == 0 )
-        return Cancelled;
+        return Cancelled;*/
 #else
     return ChangesMade;
 #endif

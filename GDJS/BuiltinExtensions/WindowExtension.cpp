@@ -25,6 +25,8 @@ WindowExtension::WindowExtension()
 
     GetAllActions()["SetFullScreen"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.window.setFullScreen");
+    GetAllActions()["SetWindowMargins"].codeExtraInformation
+        .SetFunctionName("gdjs.evtTools.window.setMargins");
     GetAllActions()["SetWindowTitle"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.window.setWindowTitle");
     GetAllActions()["SetWindowSize"].codeExtraInformation

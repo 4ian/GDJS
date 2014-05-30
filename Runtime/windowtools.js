@@ -13,7 +13,12 @@
  */
 gdjs.evtTools.window = gdjs.evtTools.window || {};
 
-gdjs.evtTools.window.setFullScreen = function(runtimeScene, enable) {
+gdjs.evtTools.window.setMargins = function(runtimeScene, top, right, bottom, left) {
+	runtimeScene.getGame().setMargins(top, right, bottom, left);
+};
+
+gdjs.evtTools.window.setFullScreen = function(runtimeScene, enable, keepAspectRatio) {
+	runtimeScene.getGame().keepAspectRatio(keepAspectRatio);
     runtimeScene.getGame().setFullScreen(enable);
 };
 

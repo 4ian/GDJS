@@ -42,6 +42,9 @@ gdjs.RuntimeGame = function(data, spec)
     this._defaultHeight = gdjs.projectData.properties.windowHeight;
     this._currentWidth = gdjs.projectData.properties.windowWidth; //Current size of the canvas
     this._currentHeight = gdjs.projectData.properties.windowHeight;
+    this._keepRatio = true;
+    this._reduceIfNeed = true;
+    this._marginLeft = this._marginTop = this._marginRight = this._marginBottom = 0;
 
     if (navigator.isCocoonJS && !this._forceFullscreen) {
         this._forceFullscreen = true;
@@ -488,6 +491,33 @@ gdjs.RuntimeGame.prototype.bindStandardEvents = function(window, document) {
 };
 
 /**
+ * Set if the aspect ratio must be kept when the game canvas is resized.
+ */
+gdjs.RuntimeGame.prototype.keepAspectRatio = function(enable) {
+    if (this._keepRatio === enable) return;
+
+    this._keepRatio = enable;
+    this._resizeCanvas();
+    this._notifySceneForResize = true;
+};
+
+/**
+ * Change the margin that must be preserved around the game canvas.
+ */
+gdjs.RuntimeGame.prototype.setMargins = function(top, right, bottom, left) {
+    if (this._marginTop === top && this._marginRight === right && this._marginBottom === bottom &&
+        this._marginLeft === left)
+        return;
+
+    this._marginTop = top;
+    this._marginRight = right;
+    this._marginBottom = bottom;
+    this._marginLeft = left;
+    this._resizeCanvas();
+    this._notifySceneForResize = true;
+};
+
+/**
  * De/activate fullscreen for the canvas rendering the game.
  * @method setFullScreen
  */
@@ -496,8 +526,7 @@ gdjs.RuntimeGame.prototype.setFullScreen = function(enable) {
 
     if (this._isFullscreen !== enable) {
         this._isFullscreen = !!enable;
-        this._resizeCanvas(this._renderer, this._canvasArea, this._isFullscreen,
-            this._currentWidth, this._currentHeight);
+        this._resizeCanvas();
         this._notifySceneForResize = true;
 
         if (this._isFullscreen) {
@@ -536,14 +565,12 @@ gdjs.RuntimeGame.prototype.createStandardCanvas = function(canvasArea) {
     canvasArea.appendChild(this._renderer.view); // add the renderer view element to the DOM
     canvasArea.tabindex="1"; //Ensure that the canvas has the focus.
     canvasArea.style.overflow="hidden"; //No scrollbar in any case.
-    this._resizeCanvas(this._renderer, this._canvasArea, this._forceFullscreen || this._isFullscreen,
-        this._currentWidth, this._currentHeight);
+    this._resizeCanvas();
 
     //Handle resize
     var game = this;
     window.addEventListener("resize", function() {
-        game._resizeCanvas(game._renderer, game._canvasArea, this._forceFullscreen || game._isFullscreen,
-            game._currentWidth, game._currentHeight);
+        game._resizeCanvas();
         game._notifySceneForResize = true;
     });
 
@@ -551,23 +578,50 @@ gdjs.RuntimeGame.prototype.createStandardCanvas = function(canvasArea) {
 };
 
 /**
- * Resize the canvas. Parameters width or height are ignored if isFullscreen === true.
+ * Resize the canvas, according to _isFullscreen, _forceFullscreen, _currentWidth,
+ * _currentHeight, _marginTop, _marginLeft, _marginRight, _marginBottom, _keepRatio.
+ *
+ * If fullscreen is activated
  *
  * @method _resizeCanvas
  * @private
  * @static
  */
-gdjs.RuntimeGame.prototype._resizeCanvas = function(renderer, canvasArea, isFullscreen, width, height) {
-    if ( isFullscreen ) {
-        width = window.innerWidth;
-        height = window.innerHeight;
+gdjs.RuntimeGame.prototype._resizeCanvas = function() {
+    var keepRatio = this._keepRatio;
+
+    var reduceIfNeed = this._reduceIfNeed;
+    var isFullscreen = this._forceFullscreen || this._isFullscreen;
+    var width = this._currentWidth;
+    var height = this._currentHeight;
+    var marginLeft = this._marginLeft;
+    var marginTop = this._marginTop;
+    var marginRight = this._marginRight;
+    var marginBottom = this._marginBottom;
+    var maxWidth = window.innerWidth-marginLeft-marginRight;
+    var maxHeight = window.innerHeight-marginTop-marginBottom;
+    if (maxWidth < 0) maxWidth = 0;
+    if (maxHeight < 0) maxHeight = 0;
+
+    if (isFullscreen && !keepRatio) {
+        width = maxWidth;
+        height = maxHeight;
+    } else if (isFullscreen && keepRatio ||
+        (reduceIfNeed && (width > maxWidth || height > maxHeight))) {
+        var factor = maxWidth/width;
+        if (height*factor > maxHeight) factor = maxHeight/height;
+
+        width *= factor;
+        height *= factor;
     }
 
-    if (renderer.width !== width || renderer.height !== height) renderer.resize(width, height);
-    canvasArea.style["top"] = isFullscreen ? "0" : (gdjs.getDocHeight()-height)/2+"px";
-    canvasArea.style["left"] = isFullscreen ? "0" : (gdjs.getDocWidth()-width)/2+"px";
-    canvasArea.style.width = width+"px";
-    canvasArea.style.height = height+"px";
+    if (this._renderer.width !== width || this._renderer.height !== height)
+        this._renderer.resize(width, height);
+
+    this._canvasArea.style["top"] = ((marginTop+(maxHeight-height)/2)+"px");
+    this._canvasArea.style["left"] = ((marginLeft+(maxWidth-width)/2)+"px");
+    this._canvasArea.style.width = width+"px";
+    this._canvasArea.style.height = height+"px";
 };
 
 /**

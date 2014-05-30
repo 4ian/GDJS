@@ -450,7 +450,7 @@ bool Exporter::ExportEventsCode(gd::Project & project, std::string outputDir, st
     InsertUnique(includesFiles, "stringtools.js");
     InsertUnique(includesFiles, "windowtools.js");
 
-    for (unsigned int i = 0;i<project.GetLayoutCount();++i)
+    for (unsigned int i = 0;i<project.GetLayoutsCount();++i)
     {
         std::set<std::string> eventsIncludes;
         gd::Layout & exportedLayout = project.GetLayout(i);
@@ -594,7 +594,7 @@ void Exporter::StripProject(gd::Project & strippedProject)
     strippedProject.GetObjectGroups().clear();
     while ( strippedProject.GetExternalEventsCount() > 0 ) strippedProject.RemoveExternalEvents(strippedProject.GetExternalEvents(0).GetName());
 
-    for (unsigned int i = 0;i<strippedProject.GetLayoutCount();++i)
+    for (unsigned int i = 0;i<strippedProject.GetLayoutsCount();++i)
     {
         strippedProject.GetLayout(i).GetObjectGroups().clear();
         strippedProject.GetLayout(i).GetEvents().Clear();

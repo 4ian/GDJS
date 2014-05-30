@@ -19,14 +19,9 @@
 using namespace emscripten;
 using namespace gdjs;
 
-namespace gdjs
-{
-
-JsPlatform & AsJSPlatform(gd::Platform & platform)
-{
-	return static_cast<JsPlatform &>(platform);
-}
-
+namespace gdjs {
+JsPlatform * AsJSPlatform(gd::Platform & platform) { return static_cast<JsPlatform *>(&platform); }
+gd::Platform * AsPlatform(JsPlatform & platform) { return static_cast<gd::Platform *>(&platform); }
 }
 
 EMSCRIPTEN_BINDINGS(gdjs_JsPlatform) {
@@ -36,7 +31,8 @@ EMSCRIPTEN_BINDINGS(gdjs_JsPlatform) {
         .class_function("get", &JsPlatform::Get)
         ;
 
-    function("asJSPlatform", &gdjs::AsJSPlatform);
+    function("asPlatform", &gdjs::AsPlatform, allow_raw_pointers());
+    function("asJSPlatform", &gdjs::AsJSPlatform, allow_raw_pointers());
 }
 
 EMSCRIPTEN_BINDINGS(gdjs_EventsCodeGenerator) {
