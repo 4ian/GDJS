@@ -162,7 +162,6 @@ AudioExtension::AudioExtension()
     */
 }
 
-#if !defined(GD_NO_WX_GUI)
 void AudioExtension::ExposeActionsResources(gd::Instruction & action, gd::ArbitraryResourceWorker & worker)
 {
     if ( action.GetType() == "PlaySound" || action.GetType() == "PlaySoundCanal" || action.GetType() == "PlayMusic" || action.GetType() == "PlayMusicCanal" )
@@ -172,6 +171,5 @@ void AudioExtension::ExposeActionsResources(gd::Instruction & action, gd::Arbitr
         action.SetParameter(1, parameter);
     }
 }
-#endif
 
 }

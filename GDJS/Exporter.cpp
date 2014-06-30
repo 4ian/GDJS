@@ -3,7 +3,6 @@
  * Copyright 2008-2014 Florian Rival (Florian.Rival@gmail.com). All rights reserved.
  * This project is released under the GNU Lesser General Public License.
  */
-#if !defined(EMSCRIPTEN)
 #include <sstream>
 #include <fstream>
 #include <streambuf>
@@ -22,6 +21,7 @@
 #include "GDCore/TinyXml/tinyxml.h"
 #include "GDCore/PlatformDefinition/Project.h"
 #include "GDCore/PlatformDefinition/Layout.h"
+#include "GDCore/IDE/AbstractFileSystem.h"
 #include "GDCore/Serialization/Serializer.h"
 #include "GDCore/Serialization/SerializerElement.h"
 #include "GDCore/PlatformDefinition/ExternalEvents.h"
@@ -33,6 +33,7 @@
 #include "GDJS/Dialogs/ProjectExportDialog.h"
 #include "GDJS/Dialogs/UploadOnlineDialog.h"
 #include "GDJS/Dialogs/CocoonJSUploadDialog.h"
+#undef CopyFile //Disable an annoying macro
 
 namespace gdjs
 {
@@ -44,64 +45,42 @@ static void InsertUnique(std::vector<std::string> & container, std::string str)
         container.push_back(str);
 }
 
-#if !defined(GD_NO_WX_GUI)
-static void ClearDirectory(wxString dir)
+static void GenerateFontsDeclaration(gd::AbstractFileSystem & fs, const std::string & outputDir, std::string & css, std::string & html)
 {
-    wxString file = wxFindFirstFile( dir + "/*" );
-    while ( !file.empty() )
-    {
-        wxRemoveFile( file );
-        file = wxFindNextFile();
+    std::vector<std::string> ttfFiles = fs.ReadDir(outputDir, ".TTF");
+    for(unsigned int i = 0; i<ttfFiles.size();++i) {
+        std::string relativeFile = ttfFiles[i];
+        fs.MakeRelative(relativeFile, outputDir);
+        css += "@font-face{ font-family : \"gdjs_font_";
+        css += relativeFile;
+        css += "\"; src : url('";
+        css += relativeFile;
+        css +="') format('truetype'); }";
+
+        html += "<div style=\"font-family: 'gdjs_font_";
+        html += relativeFile;
+        html += "';\">.</div>";
     }
 }
-
-static void GenerateFontsDeclaration(const std::string & outputDir, std::string & css, std::string & html)
-{
-    wxString file = wxFindFirstFile( outputDir + "/*" );
-    while ( !file.empty() )
-    {
-        if ( file.Upper().EndsWith(".TTF") )
-        {
-            wxFileName relativeFile(file);
-            relativeFile.MakeRelativeTo(outputDir);
-            css += "@font-face{ font-family : \"gdjs_font_";
-            css += gd::ToString(relativeFile.GetFullPath());
-            css += "\"; src : url('";
-            css += gd::ToString(relativeFile.GetFullPath());
-            css +="') format('truetype'); }";
-
-            html += "<div style=\"font-family: 'gdjs_font_";
-            html += gd::ToString(relativeFile.GetFullPath());
-            html += "';\">.</div>";
-        }
-
-        file = wxFindNextFile();
-    }
-}
-#endif
 
 Exporter::~Exporter()
 {
 }
 
-bool Exporter::ExportLayoutForPreview(gd::Layout & layout, std::string exportDir)
+bool Exporter::ExportLayoutForPreview(gd::Project & project, gd::Layout & layout, std::string exportDir)
 {
-    #if !defined(GD_NO_WX_GUI)
-    if ( !project ) return false;
-
-    gd::RecursiveMkDir::MkDir(exportDir);
-    ClearDirectory(exportDir);
-    gd::RecursiveMkDir::MkDir(exportDir+"/libs");
-    gd::RecursiveMkDir::MkDir(exportDir+"/Extensions");
+    fs.MkDir(exportDir);
+    fs.ClearDir(exportDir);
+    fs.MkDir(exportDir+"/libs");
+    fs.MkDir(exportDir+"/Extensions");
     std::vector<std::string> includesFiles;
 
-    gd::Project exportedProject = *project;
+    gd::Project exportedProject = project;
 
     //Export resources ( *before* generating events as some resources filenames may be updated )
-    ExportResources(exportedProject, exportDir);
-
+    ExportResources(fs, exportedProject, exportDir);
     //Generate events code
-    if ( !ExportEventsCode(exportedProject, gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/"), includesFiles) )
+    if ( !ExportEventsCode(exportedProject, fs.GetTempDir()+"/GDTemporaries/JSCodeTemp/", includesFiles) )
         return false;
 
     //Strip the project ( *after* generating events as the events may use strioped things ( objects groups... ) )
@@ -109,27 +88,23 @@ bool Exporter::ExportLayoutForPreview(gd::Layout & layout, std::string exportDir
     exportedProject.SetFirstLayout(layout.GetName());
 
     //Export the project
-    std::string result = ExportToJSON(exportedProject, gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js"),
+    std::string result = ExportToJSON(fs, exportedProject, fs.GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js",
                                       "gdjs.projectData", false);
-    includesFiles.push_back(gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js"));
+    includesFiles.push_back(fs.GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js");
 
     //Copy all the dependencies
     ExportIncludesAndLibs(includesFiles, exportDir, false);
 
     //Create the index file
     if ( !ExportStandardIndexFile(exportedProject, exportDir, includesFiles) ) return false;
-    #else
-    gd::LogWarning("BAD USE: Exporter::ExportLayoutForPreview cannot be used");
-    #endif
 
     return true;
 }
 
-std::string Exporter::ExportToJSON(const gd::Project & project, std::string filename, std::string wrapIntoVariable, bool prettyPrinting)
+std::string Exporter::ExportToJSON(gd::AbstractFileSystem & fs, const gd::Project & project,
+    std::string filename, std::string wrapIntoVariable, bool prettyPrinting)
 {
-    #if !defined(GD_NO_WX_GUI)
-    gd::RecursiveMkDir::MkDir(wxFileName::FileName(filename).GetPath());
-    #endif
+    fs.MkDir(fs.DirNameFrom(filename));
 
     //Save the project to JSON
     gd::SerializerElement rootElement;
@@ -138,22 +113,8 @@ std::string Exporter::ExportToJSON(const gd::Project & project, std::string file
     std::string output = gd::Serializer::ToJSON(rootElement);
     if (!wrapIntoVariable.empty()) output = wrapIntoVariable + " = " + output + ";";
 
-    #if !defined(GD_NO_WX_GUI)
-    //Save to file
-    {
-        std::ofstream file;
-        file.open ( filename.c_str() );
-        if ( file.is_open() )
-        {
-            file << output;
-            file.close();
-        }
-        else
-            return "Unable to write "+filename;
-    }
-    #else
-    gd::LogWarning("BAD USE: Project cannot be exported to a JSON file");
-    #endif
+    if (!fs.WriteToFile(filename, output))
+        return "Unable to write "+filename;
 
     return "";
 }
@@ -188,7 +149,7 @@ bool Exporter::ExportMetadataFile(gd::Project & project, std::string exportDir, 
     metadata += "],\"scripts\":[";
     for (std::vector<std::string>::const_iterator it = includesFiles.begin(); it != includesFiles.end(); ++it)
     {
-        if ( !wxFileExists(exportDir+"/"+*it) )
+        if ( !fs.FileExists(exportDir+"/"+*it) )
             continue;
 
         if (it != includesFiles.begin()) metadata += ", ";
@@ -225,36 +186,24 @@ bool Exporter::ExportMetadataFile(gd::Project & project, std::string exportDir, 
 
 bool Exporter::ExportStandardIndexFile(gd::Project & project, std::string exportDir, const std::vector<std::string> & includesFiles, std::string additionalSpec)
 {
-    #if !defined(GD_NO_WX_GUI)
     //Open the index.html template
-    std::ifstream t("./JsPlatform/Runtime/index.html");
-    std::stringstream buffer;
-    buffer << t.rdbuf();
-    std::string str = buffer.str();
+    std::string str = fs.ReadFile("./JsPlatform/Runtime/index.html");
 
     //Generate custom declarations for font resources
     std::string customCss;
     std::string customHtml;
-    GenerateFontsDeclaration(exportDir, customCss, customHtml);
+    GenerateFontsDeclaration(fs, exportDir, customCss, customHtml);
 
     //Generate the file
     if ( !CompleteIndexFile(str, customCss, customHtml, exportDir, includesFiles, additionalSpec) )
         return false;
 
     //Write the index.html file
-    std::ofstream file;
-    file.open ( std::string(exportDir+"/index.html").c_str() );
-    if ( file.is_open() ) {
-        file << str;
-        file.close();
-    }
-    else {
+    if ( !fs.WriteToFile(exportDir+"/index.html", str) )
+    {
         lastError = "Unable to write index file.";
         return false;
     }
-    #else
-    gd::LogWarning("BAD USE: Exporter::ExportStandardIndexFile is not available");
-    #endif
 
     return true;
 }
@@ -264,38 +213,27 @@ bool Exporter::ExportIntelXDKIndexFile(gd::Project & project, std::string export
     #if !defined(GD_NO_WX_GUI)
     {
         //Open the index.html template
-        std::ifstream t("./JsPlatform/Runtime/XDKindex.html");
-        std::stringstream buffer;
-        buffer << t.rdbuf();
-        std::string str = buffer.str();
+        std::string str = fs.ReadFile("./JsPlatform/Runtime/XDKindex.html");
 
         //Generate custom declarations for font resources
         std::string customCss;
         std::string customHtml;
-        GenerateFontsDeclaration(exportDir, customCss, customHtml);
+        GenerateFontsDeclaration(fs, exportDir, customCss, customHtml);
 
         //Generate the file
         if ( !CompleteIndexFile(str, customCss, customHtml, exportDir, includesFiles, additionalSpec) )
             return false;
 
         //Write the index.html file
-        std::ofstream file;
-        file.open ( std::string(exportDir+"/index.html").c_str() );
-        if ( file.is_open() ) {
-            file << str;
-            file.close();
-        }
-        else {
+        if ( !fs.WriteToFile(exportDir+"/index.html", str) )
+        {
             lastError = "Unable to write index file.";
             return false;
         }
     }
     {
         //Open the XDK project file template
-        std::ifstream t("./JsPlatform/Runtime/XDKProject.xdk");
-        std::stringstream buffer;
-        buffer << t.rdbuf();
-        std::string str = buffer.str();
+        std::string str = fs.ReadFile("./JsPlatform/Runtime/XDKProject.xdk");
 
         //Complete the project file
         std::string nowTimeStamp = gd::ToString(wxDateTime::Now().GetTicks());
@@ -319,27 +257,21 @@ bool Exporter::ExportIntelXDKIndexFile(gd::Project & project, std::string export
         }
 
         //Write the file
-        std::ofstream file;
-        file.open ( std::string(exportDir+"/XDKProject.xdk").c_str() );
-        if ( file.is_open() ) {
-            file << str;
-            file.close();
-        }
-        else {
+        if (!fs.WriteToFile(exportDir+"/XDKProject.xdk", str))
+        {
             lastError = "Unable to write the intel XDK project file.";
             return false;
         }
     }
     {
-        wxLogNull noLogPlease;
-        if ( !wxCopyFile("./JsPlatform/Runtime/XDKProject.xdke", exportDir+"/XDKProject.xdke", true) )
+        if ( !fs.CopyFile("./JsPlatform/Runtime/XDKProject.xdke", exportDir+"/XDKProject.xdke") )
         {
             lastError = "Unable to write the intel XDK second project file.";
             return false;
         }
     }
     #else
-    gd::LogWarning("BAD USE: Exporter::ExportIntelXDKIndexFile is not available");
+        std::cout << "BAD USE: ExportIntelXDKIndexFile is not available." << std::endl;
     #endif
 
     return true;
@@ -347,7 +279,6 @@ bool Exporter::ExportIntelXDKIndexFile(gd::Project & project, std::string export
 
 bool Exporter::CompleteIndexFile(std::string & str, std::string customCss, std::string customHtml, std::string exportDir, const std::vector<std::string> & includesFiles, std::string additionalSpec)
 {
-    #if !defined(GD_NO_WX_GUI)
     size_t pos = str.find("/* GDJS_CUSTOM_STYLE */");
     if ( pos < str.length() )
         str = str.replace(pos, 23, customCss);
@@ -374,15 +305,15 @@ bool Exporter::CompleteIndexFile(std::string & str, std::string customCss, std::
         std::string codeFilesIncludes;
         for (std::vector<std::string>::const_iterator it = includesFiles.begin(); it != includesFiles.end(); ++it)
         {
-            if ( !wxFileExists(exportDir+"/"+*it) )
+            if ( !fs.FileExists(exportDir+"/"+*it) )
             {
                 std::cout << "Warning: Unable to found " << exportDir+"/"+*it << "." << std::endl;
                 continue;
             }
 
-            wxFileName relativeFile = wxFileName::FileName(exportDir+"/"+*it);
-            relativeFile.MakeRelativeTo(exportDir);
-            codeFilesIncludes += "\t<script src=\""+gd::ToString(relativeFile.GetFullPath(wxPATH_UNIX))+"\"></script>\n";
+            std::string relativeFile = exportDir+"/"+*it;
+            fs.MakeRelative(relativeFile, exportDir);
+            codeFilesIncludes += "\t<script src=\""+relativeFile+"\"></script>\n";
         }
 
         str = str.replace(pos, 24, codeFilesIncludes);
@@ -408,14 +339,12 @@ bool Exporter::CompleteIndexFile(std::string & str, std::string customCss, std::
         return false;
     }
 
-    #endif
     return true;
 }
 
 bool Exporter::ExportEventsCode(gd::Project & project, std::string outputDir, std::vector<std::string> & includesFiles)
 {
-    #if !defined(GD_NO_WX_GUI)
-    gd::RecursiveMkDir::MkDir(outputDir);
+    fs.MkDir(outputDir);
 
     //First, do not forget common includes ( They must be included before events generated code files ).
     InsertUnique(includesFiles, "libs/pixi.js");
@@ -455,15 +384,10 @@ bool Exporter::ExportEventsCode(gd::Project & project, std::string outputDir, st
         std::set<std::string> eventsIncludes;
         gd::Layout & exportedLayout = project.GetLayout(i);
         std::string eventsOutput = EventsCodeGenerator::GenerateSceneEventsCompleteCode(project, exportedLayout,
-                                                                                        exportedLayout.GetEvents(), eventsIncludes,
-                                                                                        false /*Export for edittime*/);
+            exportedLayout.GetEvents(), eventsIncludes, false /*Export for edittime*/);
         //Export the code
-        std::ofstream file;
-        file.open ( std::string(outputDir+"code"+gd::ToString(i)+".js").c_str() );
-        if ( file.is_open() ) {
-            file << eventsOutput;
-            file.close();
-
+        if (fs.WriteToFile(outputDir+"code"+gd::ToString(i)+".js", eventsOutput))
+        {
             for ( std::set<std::string>::iterator include = eventsIncludes.begin() ; include != eventsIncludes.end(); ++include )
                 InsertUnique(includesFiles, *include);
 
@@ -474,9 +398,6 @@ bool Exporter::ExportEventsCode(gd::Project & project, std::string outputDir, st
             return false;
         }
     }
-    #else
-    gd::LogWarning("BAD USE: Exporter::ExportEventsCode is not available");
-    #endif
 
     return true;
 }
@@ -488,7 +409,7 @@ bool Exporter::ExportIncludesAndLibs(std::vector<std::string> & includesFiles, s
     if ( minify )
     {
         std::string javaExec = GetJavaExecutablePath();
-        if ( javaExec.empty() || !wxFileExists(javaExec) )
+        if ( javaExec.empty() || !fs.FileExists(javaExec) )
         {
             std::cout << "Java executable not found." << std::endl;
             gd::LogWarning(_("The exported script could not be minified : Check that the Java Runtime Environment is installed."));
@@ -502,11 +423,11 @@ bool Exporter::ExportIncludesAndLibs(std::vector<std::string> & includesFiles, s
             std::string allJsFiles;
             for ( std::vector<std::string>::iterator include = includesFiles.begin() ; include != includesFiles.end(); ++include )
             {
-                if ( wxFileExists(jsPlatformDir+"Runtime/"+*include) )
+                if ( fs.FileExists(jsPlatformDir+"Runtime/"+*include) )
                     allJsFiles += "\""+jsPlatformDir+"Runtime/"+*include+"\" ";
-                else if ( wxFileExists(jsPlatformDir+"Runtime/Extensions/"+*include) )
+                else if ( fs.FileExists(jsPlatformDir+"Runtime/Extensions/"+*include) )
                     allJsFiles += "\""+jsPlatformDir+"Runtime/Extensions/"+*include+"\" ";
-                else if ( wxFileExists(*include) )
+                else if ( fs.FileExists(*include) )
                     allJsFiles += "\""+*include+"\" ";
             }
 
@@ -547,34 +468,35 @@ bool Exporter::ExportIncludesAndLibs(std::vector<std::string> & includesFiles, s
 
         }
     }
+    #else
+    minify = false;
+    #endif
 
     //If the closure compiler failed or was not request, simply copy all the include files.
     if ( !minify )
     {
         for ( std::vector<std::string>::iterator include = includesFiles.begin() ; include != includesFiles.end(); ++include )
         {
-            std::cout << *include << std::endl;
-            wxLogNull noLogPlease;
-            if ( wxFileExists("./JsPlatform/Runtime/"+*include) )
+            if ( fs.FileExists("./JsPlatform/Runtime/"+*include) )
             {
-                wxString path = wxFileName::FileName(exportDir+"/Extensions/"+*include).GetPath();
-                if ( !wxDirExists(path) ) gd::RecursiveMkDir::MkDir(path);
+                std::string path = fs.DirNameFrom(exportDir+"/Extensions/"+*include);
+                if ( !fs.DirExists(path) ) fs.MkDir(path);
 
-                wxCopyFile("./JsPlatform/Runtime/"+*include, exportDir+"/"+*include);
+                fs.CopyFile("./JsPlatform/Runtime/"+*include, exportDir+"/"+*include);
                 //Ok, the filename is relative to the export dir.
             }
-            else if ( wxFileExists("./JsPlatform/Runtime/Extensions/"+*include) )
+            else if ( fs.FileExists("./JsPlatform/Runtime/Extensions/"+*include) )
             {
-                wxString path = wxFileName::FileName(exportDir+"/Extensions/"+*include).GetPath();
-                if ( !wxDirExists(path) ) gd::RecursiveMkDir::MkDir(path);
+                std::string path = fs.DirNameFrom(exportDir+"/Extensions/"+*include);
+                if ( !fs.DirExists(path) ) fs.MkDir(path);
 
-                wxCopyFile("./JsPlatform/Runtime/Extensions/"+*include, exportDir+"/Extensions/"+*include);
+                fs.CopyFile("./JsPlatform/Runtime/Extensions/"+*include, exportDir+"/Extensions/"+*include);
                 *include = "Extensions/"+*include; //Ensure filename is relative to the export dir.
             }
-            else if ( wxFileExists(*include) )
+            else if ( fs.FileExists(*include) )
             {
-                wxCopyFile(*include, exportDir+"/"+wxFileName::FileName(*include).GetFullName());
-                *include = gd::ToString(wxFileName::FileName(*include).GetFullName()); //Ensure filename is relative to the export dir.
+                fs.CopyFile(*include, exportDir+"/"+fs.FileNameFrom(*include));
+                *include = fs.FileNameFrom(*include); //Ensure filename is relative to the export dir.
             }
             else
             {
@@ -582,9 +504,6 @@ bool Exporter::ExportIncludesAndLibs(std::vector<std::string> & includesFiles, s
             }
         }
     }
-    #else
-    gd::LogWarning("BAD USE: Exporter::ExportIncludesAndLibs is not available");
-    #endif
 
     return true;
 }
@@ -601,9 +520,9 @@ void Exporter::StripProject(gd::Project & strippedProject)
     }
 }
 
-void Exporter::ExportResources(gd::Project & project, std::string exportDir, wxProgressDialog * progressDialog)
+void Exporter::ExportResources(gd::AbstractFileSystem & fs, gd::Project & project, std::string exportDir, wxProgressDialog * progressDialog)
 {
-    gd::ProjectResourcesCopier::CopyAllResourcesTo(project, exportDir, true, progressDialog, false, false);
+    gd::ProjectResourcesCopier::CopyAllResourcesTo(project, fs, exportDir, true, progressDialog, false, false);
 }
 
 void Exporter::ShowProjectExportDialog(gd::Project & project)
@@ -615,48 +534,71 @@ void Exporter::ShowProjectExportDialog(gd::Project & project)
     bool exportForGDShare = dialog.GetExportType() == ProjectExportDialog::GameDevShare;
     bool exportForCocoonJS = dialog.GetExportType() == ProjectExportDialog::CocoonJS;
     bool exportForIntelXDK = dialog.GetExportType() == ProjectExportDialog::IntelXDK;
+
+    ExportWholeProject(project, dialog.GetExportDir(), dialog.RequestMinify(),
+        exportForGDShare, exportForCocoonJS, exportForIntelXDK);
+    #else
+    gd::LogError("BAD USE: Exporter::ShowProjectExportDialog is not available.");
+    #endif
+}
+
+bool Exporter::ExportWholeProject(gd::Project & project, std::string exportDir,
+    bool minify, bool exportForGDShare, bool exportForCocoonJS, bool exportForIntelXDK)
+{
     bool exportToZipFile = exportForGDShare || exportForCocoonJS;
-    bool minify = dialog.RequestMinify();
-    std::string exportDir = dialog.GetExportDir();
 
     {
+        #if !defined(GD_NO_WX_GUI)
         wxProgressDialog progressDialog(_("Export in progress ( 1/2 )"), _("Exporting the project..."));
+        #endif
 
         //Prepare the export directory
-        gd::RecursiveMkDir::MkDir(exportDir);
-        ClearDirectory(exportDir);
-        gd::RecursiveMkDir::MkDir(exportDir+"/libs");
-        gd::RecursiveMkDir::MkDir(exportDir+"/Extensions");
+        fs.MkDir(exportDir);
+        fs.ClearDir(exportDir);
+        fs.MkDir(exportDir+"/libs");
+        fs.MkDir(exportDir+"/Extensions");
         std::vector<std::string> includesFiles;
 
         gd::Project exportedProject = project;
 
         //Export the resources ( before generating events as some resources filenames may be updated )
-        ExportResources(exportedProject, exportDir, &progressDialog);
+        #if !defined(GD_NO_WX_GUI)
+        ExportResources(fs, exportedProject, exportDir, &progressDialog);
+        #else
+        ExportResources(fs, exportedProject, exportDir, NULL);
+        #endif
 
+        #if !defined(GD_NO_WX_GUI)
         progressDialog.SetTitle(_("Export in progress ( 2/2 )"));
         progressDialog.Update(50, _("Exporting events..."));
+        #endif
 
         //Export events
-        if ( !ExportEventsCode(exportedProject, gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/"), includesFiles) )
+        if ( !ExportEventsCode(exportedProject, fs.GetTempDir()+"/GDTemporaries/JSCodeTemp/", includesFiles) )
         {
             gd::LogError(_("Error during exporting: Unable to export events ( "+lastError+")."));
-            return;
+            return false;
         }
 
+        #if !defined(GD_NO_WX_GUI)
         progressDialog.Update(60, _("Preparing the project..."));
+        #endif
 
         //Strip the project (*after* generating events as the events may use stripped things like objects groups...)...
         StripProject(exportedProject);
 
+        #if !defined(GD_NO_WX_GUI)
         progressDialog.Update(70, _("Exporting files..."));
+        #endif
 
         //...and export it
-        std::string result = ExportToJSON(exportedProject, gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js"),
+        std::string result = ExportToJSON(fs, exportedProject, fs.GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js",
                                           "gdjs.projectData", false);
-        includesFiles.push_back(gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js"));
+        includesFiles.push_back(fs.GetTempDir()+"/GDTemporaries/JSCodeTemp/data.js");
 
+        #if !defined(GD_NO_WX_GUI)
         progressDialog.Update(80, minify ? _("Exporting files and minifying them...") : _("Exporting files..."));
+        #endif
 
         //Copy all dependencies and the index (or metadata) file.
         std::string additionalSpec = exportForCocoonJS ? "{forceFullscreen:true}" : "";
@@ -668,20 +610,21 @@ void Exporter::ShowProjectExportDialog(gd::Project & project)
 
         if ( !indexFile)
         {
-            gd::LogError(_("Error during exporting:\n"+lastError));
-            return;
+            gd::LogError(_("Error during export:\n")+lastError);
+            return false;
         }
 
         //Exporting for online upload requires to zip the whole game.
         if ( exportToZipFile )
         {
+            #if !defined(GD_NO_WX_GUI)
             progressDialog.Update(90, _("Creating the zip file..."));
 
             //Getting all the files to includes in the directory
             wxArrayString files;
             wxDir::GetAllFiles(exportDir, &files);
 
-            wxString zipTempName = wxFileName::GetTempDir()+"/GDTemporaries/zipped_"+ToString(&project)+".zip";
+            wxString zipTempName = fs.GetTempDir()+"/GDTemporaries/zipped_"+ToString(&project)+".zip";
             wxFFileOutputStream out(zipTempName);
             wxZipOutputStream zip(out);
             for(unsigned int i = 0; i < files.size(); ++i)
@@ -702,14 +645,18 @@ void Exporter::ShowProjectExportDialog(gd::Project & project)
             {
                 progressDialog.Update(95, _("Cleaning files..."));
 
-                ClearDirectory(exportDir);
-                wxCopyFile(zipTempName, exportDir+"/packaged_game.zip");
+                fs.ClearDir(exportDir);
+                fs.CopyFile(gd::ToString(zipTempName), exportDir+"/packaged_game.zip");
                 wxRemoveFile(zipTempName);
             }
+            #else
+            gd::LogError("BAD USE: Trying to export to a zip file, but this feature is not available when wxWidgets support is disabled.");
+            #endif
         }
     }
 
     //Finished!
+    #if !defined(GD_NO_WX_GUI)
     if ( exportForGDShare )
     {
         UploadOnlineDialog uploadDialog(NULL, project.GetName(), exportDir+wxFileName::GetPathSeparator()+"packaged_game.zip");
@@ -740,9 +687,9 @@ void Exporter::ShowProjectExportDialog(gd::Project & project)
             #endif
         }
     }
-    #else
-    gd::LogError("BAD USE: Exporter::ShowProjectExportDialog is not available.");
     #endif
+
+    return true;
 }
 
 std::string Exporter::GetProjectExportButtonLabel()
@@ -750,7 +697,7 @@ std::string Exporter::GetProjectExportButtonLabel()
     return gd::ToString(_("Export to the web"));
 }
 
-    #if !defined(GD_NO_WX_GUI)
+#if !defined(GD_NO_WX_GUI)
 std::string Exporter::GetJavaExecutablePath()
 {
     std::vector<std::string> guessPaths;
@@ -786,4 +733,3 @@ std::string Exporter::GetJavaExecutablePath()
 #endif
 
 }
-#endif

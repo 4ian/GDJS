@@ -18,7 +18,5 @@ External libraries used by Game Develop JS Platform
 ---------------------------------------------------
 
 * Pixi.js is distributed under the MIT license
-* jQuery is distributed under the MIT license
 * mongoose is distributed under the MIT license
-* wxWidgets is distributed under wxWindows License ( similar to GNU LGPL )
-* Game Develop Core is a freeware
+* wxWidgets is distributed under wxWindows License (similar to GNU LGPL)

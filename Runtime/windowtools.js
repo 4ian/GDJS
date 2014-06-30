@@ -37,3 +37,10 @@ gdjs.evtTools.window.setWindowTitle = function(runtimeScene, title) {
 gdjs.evtTools.window.getWindowTitle = function() {
     return document.title;
 };
+
+gdjs.evtTools.window.getWindowWidth = function() {
+    return window.innerWidth;
+};
+gdjs.evtTools.window.getWindowHeight = function() {
+    return window.innerHeight;
+};

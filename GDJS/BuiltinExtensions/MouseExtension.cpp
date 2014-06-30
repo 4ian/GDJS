@@ -26,24 +26,24 @@ MouseExtension::MouseExtension()
                           "Open source (LGPL)");
 
     GetAllConditions()["SourisX"].codeExtraInformation
-        .SetFunctionName("gdjs.evtTools.input.getMouseX").SetIncludeFile("inputtools.h");
+        .SetFunctionName("gdjs.evtTools.input.getMouseX").SetIncludeFile("inputtools.js");
     GetAllConditions()["SourisY"].codeExtraInformation
-        .SetFunctionName("gdjs.evtTools.input.getMouseY").SetIncludeFile("inputtools.h");
+        .SetFunctionName("gdjs.evtTools.input.getMouseY").SetIncludeFile("inputtools.js");
     GetAllConditions()["SourisBouton"].codeExtraInformation
-        .SetFunctionName("gdjs.evtTools.input.isMouseButtonPressed").SetIncludeFile("inputtools.h");
+        .SetFunctionName("gdjs.evtTools.input.isMouseButtonPressed").SetIncludeFile("inputtools.js");
     GetAllActions()["CacheSouris"].codeExtraInformation
-        .SetFunctionName("gdjs.evtTools.input.hideCursor").SetIncludeFile("inputtools.h");
+        .SetFunctionName("gdjs.evtTools.input.hideCursor").SetIncludeFile("inputtools.js");
     GetAllActions()["MontreSouris"].codeExtraInformation
-        .SetFunctionName("gdjs.evtTools.input.showCursor").SetIncludeFile("inputtools.h");
+        .SetFunctionName("gdjs.evtTools.input.showCursor").SetIncludeFile("inputtools.js");
 
     GetAllExpressions()["MouseX"].codeExtraInformation
-        .SetFunctionName("gdjs.evtTools.input.getMouseX").SetIncludeFile("inputtools.h");
+        .SetFunctionName("gdjs.evtTools.input.getMouseX").SetIncludeFile("inputtools.js");
     GetAllExpressions()["SourisX"].codeExtraInformation
-        .SetFunctionName("gdjs.evtTools.input.getMouseX").SetIncludeFile("inputtools.h"); //Deprecated
+        .SetFunctionName("gdjs.evtTools.input.getMouseX").SetIncludeFile("inputtools.js"); //Deprecated
     GetAllExpressions()["MouseY"].codeExtraInformation
-        .SetFunctionName("gdjs.evtTools.input.getMouseY").SetIncludeFile("inputtools.h");
+        .SetFunctionName("gdjs.evtTools.input.getMouseY").SetIncludeFile("inputtools.js");
     GetAllExpressions()["SourisY"].codeExtraInformation
-        .SetFunctionName("gdjs.evtTools.input.getMouseY").SetIncludeFile("inputtools.h"); //Deprecated
+        .SetFunctionName("gdjs.evtTools.input.getMouseY").SetIncludeFile("inputtools.js"); //Deprecated
 
     StripUnimplementedInstructionsAndExpressions(); //Unimplemented things are listed here:
     /*

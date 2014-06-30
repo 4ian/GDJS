@@ -14,7 +14,7 @@ gdjs.Sound = function(soundFile) {
 	this.audio = new Audio(soundFile || "");
 	this._volume = 100;
 	this._requestedCurrentTime = null; //Can be set to the requested playing offset, when the audio is not ready yet. See below:
-	
+
 	//Extra work when the audio is ready:
 	//Setting its playing offset to the request one, if any.
 	var that = this;
@@ -25,6 +25,15 @@ gdjs.Sound = function(soundFile) {
 		}
 	});
 };
+
+gdjs.Sound.prototype.setSrc = function(soundFile) {
+	if (!gdjs.SoundManager.canUseOgg &&
+		(soundFile.length >= 4 && soundFile.substr(soundFile.length-4, 4).toLowerCase() === ".ogg")) {
+		soundFile = soundFile.substr(0, soundFile.length-4)+".mp3";
+	}
+
+	this.audio.src = soundFile;
+}
 
 gdjs.Sound.prototype.setVolume = function(volume, globalVolume) {
 	if ( volume < 0 ) volume = 0;
@@ -99,7 +108,14 @@ gdjs.SoundManager = function()
     this._freeSounds = []; //Sounds without an assigned channel.
     this._freeMusics = []; //Musics without an assigned channel.
     this._globalVolume = 100;
+
+    //Check if ogg is supported. If not, fallback to mp3.
+    try {
+		gdjs.SoundManager.canUseOgg = !!(new Audio().canPlayType('audio/ogg; codecs="vorbis"'));
+	}
+	catch (e) {}
 };
+gdjs.SoundManager.canUseOgg = false; //Static boolean to know if we can play ogg files or not.
 
 gdjs.SoundManager.prototype._getRecyledResource = function(arr) {
 	//Try to recycle an old sound.
@@ -117,7 +133,7 @@ gdjs.SoundManager.prototype._getRecyledResource = function(arr) {
 gdjs.SoundManager.prototype.playSound = function(soundFile, loop, volume, pitch) {
 	var theSound = this._getRecyledResource(this._freeSounds);
 
-	theSound.audio.src = soundFile;
+	theSound.setSrc(soundFile);
 	theSound.audio.loop = loop;
 	theSound.setVolume(volume, this._globalVolume);
 	theSound.audio.play();
@@ -131,7 +147,7 @@ gdjs.SoundManager.prototype.playSoundOnChannel = function(soundFile, channel, lo
 	var theSound = this._sounds[channel];
 
 	theSound.stop();
-	theSound.audio.src = soundFile;
+	theSound.setSrc(soundFile);
 	theSound.audio.loop = loop;
 	theSound.setVolume(volume, this._globalVolume);
 	theSound.audio.play();
@@ -198,7 +214,7 @@ gdjs.SoundManager.prototype.setSoundOnChannelPlayingOffset = function(channel, p
 gdjs.SoundManager.prototype.playMusic = function(soundFile, loop, volume, pitch) {
 	var theMusic = this._getRecyledResource(this._freeMusics);
 
-	theMusic.audio.src = soundFile;
+	theMusic.setSrc(soundFile);
 	theMusic.audio.loop = loop;
 	theMusic.setVolume(volume, this._globalVolume);
 	theMusic.audio.play();
@@ -212,7 +228,7 @@ gdjs.SoundManager.prototype.playMusicOnChannel = function(soundFile, channel, lo
 	var theMusic = this._musics[channel];
 
 	theMusic.stop();
-	theMusic.audio.src = soundFile;
+	theMusic.setSrc(soundFile);
 	theMusic.audio.loop = loop;
 	theMusic.setVolume(volume, this._globalVolume);
 	theMusic.audio.play();

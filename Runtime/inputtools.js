@@ -120,36 +120,36 @@ gdjs.evtTools.input.isKeyPressed = function(runtimeScene, key) {
     if ( key === "Pause" ) { return runtimeScene.getGame().isKeyPressed(19); }
 
     return false;
-}
+};
 
 gdjs.evtTools.input.anyKeyPressed = function(runtimeScene) {
     return runtimeScene.getGame().anyKeyPressed();
-}
+};
 
 gdjs.evtTools.input.isMouseButtonPressed = function(runtimeScene, button) {
     if ( button == "Left" ) return runtimeScene.getGame().isMouseButtonPressed(0);
     if ( button == "Right" ) return runtimeScene.getGame().isMouseButtonPressed(1);
     return false;
-}
+};
 
 gdjs.evtTools.input.hideCursor = function(runtimeScene) {
     runtimeScene.getPIXIRenderer().view.style.cursor = 'none';
-}
+};
 
 gdjs.evtTools.input.showCursor = function(runtimeScene) {
     runtimeScene.getPIXIRenderer().view.style.cursor = '';
-}
+};
 
 gdjs.evtTools.input.getMouseWheelDelta = function(runtimeScene) {
     return runtimeScene.getGame().getMouseWheelDelta();
-}
+};
 
 gdjs.evtTools.input.getMouseX = function(runtimeScene, layer, camera) {
-    return runtimeScene.getLayer(layer).convertCoords(runtimeScene.getGame().getMouseX(), 
+    return runtimeScene.getLayer(layer).convertCoords(runtimeScene.getGame().getMouseX(),
         runtimeScene.getGame().getMouseY())[0];
-}
+};
 
 gdjs.evtTools.input.getMouseY = function(runtimeScene, layer, camera) {
-    return runtimeScene.getLayer(layer).convertCoords(runtimeScene.getGame().getMouseX(), 
+    return runtimeScene.getLayer(layer).convertCoords(runtimeScene.getGame().getMouseX(),
         runtimeScene.getGame().getMouseY())[1];
-}
+};

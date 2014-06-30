@@ -7,6 +7,7 @@
 #include "GDCore/PlatformDefinition/Project.h"
 #include "GDCore/IDE/Dialogs/LayoutEditorCanvas/LayoutEditorCanvas.h"
 #include "GDCore/IDE/ExtensionsLoader.h"
+#include "GDCore/IDE/AbstractFileSystem.h"
 #include "GDCore/CommonTools.h"
 #include "GDJS/JsPlatform.h"
 #include "GDJS/Exporter.h"
@@ -43,6 +44,7 @@ namespace gdjs
 
 JsPlatform *JsPlatform::singleton = NULL;
 
+
 #if !defined(GD_NO_WX_GUI)
 /**
  * \brief Allow the platform to launch preview in a browser.
@@ -66,8 +68,8 @@ public:
     {
         std::string exportDir = gd::ToString(wxFileName::GetTempDir()+"/GDTemporaries/JSPreview/");
 
-        Exporter exporter(&project);
-        if ( !exporter.ExportLayoutForPreview(layout, exportDir) )
+        Exporter exporter(gd::NativeFileSystem::Get());
+        if ( !exporter.ExportLayoutForPreview(project, layout, exportDir) )
         {
             gd::LogError(_("An error occurred when launching the preview:\n\n")+exporter.GetLastError()
                        +_("\n\nPlease report this error on the Game Develop website, or contact the extension developer if it seems related to a third party extension."));
@@ -106,7 +108,18 @@ boost::shared_ptr<gd::LayoutEditorPreviewer> JsPlatform::GetLayoutPreviewer(gd::
 
 boost::shared_ptr<gd::ProjectExporter> JsPlatform::GetProjectExporter() const
 {
-    return boost::shared_ptr<gd::ProjectExporter>(new Exporter);
+    return boost::shared_ptr<gd::ProjectExporter>(new Exporter(gd::NativeFileSystem::Get()));
+}
+#endif
+
+ //When compiling with emscripten, extensions exposes specific functions to create them.
+#if defined(EMSCRIPTEN)
+extern "C" {
+gd::PlatformExtension * CreateGDJSPlatformAutomatismExtension();
+gd::PlatformExtension * CreateGDJSDestroyOutsideAutomatismExtension();
+gd::PlatformExtension * CreateGDJSTiledSpriteObjectExtension();
+gd::PlatformExtension * CreateGDJSDraggableAutomatismExtension();
+gd::PlatformExtension * CreateGDJSTopDownMovementAutomatismExtension();
 }
 #endif
 
@@ -156,6 +169,12 @@ JsPlatform::JsPlatform() :
     gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/PathfindingAutomatism."+extension, *this); std::cout.flush();
     gd::ExtensionsLoader::LoadExtension("CppPlatform/Extensions/TopDownMovementAutomatism."+extension, *this); std::cout.flush();
     std::cout << "done." << std::endl;
+    #else
+    AddExtension(boost::shared_ptr<gd::PlatformExtension>(CreateGDJSPlatformAutomatismExtension())); std::cout.flush();
+    AddExtension(boost::shared_ptr<gd::PlatformExtension>(CreateGDJSDestroyOutsideAutomatismExtension())); std::cout.flush();
+    AddExtension(boost::shared_ptr<gd::PlatformExtension>(CreateGDJSTiledSpriteObjectExtension())); std::cout.flush();
+    AddExtension(boost::shared_ptr<gd::PlatformExtension>(CreateGDJSDraggableAutomatismExtension())); std::cout.flush();
+    AddExtension(boost::shared_ptr<gd::PlatformExtension>(CreateGDJSTopDownMovementAutomatismExtension())); std::cout.flush();
     #endif
 };
 

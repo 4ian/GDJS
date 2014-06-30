@@ -3,7 +3,6 @@
  * Copyright 2008-2014 Florian Rival (Florian.Rival@gmail.com). All rights reserved.
  * This project is released under the GNU Lesser General Public License.
  */
-#if !defined(EMSCRIPTEN)
 #ifndef EXPORTER_H
 #define EXPORTER_H
 #include <vector>
@@ -12,6 +11,7 @@
 #include "GDCore/IDE/ProjectExporter.h"
 namespace gd { class Project; }
 namespace gd { class Layout; }
+namespace gd { class AbstractFileSystem; }
 class wxProgressDialog;
 
 namespace gdjs
@@ -23,10 +23,8 @@ namespace gdjs
 class Exporter : public gd::ProjectExporter
 {
 public:
-    Exporter() : project(NULL) {};
-    Exporter(gd::Project * project_) : project(project_) {};
+    Exporter(gd::AbstractFileSystem & fileSystem) : fs(fileSystem) {};
     virtual ~Exporter();
-
 
     /**
      * \brief Show a dialog that will enable the user to export the project.
@@ -47,7 +45,15 @@ public:
      * \param exportDir The directory where the preview must be created.
      * \return true if export was successful.
      */
-    bool ExportLayoutForPreview(gd::Layout & layout, std::string exportDir);
+    bool ExportLayoutForPreview(gd::Project & project, gd::Layout & layout, std::string exportDir);
+
+    /**
+     * \brief Export the specified project.
+     *
+     * Called by ShowProjectExportDialog if the user clicked on Ok.
+     */
+    bool ExportWholeProject(gd::Project & project, std::string exportDir,
+        bool minify, bool exportForGDShare, bool exportForCocoonJS, bool exportForIntelXDK);
 
     /**
      * \brief Return the error that occurred during the last export.
@@ -75,6 +81,7 @@ private:
     /**
      * \brief Export a project to JSON
      *
+     * \param fs The abstract file system to use to write the file
      * \param project The project to be exported.
      * \param filename The filename where export the project
      * \param wrapIntoVariable If not empty, the resulting json will be wrapped in this javascript
@@ -82,16 +89,18 @@ private:
      * \param prettyPrinting If set to true, the JSON will be nicely indented
      * \return Empty string if everthing is ok, description of the error otherwise.
      */
-    static std::string ExportToJSON(const gd::Project & project, std::string filename, std::string wrapIntoVariable = "", bool prettyPrinting = false);
+    static std::string ExportToJSON(gd::AbstractFileSystem & fs, const gd::Project & project, std::string filename, std::string wrapIntoVariable = "", bool prettyPrinting = false);
 
     /**
      * \brief Copy all the resources of the project to to the export directory, updating the resources filenames.
      *
+     * \param fs The abstract file system to use
      * \param project The project with resources to be exported.
      * \param exportDir The directory where the preview must be created.
      * \param progressDlg Optional wxProgressDialog which will be updated with the progress.
      */
-    static void ExportResources(gd::Project & project, std::string exportDir, wxProgressDialog * progressDlg = NULL);
+    static void ExportResources(gd::AbstractFileSystem & fs, gd::Project & project, std::string exportDir,
+        wxProgressDialog * progressDlg = NULL);
 
     /**
      * \brief Copy all the includes files and the standard libraries files to the export directory.
@@ -165,10 +174,9 @@ private:
      */
     bool ExportMetadataFile(gd::Project & project, std::string exportDir, const std::vector<std::string> & includesFiles);
 
-    gd::Project * project; ///< The project being exported. Can be NULL if no project was set.
+    gd::AbstractFileSystem & fs; ///< The abstract file system to be used for exportation.
     std::string lastError; ///< The last error that occurred.
 };
 
 }
 #endif // EXPORTER_H
-#endif

@@ -26,11 +26,11 @@ KeyboardExtension::KeyboardExtension()
                           "Open source (LGPL)");
 
     GetAllConditions()["KeyPressed"].codeExtraInformation
-        .SetFunctionName("gdjs.evtTools.input.isKeyPressed").SetIncludeFile("inputtools.h");
+        .SetFunctionName("gdjs.evtTools.input.isKeyPressed").SetIncludeFile("inputtools.js");
     GetAllConditions()["KeyFromTextPressed"].codeExtraInformation
-        .SetFunctionName("gdjs.evtTools.input.isKeyPressed").SetIncludeFile("inputtools.h");
+        .SetFunctionName("gdjs.evtTools.input.isKeyPressed").SetIncludeFile("inputtools.js");
     GetAllConditions()["AnyKeyPressed"].codeExtraInformation
-        .SetFunctionName("gdjs.evtTools.input.anyKeyPressed").SetIncludeFile("inputtools.h");
+        .SetFunctionName("gdjs.evtTools.input.anyKeyPressed").SetIncludeFile("inputtools.js");
 }
 
 }

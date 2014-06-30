@@ -34,6 +34,10 @@ WindowExtension::WindowExtension()
 
     GetAllStrExpressions()["WindowTitle"].codeExtraInformation
         .SetFunctionName("gdjs.evtTools.window.getWindowTitle");
+    GetAllExpressions()["SceneWindowWidth"].codeExtraInformation
+        .SetFunctionName("gdjs.evtTools.window.getWindowWidth");
+    GetAllExpressions()["SceneWindowHeight"].codeExtraInformation
+        .SetFunctionName("gdjs.evtTools.window.getWindowHeight");
 
     StripUnimplementedInstructionsAndExpressions(); //Unimplemented things are listed here:
 
@@ -66,15 +70,6 @@ WindowExtension::WindowExtension()
         .AddCodeOnlyParameter("currentScene", "")
         .AddParameter("string", _("Name of the image to be used as the icon"), "",false)
         .codeExtraInformation.SetFunctionName("SetWindowIcon").SetIncludeFile("GDCpp/BuiltinExtensions/RuntimeSceneTools.h");
-
-
-    AddExpression("SceneWindowWidth", _("Width of the scene's window"), _("Width of the scene's window"), _("Screen"), "res/window.png")
-        .AddCodeOnlyParameter("currentScene", "")
-        .codeExtraInformation.SetFunctionName("GetSceneWindowWidth").SetIncludeFile("GDCpp/BuiltinExtensions/RuntimeSceneTools.h");
-
-    AddExpression("SceneWindowHeight", _("Height of the scene's window"), _("Height of the scene's window"), _("Screen"), "res/window.png")
-        .AddCodeOnlyParameter("currentScene", "")
-        .codeExtraInformation.SetFunctionName("GetSceneWindowHeight").SetIncludeFile("GDCpp/BuiltinExtensions/RuntimeSceneTools.h");
 
 
     AddExpression("ScreenWidth", _("Width of the current resolution"), _("Width of the current resolution"), _("Screen"), "res/display16.png")

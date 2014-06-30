@@ -224,7 +224,7 @@ gdjs.Layer.prototype.setCameraRotation = function(rotation, cameraId) {
 };
 
 /**
- * Convert a point from the canvas coordinates ( For example, the mouse position ) to the
+ * Convert a point from the canvas coordinates (For example, the mouse position) to the
  * "world" coordinates.
  *
  * @method convertCoords
